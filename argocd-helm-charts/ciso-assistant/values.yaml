@@ -10,5 +10,5 @@ ciso-assistant:
 
 service:
   loadBalancer:
-    enabled: true
+    enabled: false
     annotations: {}

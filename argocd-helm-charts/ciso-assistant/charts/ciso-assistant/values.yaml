@@ -45,9 +45,3 @@ persistence:
 
 ingress:
   enabled: false
-
-service:
-  type: ClusterIP
-  loadBalancer:
-    enabled: false
-    annotations: {}
