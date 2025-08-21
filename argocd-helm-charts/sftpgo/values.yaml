@@ -4,21 +4,18 @@ sftpgo:
 
   ftpd:
     enabled: true
-  
+
   webdavd:
     enabled: true
 
-  volumes:
-    - name: data
-      persistentVolumeClaim:
-        claimName: sftpgo
-
-  volumeMounts:
-    - name: data
-      mountPath: /srv/sftpgo/ftp
-
   replicaCount: 1
+
+  service:
+    ports:
+      http:
+        port: 8080
 
   persistence:
     enabled: true
-    storageClassName: "rook-ceph-block"
+    pvc:
+      storageClassName: "rook-ceph-block"
