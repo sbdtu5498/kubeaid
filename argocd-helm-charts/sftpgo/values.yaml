@@ -13,7 +13,7 @@ sftpgo:
   service:
     ports:
       http:
-        port: 8080
+        port: 38080
 
   persistence:
     enabled: true
