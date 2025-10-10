@@ -1,0 +1,9 @@
+apiVersion: v1
+name: seaweedfs
+description: SeaweedFS
+version: 4.0.393
+appVersion: "3.93"
+dependencies:
+  - name: seaweedfs
+    version: 4.0.393
+    repository: https://seaweedfs.github.io/seaweedfs/helm
