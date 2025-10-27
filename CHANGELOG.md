@@ -2,6 +2,13 @@
 
 All releases and the changes included in them (pulled from git commits added since last release) will be detailed in this file.
 
+### Improvements
+- [`813aa6ef`](../../commit/813aa6ef) Add seaweedfs to Kubeaid
+- [`fc2defaa`](../../commit/fc2defaa) add support for Adding Cpu and Mem resources for mattermost
+- [`b7e9570d`](../../commit/b7e9570d) docs: add instructions for restoring Mattermost DB and updating DB connection string in version 10.11.4
+- [`54edbbcd`](../../commit/54edbbcd) add restore scripts for mongodb and postgres logical backups and update readme in cnpg and mongodb operators
+- [`ba85c47a`](../../commit/ba85c47a) add persistence in alertmanager https://gitea.obmondo.com/EnableIT/KubeAid/issues/989
+
 ## 20.0.0
 ### Major Version Upgrades
 - Updated argo-cd from version 8.6.1 to 9.0.3
