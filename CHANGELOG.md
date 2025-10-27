@@ -2,6 +2,32 @@
 
 All releases and the changes included in them (pulled from git commits added since last release) will be detailed in this file.
 
+## 20.1.0
+### Minor Version Upgrades
+- Updated traefik from version 37.1.2 to 37.2.0
+- Updated tigera-operator from version v3.30.4 to v3.31.0
+- Updated prometheus-adapter from version 5.1.0 to 5.2.0
+- Updated opentelemetry-collector from version 0.137.0 to 0.138.0
+- Updated opentelemetry-operator from version 0.97.1 to 0.98.0
+- Updated opencost from version 2.3.2 to 2.4.0
+- Updated mariadb-operator from version 25.8.4 to 25.10.1
+- Updated argocd-image-updater from version 0.13.0 to 0.14.0
+
+### Patch Version Upgrades
+- Updated teleport-kube-agent from version 18.2.7 to 18.2.10
+- Updated teleport-cluster from version 18.2.7 to 18.2.10
+- Updated seaweedfs from version 4.0.393 to 4.0.399
+- Updated rook-ceph-cluster from version v1.18.4 to v1.18.5
+- Added rook-ceph from version v1.18.4 to v1.18.4
+- Updated opensearch from version 3.3.0 to 3.3.1
+- Updated metal3 from version 0.12.7 to 0.12.8
+- Updated graylog from version 3.0.1 to 3.0.3
+- Updated erpnext from version 7.0.246 to 7.0.247
+- Updated cluster-autoscaler from version 9.52.0 to 9.52.1
+- Updated cloudnative-pg from version 0.26.0 to 0.26.1
+- Updated cilium from version 1.18.2 to 1.18.3
+- Updated argo-cd from version 9.0.3 to 9.0.5
+
 ### Improvements
 - [`813aa6ef`](../../commit/813aa6ef) Add seaweedfs to Kubeaid
 - [`fc2defaa`](../../commit/fc2defaa) add support for Adding Cpu and Mem resources for mattermost

@@ -2,9 +2,9 @@
 
 OpenCost and OpenCost UI
 
-![Version: 2.3.2](https://img.shields.io/badge/Version-2.3.2-informational?style=flat-square)
+![Version: 2.4.0](https://img.shields.io/badge/Version-2.4.0-informational?style=flat-square)
 ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square)
-![AppVersion: 1.117.6](https://img.shields.io/badge/AppVersion-1.117.6-informational?style=flat-square)
+![AppVersion: 1.118.0](https://img.shields.io/badge/AppVersion-1.118.0-informational?style=flat-square)
 [![Artifact Hub](https://img.shields.io/endpoint?url=https://artifacthub.io/badge/repository/opencost)](https://artifacthub.io/packages/search?repo=opencost)
 [![Artifact Hub](https://img.shields.io/endpoint?url=https://artifacthub.io/badge/repository/opencost-oci)](https://artifacthub.io/packages/search?repo=opencost-oci)
 
@@ -80,12 +80,12 @@ $ helm install opencost opencost/opencost
 | opencost.exporter.extraArgs | list | `[]` | List of extra arguments for the command, e.g.: log-format=json |
 | opencost.exporter.extraEnv | object | `{}` | Any extra environment variables you would like to pass on to the pod |
 | opencost.exporter.extraVolumeMounts | list | `[]` | A list of volume mounts to be added to the pod |
-| opencost.exporter.image | object | `{"fullImageName":null,"pullPolicy":"IfNotPresent","registry":"ghcr.io","repository":"opencost/opencost","tag":"1.117.6@sha256:6f1a0e6fe21559a77051e7b7f9e4ac6bc80277131492ae084e8365ada805af91"}` | This overrides the above defaultClusterId. Ensure the ConfigMap exists and contains the required CLUSTER_ID key. clusterIdConfigmap: cluster-id-configmap |
+| opencost.exporter.image | object | `{"fullImageName":null,"pullPolicy":"IfNotPresent","registry":"ghcr.io","repository":"opencost/opencost","tag":"1.118.0@sha256:c1a08767fe3c3b2964a75885c145bae0cba32225c0b4c1e0382a77566aef93e9"}` | This overrides the above defaultClusterId. Ensure the ConfigMap exists and contains the required CLUSTER_ID key. clusterIdConfigmap: cluster-id-configmap |
 | opencost.exporter.image.fullImageName | string | `nil` | Override the full image name for development purposes |
 | opencost.exporter.image.pullPolicy | string | `"IfNotPresent"` | Exporter container image pull policy |
 | opencost.exporter.image.registry | string | `"ghcr.io"` | Exporter container image registry |
 | opencost.exporter.image.repository | string | `"opencost/opencost"` | Exporter container image name |
-| opencost.exporter.image.tag | string | `"1.117.6@sha256:6f1a0e6fe21559a77051e7b7f9e4ac6bc80277131492ae084e8365ada805af91"` | Exporter container image tag |
+| opencost.exporter.image.tag | string | `"1.118.0@sha256:c1a08767fe3c3b2964a75885c145bae0cba32225c0b4c1e0382a77566aef93e9"` | Exporter container image tag |
 | opencost.exporter.livenessProbe.enabled | bool | `true` | Whether probe is enabled |
 | opencost.exporter.livenessProbe.failureThreshold | int | `3` | Number of failures for probe to be considered failed |
 | opencost.exporter.livenessProbe.initialDelaySeconds | int | `10` | Number of seconds before probe is initiated |
@@ -113,6 +113,14 @@ $ helm install opencost opencost/opencost
 | opencost.exporter.startupProbe.path | string | `"/healthz"` | Probe path |
 | opencost.exporter.startupProbe.periodSeconds | int | `5` | Probe frequency in seconds |
 | opencost.extraContainers | list | `[]` | extra sidecars to add to the pod.  Useful for things like oauth-proxy for the UI |
+| opencost.mcp | object | `{"enabled":true,"ingress":{"annotations":{},"enabled":false,"hosts":[{"host":"example.local","paths":[{"path":"/","pathType":"Prefix"}]}],"ingressClassName":"","tls":[]},"port":8081}` | MCP (Model Context Protocol) Server Configuration The MCP server provides AI agents with access to cost allocation and asset data |
+| opencost.mcp.enabled | bool | `true` | Enable MCP server for AI agent integration (default: true) Set to false to disable MCP server completely |
+| opencost.mcp.ingress.annotations | object | `{}` | Annotations for Ingress resource |
+| opencost.mcp.ingress.enabled | bool | `false` | Ingress for MCP server |
+| opencost.mcp.ingress.hosts | list | See [values.yaml](values.yaml) | A list of host rules used to configure the Ingress |
+| opencost.mcp.ingress.ingressClassName | string | `""` | Ingress controller which implements the resource |
+| opencost.mcp.ingress.tls | list | `[]` | Ingress TLS configuration |
+| opencost.mcp.port | int | `8081` | HTTP port for MCP server (default: 8081) Change this if port 8081 conflicts with other services |
 | opencost.metrics.config.configmapName | string | `"custom-metrics"` | Customize the configmap name used for metrics |
 | opencost.metrics.config.disabledMetrics | list | `[]` | List of metrics to be disabled |
 | opencost.metrics.config.enabled | bool | `false` | Enables creating the metrics.json configuration as a ConfigMap |

@@ -1,5 +1,4 @@
-{{- if .Values.filer.enabled }}
-{{- if .Values.filer.ingress.enabled }}
+{{- if .Values.s3.ingress.enabled }}
 {{- if semverCompare ">=1.19-0" .Capabilities.KubeVersion.GitVersion }}
 apiVersion: networking.k8s.io/v1
 {{- else if semverCompare ">=1.14-0" .Capabilities.KubeVersion.GitVersion }}
@@ -9,9 +8,9 @@ apiVersion: extensions/v1beta1
 {{- end }}
 kind: Ingress
 metadata:
-  name: ingress-{{ template "seaweedfs.name" . }}-filer
+  name: ingress-{{ template "seaweedfs.name" . }}-s3
   namespace: {{ .Release.Namespace }}
-  {{- with .Values.filer.ingress.annotations }}
+  {{- with .Values.s3.ingress.annotations }}
   annotations:
     {{- toYaml . | nindent 4 }}
   {{- end }}
@@ -20,29 +19,28 @@ metadata:
     helm.sh/chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
     app.kubernetes.io/managed-by: {{ .Release.Service }}
     app.kubernetes.io/instance: {{ .Release.Name }}
-    app.kubernetes.io/component: filer
+    app.kubernetes.io/component: s3
 spec:
-  ingressClassName: {{ .Values.filer.ingress.className | quote }}
+  ingressClassName: {{ .Values.s3.ingress.className | quote }}
   tls:
-    {{ .Values.filer.ingress.tls | default list | toYaml | nindent 6}}
+    {{ .Values.s3.ingress.tls | default list | toYaml | nindent 6}}
   rules:
   - http:
       paths:
-      - path: /sw-filer/?(.*)
-        pathType: ImplementationSpecific
+      - path: {{ .Values.s3.ingress.path | quote }}
+        pathType: {{ .Values.s3.ingress.pathType | quote }}
         backend:
 {{- if semverCompare ">=1.19-0" .Capabilities.KubeVersion.GitVersion }}
           service:
-            name: {{ template "seaweedfs.name" . }}-filer
+            name: {{ template "seaweedfs.name" . }}-s3
             port:
-              number: {{ .Values.filer.port }}
+              number: {{ .Values.s3.port }}
               #name:
 {{- else }}
-          serviceName: {{ template "seaweedfs.name" . }}-filer
-          servicePort: {{ .Values.filer.port }}
+          serviceName: {{ template "seaweedfs.name" . }}-s3
+          servicePort: {{ .Values.s3.port }}
 {{- end }}
-{{- if .Values.filer.ingress.host }}
-    host: {{ .Values.filer.ingress.host }}
-{{- end }}
+{{- if .Values.s3.ingress.host }}
+    host: {{ .Values.s3.ingress.host | quote }}
 {{- end }}
 {{- end }}

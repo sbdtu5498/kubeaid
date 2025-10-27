@@ -96,13 +96,16 @@ Inject extra environment vars in the format key:value, if populated
 {{/* Computes the container image name for all components (if they are not overridden) */}}
 {{- define "common.image" -}}
 {{- $registryName := default .Values.image.registry .Values.global.registry | toString -}}
-{{- $repositoryName := .Values.image.repository | toString -}}
+{{- $repositoryName := default .Values.image.repository .Values.global.repository | toString -}}
 {{- $name := .Values.global.imageName | toString -}}
 {{- $tag := default .Chart.AppVersion .Values.image.tag  | toString -}}
+{{- if $repositoryName -}}
+{{-   $name = printf "%s/%s" (trimSuffix "/" $repositoryName) (base $name) -}}
+{{- end -}}
 {{- if $registryName -}}
-{{- printf "%s/%s%s:%s" $registryName $repositoryName $name $tag -}}
+{{-   printf "%s/%s:%s" $registryName $name $tag -}}
 {{- else -}}
-{{- printf "%s%s:%s" $repositoryName $name $tag -}}
+{{-   printf "%s:%s" $name $tag -}}
 {{- end -}}
 {{- end -}}
 
@@ -179,6 +182,27 @@ Usage:
 {{- end }}
 {{- end -}}
 
+{{/*
+Converts a Kubernetes quantity like "256Mi" or "2G" to a float64 in base units,
+handling both binary (Ki, Mi, Gi) and decimal (m, k, M) suffixes; numeric inputs
+Usage:
+{{ include "common.resource-quantity" "10Gi" }}
+*/}}
+{{- define "common.resource-quantity" -}}
+    {{- $value := . -}}
+    {{- $unit := 1.0 -}}
+    {{- if typeIs "string" . -}}
+        {{- $base2 := dict "Ki" 0x1p10 "Mi" 0x1p20 "Gi" 0x1p30 "Ti" 0x1p40 "Pi" 0x1p50 "Ei" 0x1p60 -}}
+        {{- $base10 := dict "m" 1e-3 "k" 1e3 "M" 1e6 "G" 1e9 "T" 1e12 "P" 1e15 "E" 1e18 -}}
+        {{- range $k, $v := merge $base2 $base10 -}}
+            {{- if hasSuffix $k $ -}}
+                {{- $value = trimSuffix $k $ -}}
+                {{- $unit = $v -}}
+            {{- end -}}
+        {{- end -}}
+    {{- end -}}
+    {{- mulf (float64 $value) $unit -}}
+{{- end -}}
 
 {{/*
 getOrGeneratePassword will check if a password exists in a secret and return it,
@@ -199,24 +223,26 @@ or generate a new random password if it doesn't exist.
 {{- end -}}
 {{- end -}}
 
-{{- /*
-Render a component’s topologySpreadConstraints exactly as given in values,
-respecting string vs. list, and providing the component name for tpl lookups.
+{{/*
+Compute the master service address to be used in cluster env vars.
+If allInOne is enabled, point to the all-in-one service; otherwise, point to the master service.
+*/}}
+{{- define "seaweedfs.cluster.masterAddress" -}}
+{{- $serviceNameSuffix := "-master" -}}
+{{- if .Values.allInOne.enabled -}}
+{{-   $serviceNameSuffix = "-all-in-one" -}}
+{{- end -}}
+{{- printf "%s%s.%s:%d" (include "seaweedfs.name" .) $serviceNameSuffix .Release.Namespace (int .Values.master.port) -}}
+{{- end -}}
 
-Usage:
-  {{ include "seaweedfs.topologySpreadConstraints" (dict "Values" .Values "component" "filer") | nindent 8 }}
-*/ -}}
-{{- define "seaweedfs.topologySpreadConstraints" -}}
-  {{- $vals := .Values -}}
-  {{- $comp := .component -}}
-  {{- $section := index $vals $comp | default dict -}}
-  {{- $tsp := index $section "topologySpreadConstraints" -}}
-  {{- with $tsp }}
-topologySpreadConstraints:
-{{- if kindIs "string" $tsp }}
-{{ tpl $tsp (dict "Values" $vals "component" $comp) }}
-{{- else }}
-{{ toYaml $tsp }}
-{{- end }}
-  {{- end }}
-{{- end }}
+{{/*
+Compute the filer service address to be used in cluster env vars.
+If allInOne is enabled, point to the all-in-one service; otherwise, point to the filer-client service.
+*/}}
+{{- define "seaweedfs.cluster.filerAddress" -}}
+{{- $serviceNameSuffix := "-filer-client" -}}
+{{- if .Values.allInOne.enabled -}}
+{{-   $serviceNameSuffix = "-all-in-one" -}}
+{{- end -}}
+{{- printf "%s%s.%s:%d" (include "seaweedfs.name" .) $serviceNameSuffix .Release.Namespace (int .Values.filer.port) -}}
+{{- end -}}

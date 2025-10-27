@@ -3,6 +3,7 @@
 global:
   createClusterRole: true
   registry: ""
+  # if repository is set, it overrides the namespace part of imageName
   repository: ""
   imageName: chrislusf/seaweedfs
   imagePullPolicy: IfNotPresent
@@ -191,7 +192,7 @@ master:
   # Topology Spread Constraints Settings
   # This should map directly to the value of the topologySpreadConstraints
   # for a PodSpec. By Default no constraints are set.
-  topologySpreadConstraints: null
+  topologySpreadConstraints: ""
 
   # Toleration Settings for master pods
   # This should be a multi-line string matching the Toleration array
@@ -201,8 +202,7 @@ master:
   # nodeSelector labels for master pod assignment, formatted as a muli-line string.
   # ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#nodeselector
   # Example:
-  nodeSelector: |
-    kubernetes.io/arch: amd64
+  nodeSelector: ""
   # nodeSelector: |
   #   sw-backend: "true"
 
@@ -238,6 +238,8 @@ master:
     className: "nginx"
     # host: false for "*" hostname
     host: "master.seaweedfs.local"
+    path: "/sw-master/?(.*)"
+    pathType: ImplementationSpecific
     annotations:
       nginx.ingress.kubernetes.io/auth-type: "basic"
       nginx.ingress.kubernetes.io/auth-secret: "default/ingress-basic-auth-secret"
@@ -358,7 +360,7 @@ volume:
   # This will automatically create a job for patching Kubernetes resources if the dataDirs type is 'persistentVolumeClaim' and the size has changed.
   resizeHook:
     enabled: true
-    image: bitnami/kubectl
+    image: alpine/k8s:1.28.4
 
   # idx can be defined by:
   #
@@ -456,13 +458,13 @@ volume:
             matchLabels:
               app.kubernetes.io/name: {{ template "seaweedfs.name" . }}
               app.kubernetes.io/instance: {{ .Release.Name }}
-              app.kubernetes.io/component: volume
+              app.kubernetes.io/component: {{ $volumeName }}
           topologyKey: kubernetes.io/hostname
 
   # Topology Spread Constraints Settings
   # This should map directly to the value of the topologySpreadConstraints
   # for a PodSpec. By Default no constraints are set.
-  topologySpreadConstraints: null
+  topologySpreadConstraints: ""
 
   # Resource requests, limits, etc. for the server cluster placement. This
   # should map directly to the value of the resources field for a PodSpec,
@@ -478,8 +480,7 @@ volume:
   # nodeSelector labels for server pod assignment, formatted as a muli-line string.
   # ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#nodeselector
   # Example:
-  nodeSelector: |
-   kubernetes.io/arch: amd64
+  nodeSelector: ""
   # nodeSelector: |
   #   sw-volume: "true"
 
@@ -537,6 +538,31 @@ volume:
     successThreshold: 1
     failureThreshold: 100
     timeoutSeconds: 30
+
+# Map of named volume groups for topology-aware deployments.
+# Each key inherits all fields from the `volume` section but can override
+# them locally—for example, replicas, nodeSelector, dataCenter, etc.
+# To switch entirely to this scheme, set `volume.enabled: false`
+# and define one entry per zone/data-center under `volumes`.
+#
+# volumes:
+#   dc1:
+#     replicas: 2
+#     dataCenter: "dc1"
+#     nodeSelector: |
+#      topology.kubernetes.io/zone: dc1
+#   dc2:
+#     replicas: 2
+#     dataCenter: "dc2"
+#     nodeSelector: |
+#      topology.kubernetes.io/zone: dc2
+#   dc3:
+#     replicas: 2
+#     dataCenter: "dc3"
+#     nodeSelector: |
+#      topology.kubernetes.io/zone: dc3
+#
+volumes: {}
 
 filer:
   enabled: true
@@ -690,7 +716,7 @@ filer:
   # Topology Spread Constraints Settings
   # This should map directly to the value of the topologySpreadConstraints
   # for a PodSpec. By Default no constraints are set.
-  topologySpreadConstraints: null
+  topologySpreadConstraints: ""
 
   # updatePartition is used to control a careful rolling update of SeaweedFS
   # masters.
@@ -710,8 +736,7 @@ filer:
   # nodeSelector labels for server pod assignment, formatted as a muli-line string.
   # ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#nodeselector
   # Example:
-  nodeSelector: |
-    kubernetes.io/arch: amd64
+  nodeSelector: ""
   # nodeSelector: |
   #   sw-backend: "true"
 
@@ -747,6 +772,8 @@ filer:
     className: "nginx"
     # host: false for "*" hostname
     host: "seaweedfs.cluster.local"
+    path: "/sw-filer/?(.*)"
+    pathType: ImplementationSpecific
     annotations:
       nginx.ingress.kubernetes.io/backend-protocol: GRPC
       nginx.ingress.kubernetes.io/auth-type: "basic"
@@ -846,7 +873,7 @@ filer:
     #     anonymousRead: false
 
 s3:
-  enabled: false
+  enabled: true
   imageOverride: null
   restartPolicy: null
   replicas: 1
@@ -907,8 +934,7 @@ s3:
   # nodeSelector labels for server pod assignment, formatted as a muli-line string.
   # ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#nodeselector
   # Example:
-  nodeSelector: |
-    kubernetes.io/arch: amd64
+  nodeSelector: ""
   # nodeSelector: |
   #   sw-backend: "true"
 
@@ -950,6 +976,11 @@ s3:
 
   extraEnvironmentVars:
 
+  # Custom command line arguments to add to the s3 command
+  # Example to fix connection idle seconds:
+  extraArgs: ["-idleTimeout=30"]
+  # extraArgs: []
+
   # used to configure livenessProbe on s3 containers
   #
   livenessProbe:
@@ -981,6 +1012,8 @@ s3:
     className: "nginx"
     # host: false for "*" hostname
     host: "seaweedfs.cluster.local"
+    path: "/"
+    pathType: Prefix
     # additional ingress annotations for the s3 endpoint
     annotations: {}
     tls: []
@@ -1026,8 +1059,7 @@ sftp:
   annotations: {}
   resources: {}
   tolerations: ""
-  nodeSelector: |
-    kubernetes.io/arch: amd64
+  nodeSelector: ""
   priorityClassName: ""
   serviceAccountName: ""
   podSecurityContext: {}
@@ -1063,7 +1095,6 @@ allInOne:
   enabled: false
   imageOverride: null
   restartPolicy: Always
-  replicas: 1
 
   # Core configuration
   idleTimeout: 30  # Connection idle seconds
@@ -1146,7 +1177,7 @@ allInOne:
   # Topology Spread Constraints Settings
   # This should map directly to the value of the topologySpreadConstraints
   # for a PodSpec. By Default no constraints are set.
-  topologySpreadConstraints: null
+  topologySpreadConstraints: ""
 
   # Toleration Settings for master pods
   # This should be a multi-line string matching the Toleration array
@@ -1155,8 +1186,7 @@ allInOne:
 
   # nodeSelector labels for master pod assignment, formatted as a muli-line string.
   # ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#nodeselector
-  nodeSelector: |
-    kubernetes.io/arch: amd64
+  nodeSelector: ""
 
   # Used to assign priority to master pods
   # ref: https://kubernetes.io/docs/concepts/configuration/pod-priority-preemption/
@@ -1206,7 +1236,7 @@ cosi:
   region: ""
 
   sidecar:
-    image: gcr.io/k8s-staging-sig-storage/objectstorage-sidecar/objectstorage-sidecar:v20230130-v0.1.0-24-gc0cf995
+    image: gcr.io/k8s-staging-sig-storage/objectstorage-sidecar:v20250711-controllerv0.2.0-rc1-80-gc2f6e65
     # Resource requests, limits, etc. for the server cluster placement. This
     # should map directly to the value of the resources field for a PodSpec,
     # formatted as a multi-line string. By default no direct resource request
