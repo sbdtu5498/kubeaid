@@ -1,4 +1,10 @@
 ---
+# we moved to bitnami legacy images so `allowInsecureImages` is enabled due to an image verification issue during chart deployment.
+# Refer to https://github.com/Obmondo/kubeaid/blob/fc2defaa25dc9c9f2da00db3ecf893277e0250f6/argocd-helm-charts/odoo/charts/odoo/charts/postgresql/charts/common/templates/_errors.tpl#L68
+# for context on this workaround and related error handling logic.
+global:
+  security:
+    allowInsecureImages: true
 odoo:
   postgresql:
     enabled: false
@@ -50,3 +56,6 @@ postgres:
     requests:
       memory: 500Mi
       cpu: 250m
+
+redirectToWWW:
+  enabled: false
