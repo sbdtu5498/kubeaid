@@ -720,7 +720,7 @@ local kp =
                 accessModes: ['ReadWriteOnce'],
                 resources: {
                   requests: {
-                    storage: '1Gi', // <-- set desired size here
+                    storage: '1Gi',  // <-- set desired size here
                   },
                 },
               },

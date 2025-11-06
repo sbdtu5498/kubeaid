@@ -4,7 +4,7 @@
 RESTORE_MODE=${RESTORE_MODE:="interactive"}
 
 function read_input {
-    read -p "Storage provider (s3/azure): " STORAGE_PROVIDER
+    read -r -p "Storage provider (s3/azure): " STORAGE_PROVIDER
     if [[ "$STORAGE_PROVIDER" == "s3" ]]; then
         read_aws_credentials
     else
@@ -15,29 +15,29 @@ function read_input {
 }
 
 function read_aws_credentials {
-    read -p "AWS Access Key ID: " AWS_ACCESS_KEY_ID
-    read -s -p "AWS Secret Access Key: " AWS_SECRET_ACCESS_KEY
+    read -r -p "AWS Access Key ID: " AWS_ACCESS_KEY_ID
+    read -r -s -p "AWS Secret Access Key: " AWS_SECRET_ACCESS_KEY
     echo
-    read -p "S3 Bucket Name: "  LOGICAL_BACKUP_S3_BUCKET
-    read -p "Backup file path: " BACKUP_FILE_PATH
-    read -p "S3 endpoint: " LOGICAL_BACKUP_S3_ENDPOINT 
+    read -r -p "S3 Bucket Name: "  LOGICAL_BACKUP_S3_BUCKET
+    read -r -p "Backup file path: " BACKUP_FILE_PATH
+    read -r -p "S3 endpoint: " LOGICAL_BACKUP_S3_ENDPOINT 
 }
 
 function read_azure_credentials {
-    read -p "Azure Account Name: " AZURE_STORAGE_ACCOUNT_NAME
-    read -s -p "Azure Storage Account Key: " AZURE_STORAGE_ACCOUNT_KEY
+    read -r -p "Azure Account Name: " AZURE_STORAGE_ACCOUNT_NAME
+    read -r -s -p "Azure Storage Account Key: " AZURE_STORAGE_ACCOUNT_KEY
     echo
-    read -p "Azure Storage Container Name: " AZURE_STORAGE_CONTAINER_NAME
-    read -p "Azure Storage Backup Path: " AZURE_STORAGE_BACKUP_PATH
+    read -r -p "Azure Storage Container Name: " AZURE_STORAGE_CONTAINER_NAME
+    read -r -p "Azure Storage Backup Path: " AZURE_STORAGE_BACKUP_PATH
 }
 
 function read_database_credentials {
-    read -p "Database name: " DB_NAME
-    read -p "Database user: " DB_USER
-    read -s -p "Database password: " DB_PASS
+    read -r -p "Database name: " DB_NAME
+    read -r -p "Database user: " DB_USER
+    read -r -s -p "Database password: " DB_PASS
     echo
-    read -p "Database host: " DB_HOST
-    read -p "Database port: " DB_PORT
+    read -r -p "Database host: " DB_HOST
+    read -r -p "Database port: " DB_PORT
 }
 
 function validate_arguments {
@@ -143,7 +143,7 @@ if [[ "$STORAGE_PROVIDER" == "s3" ]]; then
         echo "Restoring ${BACKUP_FILE_PATH} from AWS S3..."
         
         # Download the file from S3 and pipe it to gunzip and then to the psql client
-        AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY aws s3 cp "s3://${PATH_TO_BACKUP}" --endpoint-url $LOGICAL_BACKUP_S3_ENDPOINT - | gunzip | PGPASSWORD=$DB_PASS psql -U "${DB_USER}" -d "${DB_NAME}" -h ${DB_HOST} -p $DB_PORT
+        AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY aws s3 cp "s3://${PATH_TO_BACKUP}" --endpoint-url "$LOGICAL_BACKUP_S3_ENDPOINT" - | gunzip | PGPASSWORD=$DB_PASS psql -U "${DB_USER}" -d "${DB_NAME}" -h "${DB_HOST}" -p "$DB_PORT"
     else 
         echo "${BACKUP_FILE_PATH} - Not a valid postgres backup"
     fi
@@ -154,7 +154,7 @@ elif [[ "$STORAGE_PROVIDER" == "azure" ]]; then
         echo "Restoring ${AZURE_STORAGE_BACKUP_PATH} from Azure blob storage..."
 
         # Download the file from Azure blob storage and pipe it to gunzip and then to the psql client
-        az storage blob download --account-name $AZURE_STORAGE_ACCOUNT_NAME --account-key $AZURE_STORAGE_ACCOUNT_KEY --container-name $AZURE_STORAGE_CONTAINER_NAME --name $AZURE_STORAGE_BACKUP_PATH --file - | gunzip | PGPASSWORD=$DB_PASS psql -U "${DB_USER}" -d "${DB_NAME}" -h ${DB_HOST} -p $DB_PORT
+        az storage blob download --account-name "$AZURE_STORAGE_ACCOUNT_NAME" --account-key "$AZURE_STORAGE_ACCOUNT_KEY" --container-name "$AZURE_STORAGE_CONTAINER_NAME" --name "$AZURE_STORAGE_BACKUP_PATH" --file - | gunzip | PGPASSWORD=$DB_PASS psql -U "${DB_USER}" -d "${DB_NAME}" -h "${DB_HOST}" -p "$DB_PORT"
     else 
         echo "${AZURE_STORAGE_BACKUP_PATH} - Not a valid postgres backup"
     fi 
