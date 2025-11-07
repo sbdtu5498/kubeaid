@@ -15,11 +15,11 @@ spec:
 
   storage:
     size: {{ $postgresql.size }}
-    {{- if $postgresql.storageClass }}
-    storageClass: {{ $postgresql.storageClass }}
+    {{- with $postgresql.storageClass -}}
+    storageClass: {{ . }}
     {{- end }}
 
-  {{- if $postgresql.backups.enabled }}
+  {{- if $postgresql.backups.enabled -}}
   plugins:
     - enabled: true
       isWALArchiver: true

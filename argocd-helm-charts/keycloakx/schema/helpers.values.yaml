@@ -1,0 +1,7 @@
+# The following values must be provided by the user explicitly.
+# I'm providing dummy values here, so helm-values-schema-json plugin can generate the corresponding
+# values JSON schema.
+
+postgresql:
+  backups:
+    endpointURL: ""
