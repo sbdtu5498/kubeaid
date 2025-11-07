@@ -1,0 +1,17 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: ScheduledBackup
+metadata:
+  name: keycloak-pgsql
+
+spec:
+  cluster:
+    name: keycloak-pgsql
+
+  backupOwnerReference: self
+
+  schedule: {{ .Values.postgresql.backups.schedule }}
+  immediate: true
+
+  method: plugin
+  pluginConfiguration:
+    name: barman-cloud.cloudnative-pg.io
