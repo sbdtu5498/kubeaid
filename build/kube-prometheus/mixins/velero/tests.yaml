@@ -1,54 +1,71 @@
 rule_files:
-  - prometheus.yaml
+  - prometheus.yaml   # The file containing your Velero alert rule
 
 tests:
-  # ───────────────────────────────────────────────────────────────────────────────────────────────
-  # (1) You install Velero for the first time in your cluster. There'll be no backups.
-  #     And the velero_backup_last_successful_timestamp gauge metric will not have any values.
-  #     REFERENCE : https://github.com/vmware-tanzu/velero/blob/61adb2a6073229995bceade437d6a3409f7dc8b9/pkg/metrics/metrics.go#L696.
-  #
-  #     We assume that it takes < 15 minutes for a backup to complete.
-  #
-  #     Someone must go and trigger the first backup (for each schedule), which must successfully
-  #     complete within t = 15m. If it doesn't (as in this case), then we must get alerted.
-  #
-  #     Once the first backup succeeds, the gauge metric will have a value and the alert will go
-  #     away.
-  # ───────────────────────────────────────────────────────────────────────────────────────────────
+  # ───────────────────────────────────────────────
+  # (1) Velero pod is UP but no successful backups.
+  #     -> Alert should fire.
+  # ───────────────────────────────────────────────
   - interval: 5m
     input_series:
-      # NOTE : velero_backup_attempt_total{schedule="daily-schedule"} metric exists.
-      #        Which indicates that the daily schedule is enabled.
-      - series: 'velero_backup_attempt_total{schedule="daily-schedule"}'
-        values: "0+0x3"
+      - series: 'up{pod="velero"}'
+        values: '1+0x4'  # Velero pod active
+      - series: 'velero_backup_success_total{schedule="daily"}'
+        values: '0+0x4'  # No successful backups yet
     alert_rule_test:
-      - eval_time: 16m
+      - eval_time: 15m
         alertname: VeleroNoFirstSuccessfulBackup
         exp_alerts:
           - exp_labels:
               severity: critical
-              schedule: daily-schedule
+              schedule: daily
             exp_annotations:
-              description: No first successful Velero backup found for daily-schedule.
-              summary: No first successful Velero backup found.
+              summary: "Velero backup has not completed once successfully for any schedule."
+              description: "No successful Velero backups have been detected for schedule: daily while the Velero pod is running.This likely indicates a configuration or permission issue preventing backups from completing."
 
-  # ───────────────────────────────────────────────────────────────────────────────────────────────
-  # (2) The first backup completed successfully at t = 20m. And it's currently t = 25m.
-  #     No alert should be triggered for the daily schedule.
-  # ───────────────────────────────────────────────────────────────────────────────────────────────
+  # ───────────────────────────────────────────────
+  # (2) Velero pod is DOWN — no alert should fire.
+  # ───────────────────────────────────────────────
   - interval: 5m
     input_series:
-      - series: velero_backup_attempt_total{schedule="daily-schedule"}
-        values: "0+0x5"
-      - series: velero_backup_last_successful_timestamp{schedule="daily-schedule"}
-        values: "NaN+0x3 1200+0x02"
+      - series: 'up{pod="velero"}'
+        values: '0+0x4'  # Velero pod down
+      - series: 'velero_backup_success_total{schedule="daily"}'
+        values: '0+0x4'
     alert_rule_test:
-      - eval_time: 25m
+      - eval_time: 15m
         alertname: VeleroNoFirstSuccessfulBackup
-        exp_alerts: []
-      - eval_time: 25m
-        alertname: VeleroUnsuccessfulBackup
-        exp_alerts: []
+        exp_alerts: []   # No alerts expected when pod is down
 
-# ───────────────────────────────────────────────────────────────────────────────────────────────
-# (3) The first backup completed successfully at t = 20m. And it's currently t = 1d45m.
+  # ───────────────────────────────────────────────
+  # (3) Velero pod UP and first successful backup done.
+  #     -> Alert should clear.
+  # ───────────────────────────────────────────────
+  - interval: 5m
+    input_series:
+      - series: 'up{pod="velero"}'
+        values: '1+0x4'
+      - series: 'velero_backup_success_total{schedule="daily"}'
+        values: '0+0x2 1+0x2'  # Backup success after 10 minutes
+    alert_rule_test:
+      - eval_time: 20m
+        alertname: VeleroNoFirstSuccessfulBackup
+        exp_alerts: []   # Alert clears once success recorded
+
+  # ───────────────────────────────────────────────
+  # (4) Velero pod UP but backup metric missing (metric drop case or metric not initialized case)
+  #     -> Alert should fire since no success metric found.
+  # ───────────────────────────────────────────────
+  - interval: 5m
+    input_series:
+      - series: 'up{pod="velero"}'
+        values: '1+0x4'
+    alert_rule_test:
+      - eval_time: 15m
+        alertname: VeleroNoFirstSuccessfulBackup
+        exp_alerts:
+          - exp_labels:
+              severity: critical
+            exp_annotations:
+              summary: "Velero backup has not completed once successfully for any schedule."
+              description: "Velero backup metrics are missing while the Velero pod is running. This may indicate that the backup metric is not being emitted or there is a configuration/permission issue."

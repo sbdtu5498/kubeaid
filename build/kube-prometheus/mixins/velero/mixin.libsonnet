@@ -35,23 +35,7 @@
             alert: 'VeleroNoFirstSuccessfulBackup',
             expr: |||
               (
-                (
-                  count by(__name__, schedule) (velero_backup_attempt_total{schedule=~".*6hrly.*"}) > 0
-                  unless
-                    velero_backup_last_successful_timestamp
-                )
-                or
-                (
-                  count by(__name__, schedule) (velero_backup_attempt_total{schedule=~".*daily.*"}) > 0
-                  unless
-                    velero_backup_last_successful_timestamp
-                )
-                or
-                (
-                  count by(__name__, schedule) (velero_backup_attempt_total{schedule=~".*weekly.*"}) > 0
-                  unless
-                    velero_backup_last_successful_timestamp
-                )
+                (absent(velero_backup_success_total{schedule=~".*(daily|6hrly|weekly).*"} ) or (velero_backup_success_total{schedule=~".*(daily|6hrly|weekly).*", schedule!=""} == 0)) and on() (up{pod=~".*velero.*"} == 1)
               )
             ||| % $._config,
             'for': '15m',
@@ -60,8 +44,9 @@
               schedule: '{{ $labels.schedule }}'
             },
             annotations: {
-              description: 'Velero backup was not successful for {{ $labels.schedule }}.',
-              summary: 'Velero backup for schedule was unsuccessful.',
+              summary: "Velero backup has not completed once successfully for any schedule.",
+              description:
+                "{{- with $labels.schedule -}} No successful Velero backups have been detected for schedule: {{ . }} while the Velero pod is running.This likely indicates a configuration or permission issue preventing backups from completing. {{- else -}} Velero backup metrics are missing while the Velero pod is running. This may indicate that the backup metric is not being emitted or there is a configuration/permission issue. {{- end }}"
             },
           },
         ],
