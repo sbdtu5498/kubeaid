@@ -1,3 +1,7 @@
 cloudnative-pg:
+  config:
+    data:
+      INHERITED_ANNOTATIONS: iam.amazonaws.com/role,velero.io/exclude-from-backup
+
   monitoring:
     podMonitorEnabled: true
