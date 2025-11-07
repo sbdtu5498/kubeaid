@@ -1,4 +1,4 @@
-{{- $postgresql := .Values.postgresql -}}
+{{- $postgresql := .Values.postgresql }}
 
 apiVersion: postgresql.cnpg.io/v1
 kind: Cluster
@@ -8,43 +8,42 @@ metadata:
 spec:
   instances: {{ $postgresql.instances }}
 
-  {{- with $postgresql.resources -}}
+  {{- with $postgresql.resources }}
   resources:
-    {{ toYaml . | nindent 4 }}
-  {{- end -}}
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
 
   storage:
     size: {{ $postgresql.size }}
-    {{- with $postgresql.storageClass -}}
-    storageClass: {{ . }}
+    {{- if $postgresql.storageClass }}
+    storageClass: {{ $postgresql.storageClass }}
     {{- end }}
 
-  {{- if $postgresql.backups.enabled -}}
+  {{- if $postgresql.backups.enabled }}
   plugins:
     - enabled: true
       isWALArchiver: true
       name: barman-cloud.cloudnative-pg.io
       parameters:
         barmanObjectName: keycloak-pgsql-backups
-        serverName: revision-{{ $postgresql.revision }}
-  {{ end  }}
+        serverName: "revision-{{ $postgresql.revision }}"
+  {{- end }}
 
   bootstrap:
-    {{- if $postgresql.recover.enabled -}}
+    {{- if $postgresql.recover.enabled }}
     recovery: keycloak-pgsql
-    {{- else -}}
+    {{- else }}
     initdb:
       database: keycloak
       owner: keycloak
-    {{- else -}}
+    {{- end }}
 
-  {{- if $postgresql.recover.enabled -}}
+  {{- if $postgresql.recover.enabled }}
   externalClusters:
     - name: keycloak-pgsql
       plugin:
         name: barman-cloud.cloudnative-pg.io
         parameters:
           barmanObjectName: keycloak-pgsql-backups
-          serverName: revision-{{ $postgresql.recover.revision }}
-  {{- end -}}
-{{ end }}
+          serverName: "revision-{{ $postgresql.recover.revision }}"
+  {{- end }}

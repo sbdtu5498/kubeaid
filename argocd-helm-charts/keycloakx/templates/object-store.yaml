@@ -1,4 +1,4 @@
-{{- $backups := .Values.postgresql.backups -}}
+{{- $backups := .Values.postgresql.backups }}
 
 {{/* NOTE : While it is technically possible to reuse the same ObjectStore for multiple Cluster
             resources within the same namespace, it is strongly recommended to dedicate one object
@@ -11,26 +11,25 @@ metadata:
 
 spec:
   configuration:
-    {{- if $backups.endpointURL -}}
+    {{- if $backups.endpointURL }}
     endpointURL: {{ $backups.endpointURL }}
-    {{- end -}}
-    destinationPath: {{ $backups.destinationPath }}
+    {{- end }}
+    destinationPath: {{ required ".destinationPath must be provided" $backups.destinationPath }}
 
-    {{- if eq $backups.provider "aws" -}}
+    {{- if eq $backups.provider "aws" }}
     s3Credentials:
-      {{- if $backups.aws.enableKube2IAMIntegration -}}
-        inheritFromIAMRole: true
-      {{- else -}}
+      {{- if $backups.aws.enableKube2IAMIntegration }}
+      inheritFromIAMRole: true
+      {{- else }}
       accessKeyId:
         name: keycloak-pgsql-backup-creds
         key: ACCESS_KEY_ID
       secretAccessKey:
         name: keycloak-pgsql-backup-creds
         key: ACCESS_SECRET_KEY
-      {{- end -}}
-    {{- end -}}
+      {{- end }}
 
-    {{- else if eq $backups.provider "azure" -}}
+    {{- else if eq $backups.provider "azure" }}
     azureCredentials:
       connectionString:
         name: keycloak-pgsql-backup-creds
@@ -44,7 +43,7 @@ spec:
       storageSasToken:
         name: keycloak-pgsql-backup-creds
         key: AZURE_STORAGE_SAS_TOKEN
-    {{- end -}}
+    {{- end }}
 
     wal:
       compression: gzip
