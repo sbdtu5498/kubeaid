@@ -81,14 +81,45 @@ it in case it is unretrievable.
 
   # List all argocd accounts to make sure the user with apikey capabilities are there
   argocd account list
-  
+
   # Create a password for that user
   argocd account update-password --account apiuser --current-password <existing admin user password> --new-password <newpassword>
 
   # Generate the token using user
   argocd account generate-token -a apiuser --server-name <argocd ingress>
- 
   ```
+
+## Create admin password
+
+* Generate a random string
+
+  ```sh
+  $ gopass pwgen 50
+  SnuTjj4WISX0opUYiGOGLNFq7Ar34uWdhphIVHWORiX7SWOkW9
+  ```
+
+* Generate random string for admin password
+
+  ```sh
+  $ gopass pwgen 30
+  $ bcrypt-tool hash JljJlkjhayZePnRznr4r 10
+  ```
+
+* Create the secret
+
+  ```sh
+  kubectl create secret generic argocd-secret --namespace argocd --dry-run=client --from-literal=admin.password='$2a$10$nOZv8mvkEV6' --from-literal=admin.passwordMtime="$(date +%FT%T%Z)" --from-literal=server.secretkey=m5wtVpw9oA --output=yaml | kubeseal --controller-name sealed-secrets-controller --controller-namespace sealed-secrets -o yaml > argocd-secret.yaml
+  ```
+
+* Manually apply, (since you can't sync, ofcourse argocd is down)
+
+  ```sh
+  cat argocd-secret.yaml | kubectl apply -f -
+  ```
+
+* Delete the argocd-server pod (so deployment can re-create it again)
+
+* Sync the sealed-secret in the secret app via argocd, since it matches up againt the git
 
 ## Replace admin password
 
@@ -139,7 +170,7 @@ wget https://github.com/mikefarah/yq/releases/download/${VERSION}/${BINARY}.tar.
 * Generate sealedsecret by running following command
 
 ```bash
-kubectl create secret generic repo-token-name --namespace argocd --dry-run=client --from-literal=type='git' --from-literal=name='repo-token-name' --from-literal=url='https://gitea.obmondo.com/EnableIT/repo-name.git' --from-literal=username='enableit_bot' --from-literal=password='SECRETPASSWORD' --output yaml | yq eval '.metadata.labels.["argocd.argoproj.io/secret-type"]="repository"' - | yq eval '.metadata.annotations.["sealedsecrets.bitnami.com/managed"]="true"' - | yq eval '.metadata.annotations.["managed-by"]="argocd.argoproj.io"' - | kubeseal --controller-namespace system --controller-name sealed-secrets --format yaml - > repo-token-name.yaml 
+kubectl create secret generic repo-token-name --namespace argocd --dry-run=client --from-literal=type='git' --from-literal=name='repo-token-name' --from-literal=url='https://gitea.obmondo.com/EnableIT/repo-name.git' --from-literal=username='enableit_bot' --from-literal=password='SECRETPASSWORD' --output yaml | yq eval '.metadata.labels.["argocd.argoproj.io/secret-type"]="repository"' - | yq eval '.metadata.annotations.["sealedsecrets.bitnami.com/managed"]="true"' - | yq eval '.metadata.annotations.["managed-by"]="argocd.argoproj.io"' - | kubeseal --controller-namespace sealed-secrets --controller-name sealed-secrets-controller --format yaml - > repo-token-name.yaml
 ```
 
 * Apply the secret in the `argocd` namespace of your cluster:
