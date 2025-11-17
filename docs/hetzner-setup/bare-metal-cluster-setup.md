@@ -21,17 +21,24 @@ The `hetzner` provider, in `bare-metal` mode, is used to provision a KubeAid man
 - Have [Docker](https://www.docker.com/products/docker-desktop/) running locally.
 
 - Create a Hetzner Bare Metal SSH KeyPair, by visiting <https://robot.hetzner.com/key/index>.
-  > Ensure that you don't already have a Hetzner Bare Metal SSH KeyPair with the SSH key-pair
-  > you'll be using.
-  > Otherwise, ClusterAPI Provider Hetzner (CAPH) will error out.
+  > Remember, no 2 Hetzner Bare Metal SSH KeyPairs can have the same SSH public key.
 
-- If you're going to use RAID, then remove any pre-existing RAID setup from the Hetzner Bare Metal servers.
+- If you're going to set `cloud.hetzner.bareMetal.wipeDisks: True` in `general.config.yaml`, then remove any pre-existing RAID setup from the corresponding your Hetzner Bare Metal servers.
 
-  You can do so, by executing the following in each Hetzner Bare Metal server :
-  ```shell script
-  wipefs -fa /dev/sda
-  wipefs -fa /dev/sdb
-  ```
+  You can do so, by executing the `wipefs -fa <partition-name>` for each partition in each Hetzner Bare Metal server.
+
+## Disk layout for Hetzner Bare Metal servers
+
+For each Hetzner Bare Metal server, we have **level 1** `SWRAID` (Software RAID) enabled across disks whose WWNs you've specified in the general config file. And, by default, on top of that level 1 SWRAID, we create a 25G sized `Logical Volume Group` (LVG) named **vg0**. It contains the 10G sized **root** `Volume Group` (VG), where the Operating System gets installed.
+> If you have HDDs attached to the server, then we recommend you specify their WWNs in the general config file. So the OS will get installed there, and, you'll have your SSDs / NVMes solely dedicated to your stateful workloads.
+
+Now, you can configure the disk layout further, via the `diskLayoutSetupCommands` option in the general config file.
+
+We recommend :
+
+- allocating your HDDs / SSDs to `Ceph`.
+
+- allocating your NVMes to a ZPool (running in `mirror mode`), shared by ContainerD image store, Kubernetes pod logs and ephemeral volumes and `OpenEBS ZFS LocalPV provisioner`.
 
 ## Installation
 

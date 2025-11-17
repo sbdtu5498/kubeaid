@@ -21,8 +21,7 @@ The `hetzner` provider, in `hcloud` mode, is used to provision a KubeAid managed
 - Have [Docker](https://www.docker.com/products/docker-desktop/) running locally.
 
 - [Create an HCloud SSH KeyPair](https://www.youtube.com/watch?v=mxN6fyMuQRI).
-  > Ensure that you don't already have an HCloud SSH KeyPair with the SSH key-pair you'll be using.
-  > Otherwise, ClusterAPI Provider Hetzner (CAPH) will error out.
+  > Remember, no 2 HCloud SSH KeyPairs can have the same SSH public key.
 
 ## Installation
 
