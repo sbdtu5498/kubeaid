@@ -9,7 +9,6 @@ spec:
         extraArgs:
           authorization-mode: Node,RBAC
           client-ca-file: /etc/kubernetes/pki/ca.crt
-          cloud-provider: external
           default-not-ready-toleration-seconds: "45"
           default-unreachable-toleration-seconds: "45"
           enable-aggregator-routing: "true"
@@ -205,6 +204,9 @@ spec:
       path: /bind-floating-ip.sh
       permissions: "0744"
     {{- end }}
+    {{- if ((.Values.controlPlane).apiServer).files }}
+    {{- ((.Values.controlPlane).apiServer).files | toYaml | nindent 4 }}
+    {{- end }}
     initConfiguration:
       skipPhases:
         - addon/kube-proxy
@@ -245,6 +247,39 @@ spec:
     {{- end }}
     preKubeadmCommands:
       - set -x
+
+      {{/* Give highest priority to the Network Card entry in the boot order.
+           Otherwise, we cannot boot the servers into rescue mode, and need to reach out to the
+           Hetzner support team. */}}
+      {{- if eq .Values.mode "bare-metal" }}
+      - |
+        NETBOOT=$(efibootmgr -v | grep "Network Card" | sed 's/Boot\([0-9A-F]*\).*/\1/')
+        CURRENT_ORDER=$(efibootmgr | grep "BootOrder:" | cut -d' ' -f2)
+        NEW_ORDER=$(echo "$CURRENT_ORDER" | sed "s/$NETBOOT,\?//g" | sed "s/^/$NETBOOT,/" | sed 's/,$//')
+        efibootmgr -o $NEW_ORDER
+      {{- end }}
+
+      {{/*
+        User provided commands used to setup the disk layout.
+        We recommend the following :
+           
+          (1) If NVMe, then create a ZPool out of the available storage space.
+              That ZPool will be used by Kubernetes ephemeral volumes, pod logs and OpenEBS ZFS
+              LocalPV provisioner.
+               
+          (2) If HDD / regular SSD, then create a partition out of the available storage space,
+              allocating it to Rook Ceph.
+      */}}
+      {{- if eq .Values.mode "bare-metal" }}
+      {{- if .Values.controlPlane.bareMetal.diskLayoutSetupCommands }}
+      - |
+        {{ .Values.controlPlane.bareMetal.diskLayoutSetupCommands | nindent 8 }}
+      {{- else if .Values.bareMetal.diskLayoutSetupCommands }}
+      - |
+        {{ .Values.bareMetal.diskLayoutSetupCommands | nindent 8 }}
+      {{- end }}
+      {{- end }}
+
       - export CONTAINERD=2.1.3
       - export RUNC=1.2.5
       - export KUBERNETES_VERSION=$(echo {{ $.Values.global.kubernetes.version }} | sed 's/^v//')
@@ -252,7 +287,6 @@ spec:
       - ARCH="$(dpkg --print-architecture)"
       - localectl set-locale LANG=en_US.UTF-8
       - localectl set-locale LANGUAGE=en_US.UTF-8
-      - apt-get update -y
       - apt-get -y install at jq unzip wget logrotate apt-transport-https
 
       {{- if eq .Values.mode "bare-metal" }}
@@ -300,7 +334,7 @@ spec:
       - curl -fsSL https://pkgs.k8s.io/core:/stable:/v$TRIMMED_KUBERNETES_VERSION/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
       - echo "deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v$TRIMMED_KUBERNETES_VERSION/deb/
         /" | sudo tee /etc/apt/sources.list.d/kubernetes.list
-      - apt-get update
+      - apt-get update -y
       - apt-get install -y kubelet="$KUBERNETES_VERSION-*" kubeadm="$KUBERNETES_VERSION-*"
         kubectl="$KUBERNETES_VERSION-*" bash-completion && apt-mark hold kubelet kubectl
         kubeadm && systemctl enable kubelet

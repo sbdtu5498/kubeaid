@@ -265,6 +265,35 @@ spec:
             tls-cipher-suites: TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305,TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305,TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384,TLS_RSA_WITH_AES_256_GCM_SHA384,TLS_RSA_WITH_AES_128_GCM_SHA256
       preKubeadmCommands:
       - set -x
+
+      {{/* Give highest priority to the Network Card entry in the boot order.
+           Otherwise, we cannot boot the servers into rescue mode, and need to reach out to the
+           Hetzner support team. */}}
+      - |
+        NETBOOT=$(efibootmgr -v | grep "Network Card" | sed 's/Boot\([0-9A-F]*\).*/\1/')
+        CURRENT_ORDER=$(efibootmgr | grep "BootOrder:" | cut -d' ' -f2)
+        NEW_ORDER=$(echo "$CURRENT_ORDER" | sed "s/$NETBOOT,\?//g" | sed "s/^/$NETBOOT,/" | sed 's/,$//')
+        efibootmgr -o $NEW_ORDER
+
+      {{/*
+        User provided commands used to setup the disk layout.
+        We recommend the following :
+           
+          (1) If NVMe, then create a ZPool out of the available storage space.
+              That ZPool will be used by Kubernetes ephemeral volumes, pod logs and OpenEBS ZFS
+              LocalPV provisioner.
+               
+          (2) If HDD / regular SSD, then create a partition out of the available storage space,
+              allocating it to Rook Ceph.
+      */}}
+      {{- if $nodeGroup.diskLayoutSetupCommands }}
+      - |
+        {{ $nodeGroup.diskLayoutSetupCommands | nindent 8 }}
+      {{- else if $.Values.bareMetal.diskLayoutSetupCommands }}
+      - |
+        {{ $.Values.bareMetal.diskLayoutSetupCommands | nindent 8 }}
+      {{- end }}
+
       - grep VERSION= /etc/os-release; uname -a
       - export CONTAINERD=1.7.25
       - export RUNC=1.2.3

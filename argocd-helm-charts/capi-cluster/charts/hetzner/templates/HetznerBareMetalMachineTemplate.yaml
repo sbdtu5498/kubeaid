@@ -9,6 +9,8 @@ metadata:
     capi.syself.com/constant-bare-metal-hostname: "true"
 spec:
   template:
+    {{/* Currently, Cluster API Provider Hetzner (CAPH) doesn't support having the metadata field
+         here. I've opened an issue for this here : https://github.com/syself/cluster-api-provider-hetzner/issues/1680. */}}
     {{/* metadata: */}}
     {{/*   labels: */}}
     {{/*     node.cluster.x-k8s.io/cloud-provider: hetzner-bare-metal */}}
@@ -29,23 +31,33 @@ spec:
           # Logical Volume Group.
           - fileSystem: vg0
             mount: lvm
-            size: 100G
+            size: {{ .Values.bareMetal.installImage.vg0.size }}
         logicalVolumeDefinitions:
+          # The Operating System (OS).
           - vg: vg0
             name: root
             mount: /
             filesystem: ext4
-            size: 30G
+            size: {{ .Values.bareMetal.installImage.vg0.rootVolumeSize }}
         postInstallScript: |
           #!/bin/bash
+
+          {{/* Give highest priority to the Network Card entry in the boot order.
+               Otherwise, we cannot boot the servers into rescue mode, and need to reach out to the
+               Hetzner support team. */}}
+          NETBOOT=$(efibootmgr -v | grep "Network Card" | sed 's/Boot\([0-9A-F]*\).*/\1/')
+          CURRENT_ORDER=$(efibootmgr | grep "BootOrder:" | cut -d' ' -f2)
+          NEW_ORDER=$(echo "$CURRENT_ORDER" | sed "s/$NETBOOT,\?//g" | sed "s/^/$NETBOOT,/" | sed 's/,$//')
+          efibootmgr -o $NEW_ORDER
+
           mkdir -p /etc/cloud/cloud.cfg.d && touch /etc/cloud/cloud.cfg.d/99-custom-networking.cfg
           echo "network: { config: disabled }" > /etc/cloud/cloud.cfg.d/99-custom-networking.cfg
+
           apt-get update && apt-get install -y cloud-init apparmor apparmor-utils
+
           cloud-init clean --logs
-        {{- if (default true (.Values.controlPlane.bareMetal.raid).enabled) }}
         swraid: 1
         swraidLevel: {{ (.Values.controlPlane.bareMetal.raid).level | default 1 }}
-        {{- end }}
       sshSpec:
         portAfterCloudInit: 22
         portAfterInstallImage: 22
@@ -70,6 +82,8 @@ metadata:
     capi.syself.com/constant-bare-metal-hostname: "true"
 spec:
   template:
+    {{/* Currently, Cluster API Provider Hetzner (CAPH) doesn't support having the metadata field
+         here. I've opened an issue for this here : https://github.com/syself/cluster-api-provider-hetzner/issues/1680. */}}
     {{/* metadata: */}}
     {{/*   labels: */}}
     {{/*     node.cluster.x-k8s.io/cloud-provider: hetzner-bare-metal */}}
@@ -90,23 +104,33 @@ spec:
           # Logical Volume Group.
           - fileSystem: vg0
             mount: lvm
-            size: 100G
+            size: {{ $.Values.bareMetal.installImage.vg0.size }}
         logicalVolumeDefinitions:
+          # The Operating System (OS).
           - vg: vg0
             name: root
             mount: /
             filesystem: ext4
-            size: 30G
+            size: {{ $.Values.bareMetal.installImage.vg0.rootVolumeSize }}
         postInstallScript: |
           #!/bin/bash
+
+          {{/* Give highest priority to the Network Card entry in the boot order.
+               Otherwise, we cannot boot the servers into rescue mode, and need to reach out to the
+               Hetzner support team. */}}
+          NETBOOT=$(efibootmgr -v | grep "Network Card" | sed 's/Boot\([0-9A-F]*\).*/\1/')
+          CURRENT_ORDER=$(efibootmgr | grep "BootOrder:" | cut -d' ' -f2)
+          NEW_ORDER=$(echo "$CURRENT_ORDER" | sed "s/$NETBOOT,\?//g" | sed "s/^/$NETBOOT,/" | sed 's/,$//')
+          efibootmgr -o $NEW_ORDER
+
           mkdir -p /etc/cloud/cloud.cfg.d && touch /etc/cloud/cloud.cfg.d/99-custom-networking.cfg
           echo "network: { config: disabled }" > /etc/cloud/cloud.cfg.d/99-custom-networking.cfg
+
           apt-get update && apt-get install -y cloud-init apparmor apparmor-utils
+
           cloud-init clean --logs
-        {{- if (default true ($nodeGroup.raid).enabled) }}
         swraid: 1
         swraidLevel: {{ ($nodeGroup.raid).level | default 1 }}
-        {{- end }}
       sshSpec:
         portAfterCloudInit: 22
         portAfterInstallImage: 22
