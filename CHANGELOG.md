@@ -2,6 +2,11 @@
 
 All releases and the changes included in them (pulled from git commits added since last release) will be detailed in this file.
 
+## 20.1.1
+### Fixes
+- [`fa2628f34235afc67392f8b9d0a5ca11462d7a76`](../../commit/fa2628f34235afc67392f8b9d0a5ca11462d7a76) fix(capi-cluster/hetzner): disabling Hetzner network for HCloud servers | upgrading ClusterAPI component versions
+- [`60e412b6fe0bc767484cffe95d6dd56d2863b60b`](../../commit/60e412b6fe0bc767484cffe95d6dd56d2863b60b) fix(capi-cluster/hetzner): Cilium installation command in postKubeadm section 
+
 ## 20.1.0
 ### Minor Version Upgrades
 - Updated traefik from version 37.1.2 to 37.2.0
