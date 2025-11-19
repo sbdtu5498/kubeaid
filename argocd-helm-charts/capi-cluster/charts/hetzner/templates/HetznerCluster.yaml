@@ -21,7 +21,7 @@ spec:
   {{- end }}
 
   hcloudNetwork:
-    enabled: true
+    enabled: false
     networkZone: {{ .Values.hcloud.zone }}
 
 {{- end }}

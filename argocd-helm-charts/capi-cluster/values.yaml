@@ -2,15 +2,15 @@ global:
   kubernetes:
     version: v1.33.0
   clusterAPI:
-    version: v1.10.4
+    version: v1.11.3
   enableClusterAutoscaler: true
   capa:
-    version: v2.8.4
+    version: v2.9.2
     enableMachinePools: false
   caph:
-    version: v1.0.5
+    version: v1.0.7
   capz:
-    version: v1.20.2
+    version: v1.21.1
   kubeaid:
     repo: https://github.com/Obmondo/KubeAid.git
   pods:
