@@ -1,0 +1,26 @@
+{{- if .Values.ciliumNetworkPolicy.enabled }}
+---
+# Allow teleport
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: {{ include "oncall.fullname" . }}-teleport-netpol
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "oncall.labels" . | nindent 4 }}
+    app.kubernetes.io/component: cilium-networkpolicy
+spec:
+  endpointSelector:
+    matchLabels:
+      app: teleport-kube-agent
+  ingress:
+    - fromEndpoints:
+        - {}
+    - fromEntities:
+        - world
+  egress:
+    - toEndpoints:
+        - {}
+    - toEntities:
+        - world
+{{- end }}

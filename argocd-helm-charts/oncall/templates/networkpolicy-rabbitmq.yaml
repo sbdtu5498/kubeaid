@@ -1,0 +1,65 @@
+{{- if .Values.ciliumNetworkPolicy.enabled }}
+---
+# EGRESS
+# Allow RabbitMQ to query Kubernetes API for cluster discovery
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: {{ include "oncall.fullname" . }}-rabbitmq-k8s-api
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "oncall.labels" . | nindent 4 }}
+    app.kubernetes.io/component: cilium-networkpolicy
+spec:
+  endpointSelector:
+    matchLabels:
+      app.kubernetes.io/name: rabbitmq
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  egress:
+    # Allow RabbitMQ to query Kubernetes API for StatefulSet peer discovery
+    - toEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: kube-system
+            component: kube-apiserver
+      toPorts:
+        - ports:
+            - port: "443"
+              protocol: TCP
+---
+#INGRESS
+# Allow ingress to RabbitMQ from oncall components
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: {{ include "oncall.fullname" . }}-rabbitmq-ingress
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "oncall.labels" . | nindent 4 }}
+    app.kubernetes.io/component: cilium-networkpolicy
+spec:
+  endpointSelector:
+    matchLabels:
+      app.kubernetes.io/name: oncall-rabbitmq
+  ingress:
+    # Allow from oncall-engine and oncall-celery
+    - fromEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+            app.kubernetes.io/name: {{ include "oncall.name" . }}
+            app.kubernetes.io/instance: {{ .Release.Name }}
+            app.kubernetes.io/component: engine
+      toPorts:
+        - ports:
+            - port: "5672"
+              protocol: TCP
+    - fromEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+            app.kubernetes.io/name: {{ include "oncall.name" . }}
+            app.kubernetes.io/instance: {{ .Release.Name }}
+            app.kubernetes.io/component: celery
+      toPorts:
+        - ports:
+            - port: "5672"
+              protocol: TCP
+{{- end }}

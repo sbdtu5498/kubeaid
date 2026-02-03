@@ -1,0 +1,83 @@
+{{- if .Values.ciliumNetworkPolicy.enabled }}
+{{- if .Values.oncall.redis.enabled }}
+---
+#INGRESS
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: {{ include "oncall.fullname" . }}-redis-ingress
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "oncall.labels" . | nindent 4 }}
+    app.kubernetes.io/component: cilium-networkpolicy
+spec:
+  endpointSelector:
+    matchLabels:
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  ingress:
+    # Allow from oncall-engine and oncall-celery
+    - fromEndpoints:
+        - matchLabels:
+            app.kubernetes.io/instance: {{ .Release.Name }}
+            app.kubernetes.io/component: engine
+        - matchLabels:
+            app.kubernetes.io/instance: {{ .Release.Name }}
+            app.kubernetes.io/component: celery
+      toPorts:
+        - ports:
+            - port: "6379"
+              protocol: TCP
+---
+#INGRESS to communicate between master and replicas 
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: {{ include "oncall.fullname" . }}-redis-ingress-master
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "oncall.labels" . | nindent 4 }}
+    app.kubernetes.io/component: cilium-networkpolicy
+spec:
+  endpointSelector:
+    matchLabels:
+      app.kubernetes.io/component: master
+  ingress:
+    # Allow from replicas
+    - fromEndpoints:
+      - matchLabels:
+          app.kubernetes.io/component: replica
+          app.kubernetes.io/instance: {{ .Release.Name }}
+  egress:
+    - toEndpoints:
+        - matchLabels:
+          app.kubernetes.io/component: replica
+          app.kubernetes.io/instance: {{ .Release.Name }}
+
+
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: {{ include "oncall.fullname" . }}-redis-ingress-replicas
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "oncall.labels" . | nindent 4 }}
+    app.kubernetes.io/component: cilium-networkpolicy
+spec:
+  endpointSelector:
+    matchLabels:
+      app.kubernetes.io/component: replica
+  ingress:
+    # Allow from master
+    - fromEndpoints:
+      - matchLabels:
+          app.kubernetes.io/component: master
+          app.kubernetes.io/instance: {{ .Release.Name }}
+  egress:
+    - toEndpoints:
+        - matchLabels:
+          app.kubernetes.io/component: master
+          app.kubernetes.io/instance: {{ .Release.Name }}
+
+{{- end }}
+{{- end }}

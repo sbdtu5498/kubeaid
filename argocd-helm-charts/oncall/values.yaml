@@ -98,3 +98,32 @@ postgresql:
     requests:
       memory: 500Mi
       cpu: 100m
+
+# CiliumNetworkPolicy configuration
+ciliumNetworkPolicy:
+  enabled: true
+  
+  traefik:
+    namespace: traefik
+    labels:
+      app.kubernetes.io/instance: traefik
+  
+  dns:
+    namespace: kube-system
+    labels:
+      k8s-app: kube-dns
+  
+  external:
+    allowAllHTTPS: false
+    
+    fqdns:
+      enabled: true
+      telegram: api.telegram.org
+      keycloak: "keycloak.obmondo.com"
+      grafana: "grafana.com"
+      googleStorage: "storage.googleapis.com"
+    
+    # IP-based filtering (fallback if DNS proxy is disabled)
+    # ipBlocks:
+    #   - 149.154.160.0/22  # Telegram
+    #   - 91.108.4.0/22     # Telegram
