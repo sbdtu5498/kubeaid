@@ -1,3 +1,4 @@
+{{- if (.Values.pullThroughCache).enabled }}
 apiVersion: kyverno.io/v1
 kind: ClusterPolicy
 metadata:
@@ -53,5 +54,6 @@ spec:
             patchStrategicMerge:
               spec:
                 containers:
-                  - name: "{{`{{ element.name }}`}}"
+                  - name: "{{`{{ element.image }}`}}"
                     image: harbor.obmondo.com/{{`{{ imageData.resolvedImage }}`}}
+{{- end }}

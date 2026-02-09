@@ -1,0 +1,37 @@
+{{- if and .Values.syncSecrets (default false .Values.syncSecrets.enabled) }}
+{{- range .Values.syncSecrets.items }}
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: sync-secrets-{{ .name }}
+spec:
+  validationFailureAction: Enforce
+  generateExisting: true
+  rules: 
+    - name: sync-image-pull-secret
+      match:
+        resources:
+          kinds:
+            - Namespace
+          names:
+            - {{ default "*" .namespaceMatch | quote }}
+{{- if .excludeNamespaces }}
+      exclude:
+        resources:
+          namespaces:
+{{- range .excludeNamespaces }}
+            - {{ . | quote }}
+{{- end }}
+{{- end }}
+      generate:
+        apiVersion: v1
+        kind: Secret
+        name: {{ .targetSecret.name | quote }}
+        namespace: "{{`{{ request.object.metadata.name }}`}}"
+        synchronize: true
+        clone:
+          namespace: {{ .sourceSecret.namespace | quote }}
+          name: {{ .sourceSecret.name | quote }}
+---
+{{- end }}
+{{- end }}
