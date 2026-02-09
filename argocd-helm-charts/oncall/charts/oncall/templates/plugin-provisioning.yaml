@@ -13,4 +13,4 @@ data:
         jsonData:
           stackId: 5
           orgId: 100
-          onCallApiUrl: http://helm-testing-oncall-engine:8080
+          onCallApiUrl: http://{{ include "oncall.engine.fullname" . }}:8080

@@ -1,0 +1,49 @@
+oncall:
+  # The Helm release name of the oncall chart (used for label selectors)
+  releaseName: oncall
+  ciliumNetworkPolicy:
+    enabled: false
+    traefik:
+      namespace: traefik
+      labels:
+        app.kubernetes.io/instance: traefik
+    dns:
+      namespace: kube-system
+    defaultDeny:
+      excludedPods: []
+    fqdns:
+      enabled: false
+      telegram: ""
+      keycloak: ""
+      grafana: ""
+      googleStorage: ""
+  externalPostgresql:
+    port: 5432
+  externalRabbitmq:
+    port: 5672
+  redis:
+    enabled: true
+  externalRedis:
+    host: ""
+    port: 6379
+  grafana:
+    enabled: true
+
+# CNPG PostgreSQL network policies.
+# For oncall, enable the oncall-pgsql entry and configure the client labels and cnpg operator labels.
+# Example:
+# postgres:
+#   oncall-pgsql:
+#     netpol: true
+#     clients:
+#       - labels:
+#           app.kubernetes.io/instance: oncall
+#           app.kubernetes.io/component: engine
+#       - labels:
+#           app.kubernetes.io/instance: oncall
+#           app.kubernetes.io/component: celery
+#     cnpg:
+#       labels:
+#         app.kubernetes.io/name: cloudnative-pg
+#         io.kubernetes.pod.namespace: cloudnative-pg
+postgres: {}
