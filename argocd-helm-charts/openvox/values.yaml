@@ -202,7 +202,7 @@ gfetch:
     tag: v0.0.1-beta-2-gff64624
     pullPolicy: IfNotPresent
   podSecurityContext:
-    runAsNonRoot: true
+    runAsNonRoot: false
   securityContext: {}
   resources:
     requests:
