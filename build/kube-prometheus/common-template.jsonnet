@@ -670,24 +670,38 @@ local kp =
           for dashboard in std.objectFields(mixin.grafanaDashboards)
         },
         folderDashboards+:: vars.grafana_dashboards,
+        datasources: (
+          [
+            {
+            name: 'prometheus',
+            orgId: 1,
+            type: 'prometheus',
+            url: 'http://prometheus-k8s.monitoring.svc:9090',
+            version: 1,
+            access: 'proxy',
+            editable: false,
+            },
+          ] + if std.objectHas(vars, 'grafana_external_datasources') then vars.grafana_external_datasources else []
+        ),
         analytics+: {
           check_for_updates: false,
         },
-        env: if vars.grafana_keycloak_enable then [
-          {
-            name: 'GF_SECURITY_DISABLE_INITIAL_ADMIN_CREATION',
-            value: 'true',
-          },
-          {
-            name: 'GF_AUTH_GENERIC_OAUTH_CLIENT_SECRET',
-            valueFrom+: {
-              secretKeyRef+: {
-                name: vars.grafana_keycloak_secretref.name,
-                key: vars.grafana_keycloak_secretref.key,
+        env: ( if vars.grafana_keycloak_enable then [
+            {
+              name: 'GF_SECURITY_DISABLE_INITIAL_ADMIN_CREATION',
+              value: 'true',
+            },
+            {
+              name: 'GF_AUTH_GENERIC_OAUTH_CLIENT_SECRET',
+              valueFrom+: {
+                secretKeyRef+: {
+                  name: vars.grafana_keycloak_secretref.name,
+                  key: vars.grafana_keycloak_secretref.key,
+                },
               },
             },
-          },
-        ] else [],
+          ] + if std.objectHas(vars, 'grafana_external_env_vars') then vars.grafana_external_env_vars else []
+        ),
         config+: {
           sections: {
             date_formats: { default_timezone: 'UTC' },
