@@ -160,41 +160,6 @@ puppetAgentExporter:
 blackbox:
   probe: true
 
-# Note: g10k is just a replacement of r10k
-# helm chart has not support to completely disable r10k
-# so adding a configmap for now
-g10k:
-  enabled: true
-  schedule: "*/2 * * * *"
-  podSecurityContext:
-    runAsNonRoot: true
-  image:
-    tag: v0.9.10
-    repository: ghcr.io/obmondo/g10k
-  code:
-    args:
-      - /etc/puppetlabs/puppet/r10k_code_entrypoint.sh;
-    viaSsh:
-      credentials:
-        ssh:
-          ## A multi-line string
-          value:  # |
-        known_hosts:
-          ## A multi-line string
-          value:  # |
-        existingSecret: ""
-  hiera:
-    extraRepository: {}
-    viaSsh:
-      credentials:
-        ssh:
-          ## A multi-line string
-          value:  # |
-        known_hosts:
-          ## A multi-line string
-          value:  # |
-        existingSecret: ""
-
 gfetch:
   enabled: true
   image:
