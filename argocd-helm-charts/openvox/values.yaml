@@ -191,7 +191,7 @@ gfetch:
     branches:
       - "*"
   repos:
-    - name: linuxaid
+    linuxaid:
       url: "git@gitea.obmondo.com:Obmondo/LinuxAid.git"
       tags:
         - /^v1.4.[5-9]+\./

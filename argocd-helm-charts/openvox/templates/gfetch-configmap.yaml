@@ -32,35 +32,35 @@ data:
         {{- end }}
       {{- end }}
     repos:
-    {{- range .Values.gfetch.repos }}
-      - name: {{ .name | quote }}
-        url: {{ .url | quote }}
-        {{- if .ssh_key_path }}
-        ssh_key_path: {{ .ssh_key_path | quote }}
+    {{- range $name, $repo := .Values.gfetch.repos }}
+      {{ $name }}:
+        url: {{ $repo.url | quote }}
+        {{- if $repo.ssh_key_path }}
+        ssh_key_path: {{ $repo.ssh_key_path | quote }}
         {{- end }}
-        {{- if .ssh_known_hosts }}
+        {{- if $repo.ssh_known_hosts }}
         ssh_known_hosts: |
-          {{- .ssh_known_hosts | nindent 10 }}
+          {{- $repo.ssh_known_hosts | nindent 10 }}
         {{- end }}
-        {{- if .local_path }}
-        local_path: {{ .local_path | quote }}
+        {{- if $repo.local_path }}
+        local_path: {{ $repo.local_path | quote }}
         {{- end }}
-        {{- if .poll_interval }}
-        poll_interval: {{ .poll_interval | quote }}
+        {{- if $repo.poll_interval }}
+        poll_interval: {{ $repo.poll_interval | quote }}
         {{- end }}
-        {{- if .checkout }}
-        checkout: {{ .checkout | quote }}
+        {{- if $repo.checkout }}
+        checkout: {{ $repo.checkout | quote }}
         {{- end }}
-        {{- if .openvox }}
-        openvox: {{ .openvox | quote }}
+        {{- if $repo.openvox }}
+        openvox: {{ $repo.openvox }}
         {{- end }}
-        {{- with .branches }}
+        {{- with $repo.branches }}
         branches:
           {{- range . }}
           - {{ . | quote }}
           {{- end }}
         {{- end }}
-        {{- with .tags }}
+        {{- with $repo.tags }}
         tags:
           {{- range . }}
           - {{ . | quote }}
