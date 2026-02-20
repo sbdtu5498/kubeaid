@@ -321,3 +321,146 @@ To reset the admin password for Grafana, follow these steps:
     ```bash
     kubectl delete pod $GrafanaPod -n monitoring
     ```
+
+## Grafana Air-Gapped Deployment
+
+By default Grafana downloads the `grafana-oncall-app` UI plugin from `grafana.com` at pod startup. This can be a security concern and in an air-gapped cluster this will fail on every restart. The sections below describe how to make Grafana fully work without any egress to `grafana.com`. Examples and code snippets here are specific to Grafana Oncall.
+
+### Step 1 — Push the plugin to Harbor as an OCI artifact
+
+Download the plugin ZIP from the Grafana Plugin page - `https://grafana.com/api/plugins/grafana-oncall-app/versions/<YOUR_PLUGIN_VERSION>/download`. or copy plugin from Grafana pod to your local machine
+
+```sh
+kubectl cp <GRAFANA_POD>:/var/lib/grafana/plugins/grafana-oncall-app ./grafana-oncall-app
+```
+
+Zip the plugin:
+
+```sh
+zip -r grafana-oncall-app.zip grafana-oncall-app/
+```
+
+and then push it to your Harbor registry using [`oras`](https://oras.land):
+
+```bash
+oras push <HARBOR_URL>/<PROJECT>/grafana-oncall-app-plugin:<VERSION> \
+  grafana-oncall-app.zip:application/zip
+```
+
+> [!NOTE]
+> `oras push` stores the file as an OCI artifact. The init container uses `oras pull` to retrieve it.
+
+---
+
+### Step 2 — Mirror the `oras` image to Harbor
+
+The init container runs the `oras` CLI inside a container. Mirror its image so it can be pulled later:
+
+```bash
+docker pull ghcr.io/oras-project/oras:<VERSION>
+docker tag  ghcr.io/oras-project/oras:<VERSION> <HARBOR_URL>/<PROJECT>/oras:<VERSION>
+docker push <HARBOR_URL>/<PROJECT>/oras:<VERSION>
+```
+
+### Step 3 — Create Kubernetes Secrets
+
+Two secrets are required in the OnCall namespace.
+
+#### imagePullSecret (for pulling the `oras` container image from Harbor)
+
+```bash
+kubectl create secret docker-registry harbor-pull-secret \
+  --docker-server=<HARBOR_URL> \
+  --docker-username=<robot-account> \
+  --docker-password=<robot-token> \
+  --dry-run=client -o yaml | kubeseal --format yaml > harbor-pull-secret-sealed.yaml
+```
+
+#### Registry credentials (for `oras pull` inside the init container script)
+
+```bash
+kubectl create secret generic harbor-registry-credentials \
+  --from-literal=username=<robot-account> \
+  --from-literal=password=<robot-token> \
+  --dry-run=client -o yaml | kubeseal --format yaml > harbor-registry-credentials-sealed.yaml
+```
+
+Commit both sealed secret YAML files to your `kubeaid-config` repository.
+
+### Step 4 — Configure your `kubeaid-config` values
+
+In your `kubeaid-config` repository, add the extraInitContainer and remove the grafana-oncall-app plugin from the plugin list (so that grafana pod doesnt try to download it):
+
+```yaml
+  grafana:
+    plugins: [] # Disable the grafana.com plugin download list
+
+    grafana.ini:
+      plugins:
+        preinstall_sync_enabled: false # Prevent Grafana from syncing the plugin registry
+
+    env:
+      GF_PLUGINS_ALLOW_LOADING_UNSIGNED_PLUGINS: grafana-oncall-app
+
+    # Pull the oras init container image from Harbor
+    image:
+      pullSecrets:
+        - harbor-pull-secret
+
+    extraInitContainers:
+      - name: install-oncall-plugin
+        image: <HARBOR_URL>/<PROJECT>/oras:<VERSION>
+        command: [sh, -c]
+        args:
+          - |
+            set -e
+            PLUGIN_DIR="/var/lib/grafana/plugins/grafana-oncall-app"
+
+            # Idempotent: skip if plugin is already present on the PVC.
+            if [ -f "${PLUGIN_DIR}/plugin.json" ]; then
+              echo "grafana-oncall-app already installed — skipping."
+              exit 0
+            fi
+
+            echo "Pulling grafana-oncall-app from Harbor using oras..."
+            mkdir -p /tmp/plugin-dl && cd /tmp/plugin-dl
+
+            oras pull \
+              --username "${HARBOR_USER}" \
+              --password "${HARBOR_PASSWORD}" \
+              "${HARBOR_PLUGIN_REF}"
+
+            ZIPFILE=$(ls *.zip 2>/dev/null | head -1)
+            [ -z "${ZIPFILE}" ] && { echo "ERROR: no zip found:"; ls -la; exit 1; }
+
+            echo "Extracting ${ZIPFILE}..."
+            mkdir -p /var/lib/grafana/plugins
+            unzip -q "${ZIPFILE}" -d /var/lib/grafana/plugins/
+            rm -rf /tmp/plugin-dl
+            echo "Plugin installed at ${PLUGIN_DIR}."
+        env:
+          - name: HARBOR_USER
+            valueFrom:
+              secretKeyRef:
+                name: harbor-registry-credentials
+                key: username
+          - name: HARBOR_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: harbor-registry-credentials
+                key: password
+          - name: HARBOR_PLUGIN_REF
+            value: "<HARBOR_URL>/<PROJECT>/grafana-oncall-app-plugin:<VERSION>"
+        volumeMounts:
+          - name: storage
+            mountPath: /var/lib/grafana
+```
+
+> [!TIP]
+> The `extraInitContainers` list **replaces** (not merges with) the defaults when set in your config values — so you must define the full init container spec here.
+
+---
+
+### Step 5 — Block egress to grafana.com with a Network Policy
+
+Enable `CiliumNetworkPolicy` to enforce that the Grafana pod cannot reach `grafana.com`.
