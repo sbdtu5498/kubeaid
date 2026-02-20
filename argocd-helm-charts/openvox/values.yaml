@@ -190,6 +190,9 @@ gfetch:
     openvox: true
     branches:
       - "*"
+    prune: true
+    prune_stale: true
+    stale_age: 60d
   repos:
     linuxaid:
       url: "https://github.com/Obmondo/LinuxAid.git"

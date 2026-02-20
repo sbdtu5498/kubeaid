@@ -22,6 +22,15 @@ data:
       {{- if .Values.gfetch.defaults.local_path }}
       local_path: {{ .Values.gfetch.defaults.local_path | quote }}
       {{- end }}
+      {{- if .Values.gfetch.defaults.prune }}
+      prune: {{ .Values.gfetch.defaults.prune }}
+      {{- end }}
+      {{- if .Values.gfetch.defaults.prune_stale }}
+      prune_stale: {{ .Values.gfetch.defaults.prune_stale }}
+      {{- end }}
+      {{- if .Values.gfetch.defaults.stale_age }}
+      stale_age: {{ .Values.gfetch.defaults.stale_age }}
+      {{- end }}
       {{- with .Values.gfetch.defaults.branches }}
       branches:
         {{- range . }}
@@ -56,6 +65,15 @@ data:
         {{- end }}
         {{- if $repo.openvox }}
         openvox: {{ $repo.openvox }}
+        {{- end }}
+        {{- if $repo.prune }}
+        prune: {{ $repo.prune }}
+        {{- end }}
+        {{- if $repo.prune_stale }}
+        prune_stale: {{ $repo.prune_stale }}
+        {{- end }}
+        {{- if $repo.stale_age }}
+        stale_age: {{ $repo.stale_age }}
         {{- end }}
         {{- with $repo.branches }}
         branches:
