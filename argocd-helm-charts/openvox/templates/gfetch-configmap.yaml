@@ -19,6 +19,9 @@ data:
       {{- if .Values.gfetch.defaults.poll_interval }}
       poll_interval: {{ .Values.gfetch.defaults.poll_interval | quote }}
       {{- end }}
+      {{- if .Values.gfetch.defaults.local_path }}
+      local_path: {{ .Values.gfetch.defaults.local_path | quote }}
+      {{- end }}
       {{- with .Values.gfetch.defaults.branches }}
       branches:
         {{- range . }}
