@@ -192,7 +192,7 @@ gfetch:
       - "*"
   repos:
     linuxaid:
-      url: "git@gitea.obmondo.com:Obmondo/LinuxAid.git"
+      url: "https://github.com/Obmondo/LinuxAid.git"
       tags:
         - /^v1.4.[5-9]+\./
   ssh:
