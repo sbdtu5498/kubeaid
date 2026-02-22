@@ -197,6 +197,6 @@ gfetch:
     linuxaid:
       url: "https://github.com/Obmondo/LinuxAid.git"
       tags:
-        - /^v1.4.[5-9]+\./
+        - /^v[0-9]\.[0-9]\.[0-9]+$/
   ssh:
     existingSecret: g10k-git-secret
