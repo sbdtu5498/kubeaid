@@ -1,6 +1,6 @@
 dependencies:
 - name: kubernetes-operator
   repository: https://netbirdio.github.io/kubernetes-operator
-  version: 0.1.15
-digest: sha256:89c014844f8fc4725dc7436ede0fc306eb0f3ab189b139aa34f959123ff13954
-generated: "2025-12-06T17:36:37.409840902+05:30"
+  version: 0.2.2
+digest: sha256:2cefbb6db829806e64f5cf5cae6e6f8007380e10e50b148d2a8f47d0b635875b
+generated: "2026-03-02T12:35:42.729037336+05:30"
