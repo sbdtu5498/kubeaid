@@ -4,6 +4,23 @@ All releases and the changes included in them (pulled from git commits added sin
 
 ## KubeAid Release Version 24.3.0
 
+### Minor Version Upgrades
+- 198444315 Updated fluent-bit from version 0.55.0 to 0.56.0
+- 198444315 Updated hcloud-csi from version 2.19.1 to 2.20.0
+- 198444315 Updated kubernetes-operator from version 0.1.15 to 0.2.2
+
+### Patch Version Upgrades
+- 198444315 Updated argo-cd from version 9.4.4 to 9.4.6
+- 198444315 Updated erpnext from version 8.0.24 to 8.0.28
+- 198444315 Updated mattermost-team-edition from version 6.6.92 to 6.6.93
+- 198444315 Updated opensearch-operator from version 2.8.1 to 2.8.2
+- 198444315 Updated opentelemetry-collector from version 0.146.0 to 0.146.1
+- 198444315 Updated rook-ceph from version v1.19.1 to v1.19.2
+- 198444315 Updated rook-ceph-cluster from version v1.19.1 to v1.19.2
+- 198444315 Updated sealed-secrets from version 2.18.1 to 2.18.3
+- 198444315 Updated teleport-cluster from version 18.7.0 to 18.7.1
+- 198444315 Updated teleport-kube-agent from version 18.7.0 to 18.7.1
+
 ### Bug Fixes
 - 249599fdd fix(localpv-provisioner): Make OpenEBS dynamic LocalPV provisioner StorageClass non-default
 
