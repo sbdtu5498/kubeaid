@@ -2,6 +2,18 @@
 
 All releases and the changes included in them (pulled from git commits added since last release) will be detailed in this file.
 
+## KubeAid Release Version 24.3.0
+
+### Bug Fixes
+- 249599fdd fix(localpv-provisioner): Make OpenEBS dynamic LocalPV provisioner StorageClass non-default
+
+### Other Changes
+- 2b370b663 Update argocd-helm-charts/sealed-secrets/README.md
+- 732b2cc06 (chore): add a doc on how customers can enable Grafana OnCall to not download UI plugin for air-gapped clusters
+- e3e7637ea Add values file
+- d9327c7ef bump: kubeaid agent tag to v0.0.2
+- 3771bfb5c reduce ccm-hetzner wrapper values file to only values that we are overriding
+
 ## KubeAid Release Version 24.2.0
 
 ### Minor Version Upgrades
