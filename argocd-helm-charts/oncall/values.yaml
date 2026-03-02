@@ -1,4 +1,8 @@
 oncall:
+  # Install the grafana-oncall-app plugin from local image registry via an init container.
+  # Enable this when running in an air-gapped environment.
+  grafanaPluginInstall:
+    enabled: false
   oncall:
     telegram:
       enabled: true
