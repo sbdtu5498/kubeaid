@@ -4,14 +4,12 @@
 
 - After syncing the oncall application
 
-1. Open the oncall plugin and configure the grafana backend
+1. Open the oncall plugin (<your-grafana-domain>/grafana/plugins/grafana-oncall-app) and configure the grafana backend
 
-    [URL](https://oncall.kbm.obmondo.com/grafana/plugins/grafana-oncall-app)
-
-      ```text
-      Add the backendurl as
-      http://oncall-engine:8080
-      ```
+   ```text
+   Add the backendurl as
+   http://oncall-engine:8080
+   ```
 
 2. Inform all the members to sigin using keycloakx to have all the users .
 
@@ -20,25 +18,25 @@
 1. Copy the backup file to the psql pod
 2. Restore users and schedule
 
-    ```sh
-    psql
-    # Drops the database
-    DROP DATABASE oncall;
-    # Create Empty DB
-    CRETE DATABASE oncall;
-    ```
+   ```sh
+   psql
+   # Drops the database
+   DROP DATABASE oncall;
+   # Create Empty DB
+   CRETE DATABASE oncall;
+   ```
 
-    - Now the DB is clean restore the DB using the commands
+   - Now the DB is clean restore the DB using the commands
 
-    ```sh
-    psql -d oncall -U postgres < backup.sql
+   ```sh
+   psql -d oncall -U postgres < backup.sql
 
-    # Reset the oncall password
-    psql
-    ALTER USER oncall WITH PASSWORD '<oncall user password which is in secrets>';
-    ```
+   # Reset the oncall password
+   psql
+   ALTER USER oncall WITH PASSWORD '<oncall user password which is in secrets>';
+   ```
 
-3. Kick the pods  `oncall-celery, oncall-grafana, oncall-engine` and wait for it to come back online .
+3. Kick the pods `oncall-celery, oncall-grafana, oncall-engine` and wait for it to come back online .
 
 4. Inform all the users to signin using keycloakx ,
 
@@ -72,7 +70,7 @@ Setup Grafana Oncall with Telegram:
 - It should open in new tab and click on `Send Message` or it will prompt you to `Open Telegram Desktop`
 - In the chat screen, click on `Send Message`
 - You will receive a message like:
-  
+
   ```raw
   Hi!
   This is Grafana OnCall notification bot. You can connect your Grafana OnCall account to Telegram on user settings page.
@@ -136,3 +134,7 @@ You can add overrides in this section to make one-time changes for specific shif
 - Repeat the same steps with the Employee with whom you have swapped the day.
 
 ![override](images/override.png)
+
+## Grafana Air-Gapped Deployment
+
+Please refer to [this doc](../../build/kube-prometheus/README.md#Grafana-Air-Gapped-Deployment) for details on how to make grafana air gapped deployment.
