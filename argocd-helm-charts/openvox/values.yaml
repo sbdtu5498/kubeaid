@@ -160,37 +160,45 @@ puppetAgentExporter:
 blackbox:
   probe: true
 
-# Note: g10k is just a replacement of r10k
-# helm chart has not support to completely disable r10k
-# so adding a configmap for now
-g10k:
+gfetch:
   enabled: true
-  schedule: "*/2 * * * *"
+  serviceMonitor:
+    enabled: true
+  image:
+    repository: ghcr.io/obmondo/gfetch
+    tag: v0.0.1-beta-3-g53b6411
+    pullPolicy: IfNotPresent
   podSecurityContext:
     runAsNonRoot: true
-  image:
-    tag: v0.9.10
-    repository: ghcr.io/obmondo/g10k
-  code:
-    args:
-      - /etc/puppetlabs/puppet/r10k_code_entrypoint.sh;
-    viaSsh:
-      credentials:
-        ssh:
-          ## A multi-line string
-          value:  # |
-        known_hosts:
-          ## A multi-line string
-          value:  # |
-        existingSecret: ""
-  hiera:
-    extraRepository: {}
-    viaSsh:
-      credentials:
-        ssh:
-          ## A multi-line string
-          value:  # |
-        known_hosts:
-          ## A multi-line string
-          value:  # |
-        existingSecret: ""
+    fsGroup: 999
+    fsGroupChangePolicy: "OnRootMismatch"
+  securityContext:
+    runAsUser: 999
+    runAsGroup: 999
+  resources:
+    requests:
+      memory: 64Mi
+      cpu: 50m
+    limits:
+      memory: 128Mi
+  defaults:
+    ssh_key_path: /home/gfetch/.ssh/id_rsa
+    ssh_known_hosts: |
+      [gitea.obmondo.com]:2223 ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKTyoLz71gCQ3RJ3mfLWD+AGvy876irH0SlCoPmkHxUc
+      [gitea.obmondo.com]:2223 ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDlF+Kh48gzMPCp+drznpH0fpJrUJpiQUlHoWhBbYkXK1VTvFJ7GWCl3oqqfWlGILJ6tYHGZ6oPh93fzuAHDWjaDgdrMb75AzrbE+7qP6WVDLK/SLy5ynJ8fQNxVVncVlWoq0D79EevIWawG1uECqpV5WAL6vCEhlBwcXDTdVaYF3KZWng5YQxaJzxdLbnQEYeKQ/mMQV/HT2eWF++G00EtRlqD7WR86jLOEwp3PDh5PF0tKKWzMYPWWfrC3FmBdz5L9doJDOksJAhwOyWtkFkt37g7LqWgHOMFRE2xPsz+IgKzxJ7DhZMfxEgkJEpQhS6v8e4nPtG/KdLNTOM5NlV1
+      [gitea.obmondo.com]:2223 ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBFDZKKX5kDl8liLAp6+pkvzcbAODbJ9x2iZlBwUCedH0SiiFB8J8GFBnR/WwwL57tUTtMv+bdvSPx4HyAPIc7e4=
+    local_path: /etc/puppetlabs/code/environments
+    poll_interval: 2m
+    openvox: true
+    branches:
+      - "*"
+    prune: true
+    prune_stale: true
+    stale_age: 60d
+  repos:
+    linuxaid:
+      url: "https://github.com/Obmondo/LinuxAid.git"
+      tags:
+        - /^v[0-9]\.[0-9]\.[0-9]+$/
+  ssh:
+    existingSecret: g10k-git-secret

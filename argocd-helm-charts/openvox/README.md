@@ -97,3 +97,18 @@ kubectl create secret tls obmondo-clientcert --namespace puppetserver --dry-run=
 AUTOSIGN_CLIENT_CERT: /opt/obmondo/ssl/puppetserver-cert.crt
 AUTOSIGN_CLIENT_KEY: /opt/obmondo/ssl/puppetserver-priv.key
 ```
+
+## gfetch probes and monitoring
+
+`gfetch` runs as a daemon and exposes HTTP endpoints on port `8080`.
+
+- Readiness probe uses `GET /health`
+- Prometheus metrics are exposed at `GET /metrics`
+
+ServiceMonitor for `gfetch` is enabled by default and can be toggled with:
+
+```yaml
+gfetch:
+  serviceMonitor:
+    enabled: true
+```
