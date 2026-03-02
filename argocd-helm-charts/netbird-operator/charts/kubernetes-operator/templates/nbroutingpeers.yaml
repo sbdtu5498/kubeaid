@@ -10,6 +10,8 @@ metadata:
   labels:
     app.kubernetes.io/component: operator
     {{- include "kubernetes-operator.labels" $ | nindent 4 }}
+  annotations:
+    helm.sh/resource-policy: keep
   name: router
   namespace: {{ $k }}
 {{ $spec := merge $defaults $v }}
@@ -51,6 +53,8 @@ metadata:
   labels:
     app.kubernetes.io/component: operator
     {{- include "kubernetes-operator.labels" $ | nindent 4 }}
+  annotations:
+    helm.sh/resource-policy: keep
   name: router
 {{- if or (or (or .replicas .resources) (or .labels .annotations)) (or .nodeSelector .tolerations) }}
 spec:

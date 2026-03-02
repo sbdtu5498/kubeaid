@@ -27,15 +27,15 @@ spec:
     spec:
       initContainers:
       - name: wait-network-ready
-        image: "bitnami/kubectl:latest"
+        image: "netbirdio/kubectl:latest"
         command:
-        - bash
+        - sh
         - -c
         args:
-        - kubectl wait --for 'jsonpath={.status.networkID}' -n {{ $routerNS }} nbroutingpeer router; 
+        - kubectl wait --for 'jsonpath={.status.networkID}' -n {{ $routerNS }} nbroutingpeer router;
       containers:
       - name: apply-nbresource
-        image: "bitnami/kubectl:latest"
+        image: "netbirdio/kubectl:latest"
         env:
         - name: NBRESOURCE_VALUE
           value: |
@@ -62,7 +62,7 @@ spec:
               tcpPorts:
               - 443
         command:
-        - bash
+        - sh
         - -c
         args:
         - kubectl delete NBResource --ignore-not-found -n default kubernetes; export NETWORK_ID=$(kubectl get NBRoutingPeer -n {{ $routerNS }} router -o 'jsonpath={.status.networkID}'); echo "$NBRESOURCE_VALUE" | envsubst | kubectl apply -f -
