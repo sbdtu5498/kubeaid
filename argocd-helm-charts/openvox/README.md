@@ -102,8 +102,8 @@ AUTOSIGN_CLIENT_KEY: /opt/obmondo/ssl/puppetserver-priv.key
 
 `gfetch` runs as a daemon and exposes HTTP endpoints on port `8080`.
 
-- Readiness probe uses `GET /health`
-- Prometheus metrics are exposed at `GET /metrics`
+* Readiness probe uses `GET /health`
+* Prometheus metrics are exposed at `GET /metrics`
 
 ServiceMonitor for `gfetch` is enabled by default and can be toggled with:
 
@@ -111,4 +111,23 @@ ServiceMonitor for `gfetch` is enabled by default and can be toggled with:
 gfetch:
   serviceMonitor:
     enabled: true
+```
+
+### gfetch OpenVox worker concurrency
+
+You can control OpenVox branch/tag sync concurrency with `openvox_max_workers`.
+
+* `gfetch.defaults.openvox_max_workers` sets the default for all repos
+* `gfetch.repos.<name>.openvox_max_workers` overrides per repo
+* valid range is `1..64` (default `5`)
+
+```yaml
+gfetch:
+  defaults:
+    openvox: true
+    openvox_max_workers: 5
+  repos:
+    linuxaid:
+      url: https://github.com/Obmondo/LinuxAid.git
+      openvox_max_workers: 15
 ```

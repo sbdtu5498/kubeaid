@@ -190,6 +190,7 @@ gfetch:
     local_path: /etc/puppetlabs/code/environments
     poll_interval: 2m
     openvox: true
+    openvox_max_workers: 5
     branches:
       - "*"
     prune: true
@@ -198,6 +199,7 @@ gfetch:
   repos:
     linuxaid:
       url: "https://github.com/Obmondo/LinuxAid.git"
+      openvox_max_workers: 15
       tags:
         - /^v[0-9]\.[0-9]\.[0-9]+$/
   ssh:
