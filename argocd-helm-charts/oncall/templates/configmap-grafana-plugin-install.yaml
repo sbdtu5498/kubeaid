@@ -1,0 +1,42 @@
+{{- if .Values.oncall.grafanaPluginInstall.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-grafana-plugin-install
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+data:
+  install-plugin.sh: |
+    set -e
+    PLUGIN_DIR="/var/lib/grafana/plugins/grafana-oncall-app"
+
+    # skip if plugin is already present on the PVC.
+    if [ -f "${PLUGIN_DIR}/plugin.json" ]; then
+      echo "grafana-oncall-app already installed — skipping."
+      exit 0
+    fi
+
+    echo "Pulling grafana-oncall-app from Harbor using oras..."
+    mkdir -p /tmp/plugin-dl
+    cd /tmp/plugin-dl
+
+    oras pull \
+      --username "${HARBOR_USER}" \
+      --password "${HARBOR_PASSWORD}" \
+      "${HARBOR_PLUGIN_REF}"
+
+    ZIPFILE=$(ls *.zip 2>/dev/null | head -1)
+    if [ -z "${ZIPFILE}" ]; then
+      echo "ERROR: no zip file found after oras pull; files present:"
+      ls -la
+      exit 1
+    fi
+
+    echo "Extracting ${ZIPFILE}..."
+    mkdir -p /var/lib/grafana/plugins
+    unzip -q "${ZIPFILE}" -d /var/lib/grafana/plugins/
+    rm -rf /tmp/plugin-dl
+    echo "Plugin installed at ${PLUGIN_DIR}."
+{{- end }}
