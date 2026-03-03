@@ -389,9 +389,14 @@ Commit both sealed secret YAML files to your `kubeaid-config` repository.
 
 ### Step 4 — Configure your `kubeaid-config` values
 
-In your `kubeaid-config` repository, add the extraInitContainer and remove the grafana-oncall-app plugin from the plugin list (so that grafana pod doesnt try to download it):
+In your `kubeaid-config` repository, enable the Harbor plugin install and configure the Grafana init container. The install script is managed by a Helm ConfigMap (`<release>-grafana-plugin-install`) that is rendered automatically when you set `oncall.grafanaPluginInstall.enabled: true`.
 
 ```yaml
+# Enable the ConfigMap containing the plugin install script
+oncall:
+  grafanaPluginInstall:
+    enabled: true
+
   grafana:
     plugins: [] # Disable the grafana.com plugin download list
 
@@ -410,34 +415,8 @@ In your `kubeaid-config` repository, add the extraInitContainer and remove the g
     extraInitContainers:
       - name: install-oncall-plugin
         image: <HARBOR_URL>/<PROJECT>/oras:<VERSION>
-        command: [sh, -c]
-        args:
-          - |
-            set -e
-            PLUGIN_DIR="/var/lib/grafana/plugins/grafana-oncall-app"
-
-            # Idempotent: skip if plugin is already present on the PVC.
-            if [ -f "${PLUGIN_DIR}/plugin.json" ]; then
-              echo "grafana-oncall-app already installed — skipping."
-              exit 0
-            fi
-
-            echo "Pulling grafana-oncall-app from Harbor using oras..."
-            mkdir -p /tmp/plugin-dl && cd /tmp/plugin-dl
-
-            oras pull \
-              --username "${HARBOR_USER}" \
-              --password "${HARBOR_PASSWORD}" \
-              "${HARBOR_PLUGIN_REF}"
-
-            ZIPFILE=$(ls *.zip 2>/dev/null | head -1)
-            [ -z "${ZIPFILE}" ] && { echo "ERROR: no zip found:"; ls -la; exit 1; }
-
-            echo "Extracting ${ZIPFILE}..."
-            mkdir -p /var/lib/grafana/plugins
-            unzip -q "${ZIPFILE}" -d /var/lib/grafana/plugins/
-            rm -rf /tmp/plugin-dl
-            echo "Plugin installed at ${PLUGIN_DIR}."
+        # The script is mounted from the oncall-grafana-plugin-install ConfigMap
+        command: [sh, /scripts/install-plugin.sh]
         env:
           - name: HARBOR_USER
             valueFrom:
@@ -450,14 +429,29 @@ In your `kubeaid-config` repository, add the extraInitContainer and remove the g
                 name: harbor-registry-credentials
                 key: password
           - name: HARBOR_PLUGIN_REF
-            value: "<HARBOR_URL>/<PROJECT>/grafana-oncall-app-plugin:<VERSION>"
+            valueFrom:
+              secretKeyRef:
+                name: harbor-registry-credentials
+                key: plugin
         volumeMounts:
           - name: storage
             mountPath: /var/lib/grafana
+          - name: plugin-install-script
+            mountPath: /scripts
+
+    extraVolumes:
+      - name: plugin-install-script
+        configMap:
+          name: oncall-grafana-plugin-install
+          defaultMode: 0755
+      # Required: OnCall plugin provisioning volume (subchart default)
+      - name: provisioning
+        configMap:
+          name: helm-testing-grafana-plugin-provisioning
 ```
 
-> [!TIP]
-> The `extraInitContainers` list **replaces** (not merges with) the defaults when set in your config values — so you must define the full init container spec here.
+> [!NOTE]
+> The `extraInitContainers` and `extraVolumes` lists **replace** (not merge with) the subchart defaults — so you must include the `provisioning` volume explicitly alongside the new `plugin-install-script` volume, as shown above.
 
 ---
 
