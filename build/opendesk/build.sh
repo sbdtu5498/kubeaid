@@ -9,6 +9,35 @@ fi
 
 RUN_ONLY="all"
 
+echo "Do you want to:"
+echo "1) Type MASTER_PASSWORD manually"
+echo "2) Use existing SealedSecret to pick the password"
+read -p "Enter choice [1/2]: " choice
+
+case "$choice" in
+  1)
+    # Manual input
+    read -p "Enter MASTER_PASSWORD (use the same one from previous SealedSecret if you want to regenerate): " MASTER_PASSWORD
+    echo
+    ;;
+  2)
+    # Pull from existing SealedSecret
+    read -p "Enter name of existing SealedSecret (e.g., opendesk-master-password): " SECRET_NAME
+    MASTER_PASSWORD=$(kubectl get secret $SECRET_NAME -n opendesk -o jsonpath='{.data.MASTER_PASSWORD}' | base64 --decode)
+    if [ -z "$MASTER_PASSWORD" ]; then
+      echo "Error: Secret not found or empty!"
+      exit 1
+    fi
+    echo "MASTER_PASSWORD retrieved from SealedSecret $SECRET_NAME"
+    ;;
+  *)
+    echo "Invalid choice, exiting"
+    exit 1
+    ;;
+esac
+
+# Export for Helm rendering
+export MASTER_PASSWORD
 # Allowed app names
 VALID_APPS=("essentials" "mail" "chat" "jitsi" "nextcloud" "openproject" "xwiki")
 
