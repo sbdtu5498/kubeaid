@@ -166,7 +166,7 @@ gfetch:
     enabled: true
   image:
     repository: ghcr.io/obmondo/gfetch
-    tag: v0.0.1-beta-3-g53b6411
+    tag: v1.0.0
     pullPolicy: IfNotPresent
   podSecurityContext:
     runAsNonRoot: true
