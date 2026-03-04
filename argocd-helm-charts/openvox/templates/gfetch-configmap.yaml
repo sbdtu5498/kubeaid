@@ -4,7 +4,7 @@ kind: ConfigMap
 metadata:
   name: {{ include "puppetserver.name" . }}-gfetch
 data:
-  config.yaml: |
+  config.yaml: |-
     defaults:
       {{- with .Values.gfetch.defaults.ssh_known_hosts }}
       ssh_known_hosts: |
@@ -15,6 +15,9 @@ data:
       {{- end }}
       {{- if .Values.gfetch.defaults.openvox }}
       openvox: {{ .Values.gfetch.defaults.openvox }}
+      {{- end }}
+      {{- if .Values.gfetch.defaults.openvox_max_workers }}
+      openvox_max_workers: {{ .Values.gfetch.defaults.openvox_max_workers }}
       {{- end }}
       {{- if .Values.gfetch.defaults.poll_interval }}
       poll_interval: {{ .Values.gfetch.defaults.poll_interval | quote }}
@@ -65,6 +68,9 @@ data:
         {{- end }}
         {{- if $repo.openvox }}
         openvox: {{ $repo.openvox }}
+        {{- end }}
+        {{- if $repo.openvox_max_workers }}
+        openvox_max_workers: {{ $repo.openvox_max_workers }}
         {{- end }}
         {{- if $repo.prune }}
         prune: {{ $repo.prune }}
