@@ -1,5 +1,9 @@
 
 # Opendesk Setup
+🚨 WARNING: The secrets used in opendesk.
+- are stored in plain text across all projects in this repository.
+- DO NOT make the config repository public.
+- DO NOT share access with non-admin users. it is a limitation on the upstream repo.
 
 ## Index
 
@@ -17,7 +21,8 @@
 
 
 ## Installation
-**Note:** Self-registration is not supported in Opendesk.
+
+**Note:** Self-registration is not supported in Opendesk. 
 1. **Basic Requirements**
    Ensure all prerequisites are met as described here:
    [https://gitlab.opencode.de/bmi/opendesk/deployment/opendesk/-/blob/develop/docs/requirements.md#tldr](https://gitlab.opencode.de/bmi/opendesk/deployment/opendesk/-/blob/develop/docs/requirements.md#tldr)
