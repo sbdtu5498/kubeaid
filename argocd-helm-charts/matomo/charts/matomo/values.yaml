@@ -718,6 +718,8 @@ mariadb:
     ##     memory: 1024Mi
     ##
     resources: {}
+  logicalbackup:
+    enabled: true
 ## External database configuration
 ## @param externalDatabase.host Host of the existing database
 ## @param externalDatabase.port Port of the existing database

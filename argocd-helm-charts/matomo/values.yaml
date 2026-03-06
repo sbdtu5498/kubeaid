@@ -42,3 +42,5 @@ mariadb:
     key: db-password # this should be set to db-password as when we pass externalDatabase.existingSecret in values file, it checks for this key
     generate: true
   database: matomo-mariadb
+  logicalbackup:
+    enabled: true
