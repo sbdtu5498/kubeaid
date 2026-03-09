@@ -443,7 +443,16 @@ function update_helm_chart {
         # rename the downloaded tar file so that it matches what we want during untar.
         # For example for strimzi kafka operator downloaded tar file has name strimzi-kafka-operator-helm-3-chart-0.38.0.tgz
         # while we look for strimzi-kafka-operator-0.38.0.tgz
-        tar_file=$(find "$HELM_CHART_DEP_PATH" -maxdepth 1 -type f -name "*${HELM_CHART_NAME}*.tgz" -print -quit)
+
+        # tar_file=$(find "$HELM_CHART_DEP_PATH" -maxdepth 1 -type f -name "*${HELM_CHART_NAME}*.tgz" -print -quit)
+
+        # First, try an exact version-anchored match (handles rook-ceph vs rook-ceph-cluster ambiguity)
+        tar_file=$(find "$HELM_CHART_DEP_PATH" -maxdepth 1 -type f -name "${HELM_CHART_NAME}-[v0-9]*.tgz" -print -quit)
+
+        # Fall back to broad match if not found (handles strimzi-style non-standard tar names)
+        if [ -z "$tar_file" ]; then
+          tar_file=$(find "$HELM_CHART_DEP_PATH" -maxdepth 1 -type f -name "${HELM_CHART_NAME}-*.tgz" -print -quit)
+        fi
         expected_tar_file="$HELM_CHART_DEP_PATH/$HELM_CHART_NAME-$HELM_CHART_NEW_VERSION.tgz"
 
         # Check if the downloaded tar file matches the expected name
@@ -511,7 +520,7 @@ function main (){
   COMMIT_MSG_FILE=$(mktemp)
   CURRENT_VERSION=$(get_current_kubeaid_version)
 
-  git switch -c "$GIT_BRANCH_NAME" --track origin/master
+  # git switch -c "$GIT_BRANCH_NAME" --track origin/master
 
   if $NEW_CHART; then
     create_new_chart "$CHART_NAME $CHART_URL $CHART_VERSION"
