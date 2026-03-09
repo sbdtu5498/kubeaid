@@ -520,7 +520,7 @@ function main (){
   COMMIT_MSG_FILE=$(mktemp)
   CURRENT_VERSION=$(get_current_kubeaid_version)
 
-  # git switch -c "$GIT_BRANCH_NAME" --track origin/master
+  git switch -c "$GIT_BRANCH_NAME" --track origin/master
 
   if $NEW_CHART; then
     create_new_chart "$CHART_NAME $CHART_URL $CHART_VERSION"
