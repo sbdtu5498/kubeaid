@@ -59,6 +59,18 @@ Inject extra environment vars in the format key:value, if populated
 {{- end -}}
 {{- end -}}
 
+{{- define "seaweedfs.mergeExtraEnvironmentVars" -}}
+{{- $global := ((.global | default dict).extraEnvironmentVars | default dict) -}}
+{{- $component := ((.component | default dict).extraEnvironmentVars | default dict) -}}
+{{- $target := .target -}}
+{{- range $key, $value := $global }}
+{{- $_ := set $target $key $value }}
+{{- end }}
+{{- range $key, $value := $component }}
+{{- $_ := set $target $key $value }}
+{{- end }}
+{{- end -}}
+
 {{/* Return the proper filer image */}}
 {{- define "filer.image" -}}
 {{- if .Values.filer.imageOverride -}}
@@ -135,7 +147,9 @@ Inject extra environment vars in the format key:value, if populated
 {{- $repositoryName := default .Values.image.repository .Values.global.repository | toString -}}
 {{- $name := .Values.global.imageName | toString -}}
 {{- $tag := default .Chart.AppVersion .Values.image.tag  | toString -}}
-{{- if $repositoryName -}}
+{{- if .Values.image.repository -}}
+{{-   $name = $repositoryName -}}
+{{- else if $repositoryName -}}
 {{-   $name = printf "%s/%s" (trimSuffix "/" $repositoryName) (base $name) -}}
 {{- end -}}
 {{- if $registryName -}}

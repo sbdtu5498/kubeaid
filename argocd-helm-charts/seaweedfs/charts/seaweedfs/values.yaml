@@ -20,6 +20,7 @@ global:
       filerRead: false
   # we will use this serviceAccountName for all ClusterRoles/ClusterRoleBindings
   serviceAccountName: "seaweedfs"
+  serviceAccountAnnotations: {}
   automountServiceAccountToken: true
   certificates:
     duration: 87600h
@@ -890,12 +891,22 @@ filer:
     # set to the name of an existing kubernetes Secret with the s3 json config file
     # should have a secret key called seaweedfs_s3_config with an inline json configure
     existingConfigSecret: null
+    # To provide explicit credentials for the S3 gateway, set them under
+    # the top-level s3.credentials key (not filer.s3.credentials).
+    # The s3-secret.yaml template only reads from .Values.s3.credentials.
+    # See: s3.credentials.admin.accessKey, s3.credentials.read.accessKey
     auditLogConfig: {}
     # You may specify buckets to be created during the install or upgrade process.
     # Buckets may be exposed publicly by setting `anonymousRead` to `true`
+    # ttl format: [1-255][m|h|d|w|M|y] (e.g., 7d)
+    # objectLock enables S3 Object Lock (irreversible, forces versioning)
+    # versioning: Enabled or Suspended (or true to enable)
     # createBuckets:
     #   - name: bucket-a
     #     anonymousRead: true
+    #     ttl: 7d
+    #     objectLock: true
+    #     versioning: Enabled
     #   - name: bucket-b
     #     anonymousRead: false
 
@@ -918,12 +929,28 @@ s3:
   # set to the name of an existing kubernetes Secret with the s3 json config file
   # should have a secret key called seaweedfs_s3_config with an inline json config
   existingConfigSecret: null
+  # Optionally provide explicit credentials for the S3 gateway.
+  # When set, these are used in the generated s3 secret instead of
+  # auto-generating random credentials.
+  # credentials:
+  #   admin:
+  #     accessKey: ""
+  #     secretKey: ""
+  #   read:
+  #     accessKey: ""
+  #     secretKey: ""
   auditLogConfig: {}
   # You may specify buckets to be created during the install or upgrade process.
   # Buckets may be exposed publicly by setting `anonymousRead` to `true`
+  # ttl format: [1-255][m|h|d|w|M|y] (e.g., 7d)
+  # objectLock enables S3 Object Lock (irreversible, forces versioning)
+  # versioning: Enabled or Suspended (or true to enable)
   # createBuckets:
   #   - name: bucket-a
   #     anonymousRead: true
+  #     ttl: 7d
+  #     objectLock: true
+  #     versioning: Enabled
   #   - name: bucket-b
   #     anonymousRead: false
 
@@ -1270,17 +1297,20 @@ worker:
   replicas: 1
   loggingOverrideLevel: null
   metricsPort: 9327
+  metricsIp: ""  # If empty, defaults to 0.0.0.0
 
   # Admin server to connect to
   adminServer: ""
 
-  # Worker capabilities - comma-separated list
-  # Available: vacuum, balance, erasure_coding
-  # Default: "vacuum,balance,erasure_coding" (all capabilities)
-  capabilities: "vacuum,balance,erasure_coding"
+  # Worker job types - comma-separated list
+  # Available: vacuum, volume_balance, erasure_coding
+  jobType: "vacuum,volume_balance,erasure_coding"
 
-  # Maximum number of concurrent tasks
-  maxConcurrent: 3
+  # Maximum number of concurrent detection requests
+  maxDetect: 1
+
+  # Maximum number of concurrent execution jobs
+  maxExecute: 4
 
   # Working directory for task execution
   workingDir: "/tmp/seaweedfs-worker"
@@ -1418,12 +1448,22 @@ allInOne:
     # Set to the name of an existing kubernetes Secret with the s3 json config file
     # should have a secret key called seaweedfs_s3_config with an inline json config
     existingConfigSecret: null
+    # To provide explicit credentials for the S3 gateway, set them under
+    # the top-level s3.credentials key (not allInOne.s3.credentials).
+    # The s3-secret.yaml template only reads from .Values.s3.credentials.
+    # See: s3.credentials.admin.accessKey, s3.credentials.read.accessKey
     auditLogConfig: null  # S3 audit log configuration (null inherits from s3.auditLogConfig)
     # You may specify buckets to be created during the install process.
     # Buckets may be exposed publicly by setting `anonymousRead` to `true`
+    # ttl format: [1-255][m|h|d|w|M|y] (e.g., 7d)
+    # objectLock enables S3 Object Lock (irreversible, forces versioning)
+    # versioning: Enabled or Suspended (or true to enable)
     # createBuckets:
     #   - name: bucket-a
     #     anonymousRead: true
+    #     ttl: 7d
+    #     objectLock: true
+    #     versioning: Enabled
     #   - name: bucket-b
     #     anonymousRead: false
 
@@ -1589,6 +1629,8 @@ cosi:
   image: "ghcr.io/seaweedfs/seaweedfs-cosi-driver:v0.1.2"
   driverName: "seaweedfs.objectstorage.k8s.io"
   bucketClassName: "seaweedfs"
+  # Optional parameters to pass to the default BucketClass (e.g., diskType for tiered storage)
+  bucketClassParameters: {}
   endpoint: ""
   region: ""
 
