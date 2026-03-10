@@ -143,3 +143,7 @@ curl -X 'DELETE' \
   -u '<root-user-email>:<root-user-password>' \
   -H 'accept: application/json'
 ```
+
+## Extras
+- [A short explanation on how Open Observe manages memory](https://github.com/openobserve/openobserve/discussions/2711)
+
