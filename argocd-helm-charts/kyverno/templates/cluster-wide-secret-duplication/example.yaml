@@ -1,0 +1,58 @@
+kyverno:
+  admissionController:
+    rbac:
+      clusterRole:
+        extraResources:
+          - apiGroups:
+              - ""
+            resources:
+              - secrets
+            verbs:
+              - get
+              - list
+  backgroundController:
+    rbac:
+      clusterRole:
+        extraResources:
+          - apiGroups:
+              - ""
+            resources:
+              - secrets
+            verbs:
+              - get
+              - list
+              - create
+              - update
+              - delete
+  reportsController:
+    rbac:
+      clusterRole:
+        extraResources:
+          - apiGroups:
+              - ""
+            resources:
+              - secrets
+            verbs:
+              - get
+              - list
+              - watch
+
+syncSecrets:
+  enabled: true
+  items:
+    - name: harbor
+      sourceSecret:
+        namespace: monitoring
+        name: harbor-registry-secret
+      targetSecret:
+        name: harbor-registry-secret
+      excludeNamespaces:
+        - kyverno
+        - argocd
+    - name: test
+      namespaceMatch: "obmondo-*"
+      sourceSecret:
+        namespace: obmondo
+        name: oncall
+      targetSecret:
+        name: test-remove
