@@ -158,4 +158,4 @@ vulsServer:
   resultsStorage:
     storageClass: ""
     size: 2Gi
-    accessMode: ReadWriteMany
+    accessMode: ReadWriteOnce
