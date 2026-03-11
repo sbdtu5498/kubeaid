@@ -85,10 +85,10 @@ assert_present "vulsServer: listens on port 5515" "containerPort: 5515" \
   --set vulsServer.enabled=true
 
 # --- config.toml URLs point to dictionary services ---
-assert_present "config.toml: CVE dict URL correct" "http://test-vuls-dictionary:1323" \
+assert_present "config.toml: CVE dict URL correct" "http://test-vuls-dictionary-dict-server:1323" \
   --set vulsServer.enabled=true
 
-assert_present "config.toml: OVAL dict URL correct" "http://test-vuls-dictionary:1324" \
+assert_present "config.toml: OVAL dict URL correct" "http://test-vuls-dictionary-dict-server:1324" \
   --set vulsServer.enabled=true
 
 # --- Ingress variations ---

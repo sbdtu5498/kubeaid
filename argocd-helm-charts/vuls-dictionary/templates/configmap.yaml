@@ -9,9 +9,9 @@ data:
   config.toml: |
     [cveDict]
     type = "http"
-    url = "http://{{ include "vuls-dictionary.fullname" . }}:{{ .Values.service.goCVEDictionary.port }}"
+    url = "http://{{ include "vuls-dictionary.fullname" . }}-dict-server:{{ .Values.service.goCVEDictionary.port }}"
 
     [ovalDict]
     type = "http"
-    url = "http://{{ include "vuls-dictionary.fullname" . }}:{{ .Values.service.govalDictionary.port }}"
+    url = "http://{{ include "vuls-dictionary.fullname" . }}-dict-server:{{ .Values.service.govalDictionary.port }}"
 {{- end }}

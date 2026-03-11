@@ -1,9 +1,10 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "vuls-dictionary.fullname" . }}
+  name: {{ include "vuls-dictionary.fullname" . }}-dict-server
   labels:
     {{- include "vuls-dictionary.labels" . | nindent 4 }}
+    app.kubernetes.io/component: dict-server
 spec:
   type: {{ .Values.service.type }}
   ports:
@@ -17,3 +18,4 @@ spec:
       name: http-goval
   selector:
     {{- include "vuls-dictionary.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/component: dict-server

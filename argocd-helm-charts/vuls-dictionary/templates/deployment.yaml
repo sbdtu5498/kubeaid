@@ -1,14 +1,16 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "vuls-dictionary.fullname" . }}
+  name: {{ include "vuls-dictionary.fullname" . }}-dict-server
   labels:
     {{- include "vuls-dictionary.labels" . | nindent 4 }}
+    app.kubernetes.io/component: dict-server
 spec:
   replicas: 1
   selector:
     matchLabels:
       {{- include "vuls-dictionary.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: dict-server
   template:
     metadata:
       {{- with .Values.podAnnotations }}
@@ -17,6 +19,7 @@ spec:
       {{- end }}
       labels:
         {{- include "vuls-dictionary.labels" . | nindent 8 }}
+        app.kubernetes.io/component: dict-server
         {{- with .Values.podLabels }}
         {{- toYaml . | nindent 8 }}
         {{- end }}
