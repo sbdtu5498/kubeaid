@@ -1,0 +1,19 @@
+{{- if .Values.vulsServer.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "vuls-dictionary.fullname" . }}-vuls-server
+  labels:
+    {{- include "vuls-dictionary.labels" . | nindent 4 }}
+    app.kubernetes.io/component: vuls-server
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - port: {{ .Values.vulsServer.port }}
+      targetPort: http-vuls
+      protocol: TCP
+      name: http-vuls
+  selector:
+    {{- include "vuls-dictionary.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/component: vuls-server
+{{- end }}

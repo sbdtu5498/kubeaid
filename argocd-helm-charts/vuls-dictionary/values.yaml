@@ -2,11 +2,11 @@ image:
   cve:
     repository: vuls/go-cve-dictionary
     pullPolicy: IfNotPresent
-    tag: "v0.12.1"
+    tag: "v0.16.0"
   oval:
     repository: vuls/goval-dictionary
     pullPolicy: IfNotPresent
-    tag: "v0.12.0"
+    tag: "v0.15.1"
 
 # This is for the secretes for pulling an image from a private repository more information can be found here: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
 imagePullSecrets: []
@@ -61,10 +61,22 @@ ingress:
         - path: /go-cve-dictionary
           pathType: Prefix
           servicePort: 1323
+  vulsServer:
+    enabled: false
+    hosts:
+      - host: chart-example.local
+        paths:
+          - path: /vuls
+            pathType: Prefix
   tls: []
 
-resources: {}
-
+resources:
+  requests:
+    cpu: 100m
+    memory: 256Mi
+  limits:
+    cpu: 500m
+    memory: 512Mi
 
 nodeSelector: {}
 
@@ -135,3 +147,21 @@ persistence:
   storageClass: zfs-localpv
   enabled: true
   size: 5Gi
+
+vulsServer:
+  enabled: true
+  image:
+    repository: vuls/vuls
+    tag: "v0.38.6"
+    pullPolicy: IfNotPresent
+  port: 5515
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      memory: 512Mi
+  resultsStorage:
+    storageClass: ""
+    size: 2Gi
+    accessMode: ReadWriteMany

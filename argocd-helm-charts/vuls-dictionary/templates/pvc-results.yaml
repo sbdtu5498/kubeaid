@@ -1,0 +1,17 @@
+{{- if .Values.vulsServer.enabled }}
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: {{ include "vuls-dictionary.fullname" . }}-results-pvc
+  labels:
+    {{- include "vuls-dictionary.labels" . | nindent 4 }}
+spec:
+  accessModes:
+    - {{ .Values.vulsServer.resultsStorage.accessMode | default "ReadWriteMany" }}
+  resources:
+    requests:
+      storage: {{ .Values.vulsServer.resultsStorage.size | default "2Gi" }}
+{{- if or .Values.vulsServer.resultsStorage.storageClass .Values.persistence.storageClass }}
+  storageClassName: "{{ .Values.vulsServer.resultsStorage.storageClass | default .Values.persistence.storageClass }}"
+{{- end }}
+{{- end }}
