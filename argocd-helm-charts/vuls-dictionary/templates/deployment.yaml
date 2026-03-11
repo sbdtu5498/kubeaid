@@ -37,6 +37,8 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           args:
             - server
+            - --bind
+            - 0.0.0.0
           ports:
             - name: http-go-cve
               containerPort: {{ .Values.service.goCVEDictionary.port }}
@@ -71,6 +73,8 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           args:
             - server
+            - --bind
+            - 0.0.0.0
           ports:
             - name: http-goval
               containerPort: {{ .Values.service.govalDictionary.port }}
