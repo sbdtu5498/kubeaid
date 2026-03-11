@@ -37,6 +37,6 @@ spec:
                 - name: DB_PATH
                   value: "host={{ $pgHost }} port=5432 user=vuls dbname=vuls password=$(DB_PASSWORD) sslmode=require"
               resources:
-                {{- toYaml $.Values.resources | nindent 16 }}
+                {{- toYaml ($.Values.cve.resources | default $.Values.resources) | nindent 16 }}
             {{- end }}
 {{- end }}
