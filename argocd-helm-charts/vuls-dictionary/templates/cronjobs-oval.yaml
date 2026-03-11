@@ -5,6 +5,7 @@
 {{- $baseHour := atoi (index $scheduleParts 1) -}}
 {{- $spreadMinutes := $.Values.scheduleSpreadMinutes | default 5 | int -}}
 {{- $scheduleRest := printf "%s %s %s" (index $scheduleParts 2) (index $scheduleParts 3) (index $scheduleParts 4) -}}
+{{- $pgHost := printf "%s-pgsql-rw" (include "vuls-dictionary.fullname" $) -}}
 {{- range $index, $distro := (keys $oval | sortAlpha) -}}
 {{- $versions := index $oval $distro -}}
 {{- $totalMinutes := add $baseMinute (mul (add1 $index) $spreadMinutes) -}}
@@ -21,10 +22,6 @@ spec:
     spec:
       template:
         spec:
-          volumes:
-            - name: dictionary
-              persistentVolumeClaim:
-                claimName: {{ include "vuls-dictionary.fullname" $ }}-pvc
           restartPolicy: OnFailure
           containers:
             - name: {{ include "vuls-dictionary.fullname" $ }}-oval-{{ $distro }}
@@ -45,11 +42,20 @@ spec:
                 {{- range $version := $versions }}
                 - {{ $version | quote }}
                 {{- end }}
+                - --dbtype
+                - postgres
+                - --dbpath
+                - $(DB_PATH)
+              env:
+                - name: DB_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: {{ include "vuls-dictionary.fullname" $ }}-pgsql-app
+                      key: password
+                - name: DB_PATH
+                  value: "host={{ $pgHost }} port=5432 user=vuls dbname=vuls password=$(DB_PASSWORD) sslmode=require"
               resources:
                 {{- toYaml $.Values.resources | nindent 16 }}
-              volumeMounts:
-                - name: dictionary
-                  mountPath: /go-cve-dictionary
 ---
 {{- end }}
 {{- end }}

@@ -53,7 +53,7 @@ assert_absent() {
 echo "=== vuls-dictionary Helm chart CI tests ==="
 echo ""
 
-# --- Default values (vulsServer disabled) ---
+# --- Default values ---
 run_test "default values render successfully"
 
 assert_present "default: CVE image tag is v0.16.0" "vuls/go-cve-dictionary:v0.16.0"
@@ -61,6 +61,32 @@ assert_present "default: OVAL image tag is v0.15.1" "vuls/goval-dictionary:v0.15
 assert_present "default: vuls-server deployment present" "vuls-server"
 assert_present "default: configmap present" "vuls-config"
 assert_present "default: results PVC present" "results-pvc"
+
+# --- PostgreSQL (CNPG) ---
+assert_present "postgresql: CNPG Cluster created" "kind: Cluster" \
+  --show-only templates/postgresql.yaml
+
+assert_present "postgresql: cluster name correct" "test-vuls-dictionary-pgsql"
+
+assert_present "postgresql: bootstrap database is vuls" "database: vuls"
+
+assert_present "postgresql: dbtype postgres in deployment" "dbtype" \
+  --show-only templates/deployment.yaml
+
+assert_present "postgresql: wait-for-postgres init container" "wait-for-postgres" \
+  --show-only templates/deployment.yaml
+
+assert_present "postgresql: pgsql-app secret ref in deployment" "pgsql-app" \
+  --show-only templates/deployment.yaml
+
+assert_present "postgresql: dbtype postgres in CVE cronjob" "dbtype" \
+  --show-only templates/cronjobs-cve.yaml
+
+assert_present "postgresql: dbtype postgres in OVAL cronjob" "dbtype" \
+  --show-only templates/cronjobs-oval.yaml
+
+assert_present "postgresql: dbtype postgres in CVE seed hook" "dbtype" \
+  --show-only templates/hook-cve-seed.yaml
 
 # --- vulsServer enabled ---
 run_test "vulsServer enabled renders successfully" \

@@ -1,0 +1,56 @@
+{{- $postgresql := .Values.postgresql }}
+
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: {{ include "vuls-dictionary.fullname" . }}-pgsql
+
+spec:
+  instances: {{ $postgresql.instances }}
+
+  {{- with $postgresql.resources }}
+  resources:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+
+  storage:
+    size: {{ $postgresql.size }}
+    {{- if $postgresql.storageClass }}
+    storageClass: {{ $postgresql.storageClass }}
+    {{- end }}
+
+  {{- if $postgresql.backups.enabled }}
+  plugins:
+    - enabled: true
+      isWALArchiver: true
+      name: barman-cloud.cloudnative-pg.io
+      parameters:
+        barmanObjectName: {{ include "vuls-dictionary.fullname" . }}-pgsql-backups
+        serverName: "revision-{{ $postgresql.revision }}"
+  {{- end }}
+
+  bootstrap:
+    {{- if $postgresql.recover.enabled }}
+    recovery: {{ include "vuls-dictionary.fullname" . }}-pgsql
+    {{- else }}
+    initdb:
+      database: vuls
+      owner: vuls
+    {{- end }}
+
+  {{- if $postgresql.recover.enabled }}
+  externalClusters:
+    - name: {{ include "vuls-dictionary.fullname" . }}-pgsql
+      plugin:
+        name: barman-cloud.cloudnative-pg.io
+        parameters:
+          barmanObjectName: {{ include "vuls-dictionary.fullname" . }}-pgsql-backups
+          serverName: "revision-{{ $postgresql.recover.revision }}"
+  {{- end }}
+
+  monitoring:
+    enablePodMonitor: {{ if hasKey (default dict $postgresql.monitoring) "enablePodMonitor" }}{{ $postgresql.monitoring.enablePodMonitor }}{{ else }}{{ $postgresql.backups.enabled }}{{ end }}
+    {{- $monitoringExtra := omit (default dict $postgresql.monitoring) "enablePodMonitor" }}
+    {{- if $monitoringExtra }}
+    {{- $monitoringExtra | toYaml | nindent 4 }}
+    {{- end }}

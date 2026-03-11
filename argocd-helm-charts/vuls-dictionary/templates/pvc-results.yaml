@@ -11,7 +11,7 @@ spec:
   resources:
     requests:
       storage: {{ .Values.vulsServer.resultsStorage.size | default "2Gi" }}
-{{- if or .Values.vulsServer.resultsStorage.storageClass .Values.persistence.storageClass }}
-  storageClassName: "{{ .Values.vulsServer.resultsStorage.storageClass | default .Values.persistence.storageClass }}"
+{{- if .Values.vulsServer.resultsStorage.storageClass }}
+  storageClassName: "{{ .Values.vulsServer.resultsStorage.storageClass }}"
 {{- end }}
 {{- end }}

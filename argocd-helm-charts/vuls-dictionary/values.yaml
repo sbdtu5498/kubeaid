@@ -124,10 +124,23 @@ cve:
     - jvn
     - fortinet
 
-persistence:
-  storageClass: ""
-  enabled: true
+postgresql:
+  instances: 2
   size: 5Gi
+  storageClass: ""
+  revision: "1"
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      memory: 512Mi
+  backups:
+    enabled: false
+  recover:
+    enabled: false
+    revision: "1"
+  monitoring: {}
 
 vulsServer:
   enabled: true
