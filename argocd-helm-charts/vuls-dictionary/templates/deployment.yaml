@@ -47,21 +47,15 @@ spec:
               containerPort: {{ .Values.service.goCVEDictionary.port }}
               protocol: TCP
           livenessProbe:
-             initialDelaySeconds: 300
-             httpGet:
-              path: /go-cve-dictionary/health
-              port: {{ .Values.service.goCVEDictionary.port }}
-              httpHeaders:
-                - name: Host
-                  value: {{ (index .Values.ingress.hosts 0).host }}
-          readinessProbe:
-            initialDelaySeconds: 300
             httpGet:
-              path: /go-cve-dictionary/health
-              port: {{ .Values.service.goCVEDictionary.port }}
-              httpHeaders:
-                - name: Host
-                  value: {{ (index .Values.ingress.hosts 0).host }}
+              path: /health
+              port: http-go-cve
+            initialDelaySeconds: 30
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: http-go-cve
+            initialDelaySeconds: 10
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           volumeMounts:
@@ -83,21 +77,15 @@ spec:
               containerPort: {{ .Values.service.govalDictionary.port }}
               protocol: TCP
           livenessProbe:
-            initialDelaySeconds: 300
             httpGet:
-              path: /goval-dictionary/health
-              port: {{ .Values.service.govalDictionary.port }}
-              httpHeaders:
-                - name: Host
-                  value: {{ (index .Values.ingress.hosts 0).host }}
+              path: /health
+              port: http-goval
+            initialDelaySeconds: 30
           readinessProbe:
-            initialDelaySeconds: 300
             httpGet:
-              path: /goval-dictionary/health
-              port: {{ .Values.service.govalDictionary.port }}
-              httpHeaders:
-                - name: Host
-                  value: {{ (index .Values.ingress.hosts 0).host }}
+              path: /health
+              port: http-goval
+            initialDelaySeconds: 10
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           volumeMounts:
