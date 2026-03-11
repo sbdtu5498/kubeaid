@@ -85,6 +85,8 @@ tolerations: []
 affinity: {}
 
 schedule: "0 2 * * *"
+# Minutes between each CronJob's schedule to spread load
+scheduleSpreadMinutes: 5
 
 oval:
   enabled: true

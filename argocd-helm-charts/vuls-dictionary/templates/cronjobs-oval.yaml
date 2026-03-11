@@ -1,13 +1,22 @@
 {{- if .Values.oval.enabled }}
 {{- $oval := .Values.oval.fetchDB -}}
-{{- range $distro, $versions := $oval -}}
+{{- $scheduleParts := splitList " " $.Values.schedule -}}
+{{- $baseMinute := atoi (index $scheduleParts 0) -}}
+{{- $baseHour := atoi (index $scheduleParts 1) -}}
+{{- $spreadMinutes := $.Values.scheduleSpreadMinutes | default 5 | int -}}
+{{- $scheduleRest := printf "%s %s %s" (index $scheduleParts 2) (index $scheduleParts 3) (index $scheduleParts 4) -}}
+{{- range $index, $distro := (keys $oval | sortAlpha) -}}
+{{- $versions := index $oval $distro -}}
+{{- $totalMinutes := add $baseMinute (mul (add1 $index) $spreadMinutes) -}}
+{{- $minute := mod $totalMinutes 60 -}}
+{{- $hour := mod (add $baseHour (div $totalMinutes 60)) 24 -}}
 apiVersion: batch/v1
 kind: CronJob
 metadata:
   name: {{ include "vuls-dictionary.fullname" $ }}-oval-{{ $distro }}-fetch-jobs
 spec:
   suspend: false
-  schedule: {{ $.Values.schedule | quote }}
+  schedule: "{{ $minute }} {{ $hour }} {{ $scheduleRest }}"
   jobTemplate:
     spec:
       template:
