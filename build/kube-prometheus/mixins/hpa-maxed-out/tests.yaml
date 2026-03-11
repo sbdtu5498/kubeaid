@@ -78,3 +78,37 @@ tests:
       - eval_time: 15m
         alertname: KubeHpaMaxedOut
         exp_alerts: []   # No alert should fire when not at max
+
+  # ───────────────────────────────────────────────
+  # (5) HPA with min=0, max=1, current=0
+  #     -> Alert should NOT fire (not at max)
+  # ───────────────────────────────────────────────
+  - interval: 5m
+    input_series:
+      - series: 'kube_horizontalpodautoscaler_status_current_replicas{horizontalpodautoscaler="scaling-app", namespace="test", job="kube-state-metrics"}'
+        values: '0+0x4'
+      - series: 'kube_horizontalpodautoscaler_spec_max_replicas{horizontalpodautoscaler="scaling-app", namespace="test", job="kube-state-metrics"}'
+        values: '1+0x4'
+      - series: 'kube_horizontalpodautoscaler_spec_min_replicas{horizontalpodautoscaler="scaling-app", namespace="test", job="kube-state-metrics"}'
+        values: '0+0x4'
+    alert_rule_test:
+      - eval_time: 15m
+        alertname: KubeHpaMaxedOut
+        exp_alerts: []   # No alert should fire when not at max
+
+  # ───────────────────────────────────────────────
+  # (6) HPA with min=0, max=1, current=1
+  #     -> Alert should NOT fire (at max but max is 1, intentionally fixed size)
+  # ───────────────────────────────────────────────
+  - interval: 5m
+    input_series:
+      - series: 'kube_horizontalpodautoscaler_status_current_replicas{horizontalpodautoscaler="scaling-app", namespace="test", job="kube-state-metrics"}'
+        values: '1+0x4'
+      - series: 'kube_horizontalpodautoscaler_spec_max_replicas{horizontalpodautoscaler="scaling-app", namespace="test", job="kube-state-metrics"}'
+        values: '1+0x4'
+      - series: 'kube_horizontalpodautoscaler_spec_min_replicas{horizontalpodautoscaler="scaling-app", namespace="test", job="kube-state-metrics"}'
+        values: '0+0x4'
+    alert_rule_test:
+      - eval_time: 15m
+        alertname: KubeHpaMaxedOut
+        exp_alerts: []   # No alert should fire when max is 1, even if current is at max
