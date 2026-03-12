@@ -1,0 +1,19 @@
+{{- if and .Values.vulsServer.enabled .Values.vulsExporter.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "vuls-dictionary.fullname" . }}-vuls-exporter-config
+  labels:
+    {{- include "vuls-dictionary.labels" . | nindent 4 }}
+data:
+  config.yaml: |
+    results_dir: "/vuls/results"
+    interval: {{ .Values.vulsExporter.interval | quote }}
+    obmondo:
+      url: {{ .Values.vulsExporter.obmondo.url | quote }}
+      {{- if .Values.vulsExporter.tls.secretName }}
+      cert_file: {{ .Values.vulsExporter.tls.certFile | quote }}
+      key_file: {{ .Values.vulsExporter.tls.keyFile | quote }}
+      ca_file: {{ .Values.vulsExporter.tls.caFile | quote }}
+      {{- end }}
+{{- end }}

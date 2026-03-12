@@ -2,11 +2,11 @@ image:
   cve:
     repository: vuls/go-cve-dictionary
     pullPolicy: IfNotPresent
-    tag: "v0.12.1"
+    tag: "v0.16.0"
   oval:
     repository: vuls/goval-dictionary
     pullPolicy: IfNotPresent
-    tag: "v0.12.0"
+    tag: "v0.15.1"
 
 # This is for the secretes for pulling an image from a private repository more information can be found here: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
 imagePullSecrets: []
@@ -61,10 +61,21 @@ ingress:
         - path: /go-cve-dictionary
           pathType: Prefix
           servicePort: 1323
+  vulsServer:
+    enabled: false
+    hosts:
+      - host: chart-example.local
+        paths:
+          - path: /vuls
+            pathType: Prefix
   tls: []
 
-resources: {}
-
+resources:
+  requests:
+    cpu: 100m
+    memory: 256Mi
+  limits:
+    memory: 512Mi
 
 nodeSelector: {}
 
@@ -73,55 +84,36 @@ tolerations: []
 affinity: {}
 
 schedule: "0 2 * * *"
+# Minutes between each CronJob's schedule to spread load
+scheduleSpreadMinutes: 5
 
 oval:
   enabled: true
   fetchDB:
     redhat:
-      - "7"
       - "8"
       - "9"
     debian:
-      - "11"
       - "12"
+      - "13"
     ubuntu:
-      - "20.04"
       - "22.04"
       - "24.04"
     sles-server:
-      - "12"
       - "15"
-    sles-desktop:
-      - "12"
-      - "15"
-    opensuse-leap:
-      - "15.1"
-      - "15.2"
-      - "15.3"
-      - "15.4"
-      - "15.5"
-      - "15.6"
-    opensuse:
-      - "12.1"
-      - "12.2"
-      - "12.3"
-      - "13.1"
-      - "13.2"
     alpine:
-      - "3.10"
-      - "3.11"
-      - "3.12"
-      - "3.13"
-      - "3.14"
-      - "3.15"
-      - "3.16"
-      - "3.17"
       - "3.18"
       - "3.19"
       - "3.20"
+      - "3.21"
     amazon:
-      - "2022"
       - "2023"
+    oracle:
+      - "8"
+      - "9"
+    rocky:
+      - "8"
+      - "9"
 
 cve:
   enabled: true
@@ -130,8 +122,68 @@ cve:
     - mitre
     - jvn
     - fortinet
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      memory: 1Gi
 
-persistence:
-  storageClass: zfs-localpv
-  enabled: true
+postgresql:
+  instances: 2
   size: 5Gi
+  storageClass: ""
+  revision: "1"
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      memory: 512Mi
+  backups:
+    enabled: false
+  recover:
+    enabled: false
+    revision: "1"
+  monitoring: {}
+
+vulsExporter:
+  enabled: false
+  image:
+    repository: ghcr.io/obmondo/vuls-exporter
+    tag: "latest"
+    pullPolicy: IfNotPresent
+  obmondo:
+    url: ""
+  interval: "12h"
+  tls:
+    secretName: ""
+    certFile: /etc/ssl/vuls-exporter/tls.crt
+    keyFile: /etc/ssl/vuls-exporter/tls.key
+    caFile: /etc/ssl/vuls-exporter/ca.crt
+  resources:
+    requests:
+      cpu: 20m
+      memory: 32Mi
+    limits:
+      cpu: 50m
+      memory: 64Mi
+
+vulsServer:
+  enabled: true
+  image:
+    repository: vuls/vuls
+    tag: "v0.38.6"
+    pullPolicy: IfNotPresent
+  port: 5515
+  resources:
+    requests:
+      cpu: 50m
+      memory: 256Mi
+    limits:
+      cpu: 100m
+      memory: 512Mi
+  resultsStorage:
+    storageClass: ""
+    size: 2Gi
+    accessMode: ReadWriteOnce

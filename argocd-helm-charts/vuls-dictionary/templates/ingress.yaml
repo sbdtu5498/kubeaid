@@ -35,9 +35,27 @@ spec:
             {{- end }}
             backend:
               service:
-                name: {{ include "vuls-dictionary.fullname" $ }}
+                name: {{ include "vuls-dictionary.fullname" $ }}-dict-server
                 port:
                   number: {{ .servicePort }}
           {{- end }}
     {{- end }}
+  {{- if and .Values.vulsServer.enabled .Values.ingress.vulsServer.enabled }}
+    {{- range .Values.ingress.vulsServer.hosts }}
+    - host: {{ .host | quote }}
+      http:
+        paths:
+          {{- range .paths }}
+          - path: {{ .path }}
+            {{- with .pathType }}
+            pathType: {{ . }}
+            {{- end }}
+            backend:
+              service:
+                name: {{ include "vuls-dictionary.fullname" $ }}-vuls-server
+                port:
+                  number: {{ $.Values.vulsServer.port }}
+          {{- end }}
+    {{- end }}
+  {{- end }}
 {{- end }}

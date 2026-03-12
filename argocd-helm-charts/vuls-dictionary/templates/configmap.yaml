@@ -1,0 +1,17 @@
+{{- if .Values.vulsServer.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "vuls-dictionary.fullname" . }}-vuls-config
+  labels:
+    {{- include "vuls-dictionary.labels" . | nindent 4 }}
+data:
+  config.toml: |
+    [cveDict]
+    type = "http"
+    url = "http://{{ include "vuls-dictionary.fullname" . }}-dict-server:{{ .Values.service.goCVEDictionary.port }}"
+
+    [ovalDict]
+    type = "http"
+    url = "http://{{ include "vuls-dictionary.fullname" . }}-dict-server:{{ .Values.service.govalDictionary.port }}"
+{{- end }}
