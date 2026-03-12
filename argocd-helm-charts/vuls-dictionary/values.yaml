@@ -119,9 +119,6 @@ cve:
   enabled: true
   fetchDB:
     - nvd
-    - mitre
-    - jvn
-    - fortinet
   resources:
     requests:
       cpu: 100m
