@@ -75,7 +75,6 @@ resources:
     cpu: 100m
     memory: 256Mi
   limits:
-    cpu: 500m
     memory: 512Mi
 
 nodeSelector: {}
@@ -128,7 +127,6 @@ cve:
       cpu: 100m
       memory: 256Mi
     limits:
-      cpu: "1"
       memory: 1Gi
 
 postgresql:
@@ -158,9 +156,10 @@ vulsServer:
   port: 5515
   resources:
     requests:
-      cpu: 100m
+      cpu: 50m
       memory: 256Mi
     limits:
+      cpu: 100m
       memory: 512Mi
   resultsStorage:
     storageClass: ""

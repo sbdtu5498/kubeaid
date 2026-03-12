@@ -6,11 +6,14 @@
 {{- $spreadMinutes := $.Values.scheduleSpreadMinutes | default 5 | int -}}
 {{- $scheduleRest := printf "%s %s %s" (index $scheduleParts 2) (index $scheduleParts 3) (index $scheduleParts 4) -}}
 {{- $pgHost := printf "%s-pgsql-rw" (include "vuls-dictionary.fullname" $) -}}
-{{- range $index, $distro := (keys $oval | sortAlpha) -}}
+{{- range $index, $distro := (keys $oval | sortAlpha) }}
 {{- $versions := index $oval $distro -}}
 {{- $totalMinutes := add $baseMinute (mul (add1 $index) $spreadMinutes) -}}
 {{- $minute := mod $totalMinutes 60 -}}
-{{- $hour := mod (add $baseHour (div $totalMinutes 60)) 24 -}}
+{{- $hour := mod (add $baseHour (div $totalMinutes 60)) 24 }}
+{{- if $index }}
+---
+{{- end }}
 apiVersion: batch/v1
 kind: CronJob
 metadata:
@@ -18,6 +21,9 @@ metadata:
 spec:
   suspend: false
   schedule: "{{ $minute }} {{ $hour }} {{ $scheduleRest }}"
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
   jobTemplate:
     spec:
       template:
@@ -56,6 +62,5 @@ spec:
                   value: "host={{ $pgHost }} port=5432 user=vuls dbname=vuls password=$(DB_PASSWORD) sslmode=require"
               resources:
                 {{- toYaml $.Values.resources | nindent 16 }}
----
 {{- end }}
 {{- end }}
