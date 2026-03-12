@@ -147,6 +147,28 @@ postgresql:
     revision: "1"
   monitoring: {}
 
+vulsExporter:
+  enabled: false
+  image:
+    repository: ghcr.io/obmondo/vuls-exporter
+    tag: "latest"
+    pullPolicy: IfNotPresent
+  obmondo:
+    url: ""
+  interval: "12h"
+  tls:
+    secretName: ""
+    certFile: /etc/ssl/vuls-exporter/tls.crt
+    keyFile: /etc/ssl/vuls-exporter/tls.key
+    caFile: /etc/ssl/vuls-exporter/ca.crt
+  resources:
+    requests:
+      cpu: 20m
+      memory: 32Mi
+    limits:
+      cpu: 50m
+      memory: 64Mi
+
 vulsServer:
   enabled: true
   image:

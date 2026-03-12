@@ -10,6 +10,7 @@ Helm chart for deploying Vuls vulnerability scanning infrastructure: CVE and OVA
 | **OVAL dictionary** | CronJobs fetching OVAL data per distro via [goval-dictionary](https://github.com/vulsio/goval-dictionary) |
 | **Dictionary servers** | HTTP servers exposing CVE (port 1323) and OVAL (port 1324) data to Vuls |
 | **Vuls server** | Scan server (port 5515) that accepts package lists and returns vulnerability results |
+| **Vuls exporter** | Sidecar that reads scan results and pushes them to the Obmondo API via mTLS |
 | **PostgreSQL** | CNPG-managed cluster storing all dictionary data |
 
 ## Quick start
@@ -55,7 +56,7 @@ postgresql:
 |-----------|-------------|---------|
 | `cve.enabled` | Enable CVE dictionary fetching | `true` |
 | `cve.fetchDB` | List of CVE sources to fetch | `[nvd, mitre, jvn, fortinet]` |
-| `cve.resources` | Resource requests/limits for CVE fetch containers | 100m/1 CPU, 256Mi/1Gi |
+| `cve.resources` | Resource requests/limits for CVE fetch containers | 100m CPU, 256Mi/1Gi |
 | `image.cve.repository` | CVE dictionary image | `vuls/go-cve-dictionary` |
 | `image.cve.tag` | CVE dictionary image tag | `v0.16.0` |
 
@@ -78,9 +79,28 @@ Supported distros: `redhat`, `debian`, `ubuntu`, `sles-server`, `alpine`, `amazo
 | `vulsServer.image.repository` | Vuls server image | `vuls/vuls` |
 | `vulsServer.image.tag` | Vuls server image tag | `v0.38.6` |
 | `vulsServer.port` | Vuls server listen port | `5515` |
-| `vulsServer.resources` | Resource requests/limits | 100m CPU, 256Mi/512Mi |
+| `vulsServer.resources` | Resource requests/limits | 50m/100m CPU, 256Mi/512Mi |
 | `vulsServer.resultsStorage.size` | PVC size for scan results | `2Gi` |
 | `vulsServer.resultsStorage.accessMode` | PVC access mode | `ReadWriteOnce` |
+
+### Vuls exporter
+
+The vuls-exporter runs as a sidecar in the vuls-server pod. It reads scan result JSON files and pushes them to the Obmondo API using mTLS client certificates.
+
+| Parameter | Description | Default |
+|-----------|-------------|---------|
+| `vulsExporter.enabled` | Enable the exporter sidecar | `false` |
+| `vulsExporter.image.repository` | Exporter image | `ghcr.io/obmondo/vuls-exporter` |
+| `vulsExporter.image.tag` | Exporter image tag | `latest` |
+| `vulsExporter.obmondo.url` | Obmondo API URL | `""` |
+| `vulsExporter.interval` | Push interval | `"12h"` |
+| `vulsExporter.tls.secretName` | Kubernetes Secret containing TLS client certs | `""` |
+| `vulsExporter.tls.certFile` | Path to client certificate inside the container | `/etc/ssl/vuls-exporter/tls.crt` |
+| `vulsExporter.tls.keyFile` | Path to client key inside the container | `/etc/ssl/vuls-exporter/tls.key` |
+| `vulsExporter.tls.caFile` | Path to CA certificate inside the container | `/etc/ssl/vuls-exporter/ca.crt` |
+| `vulsExporter.resources` | Resource requests/limits | 20m/50m CPU, 32Mi/64Mi |
+
+The TLS secret should contain `tls.crt`, `tls.key`, and `ca.crt` keys. When `tls.secretName` is empty, TLS is not configured.
 
 ### PostgreSQL
 

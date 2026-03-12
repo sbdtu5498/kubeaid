@@ -146,6 +146,65 @@ assert_present "ingress with vulsServer: port 5515 in ingress" "number: 5515" \
   --set ingress.enabled=true \
   --set ingress.vulsServer.enabled=true
 
+# --- vulsExporter sidecar ---
+run_test "vulsExporter disabled by default" \
+  --set vulsServer.enabled=true
+
+assert_absent "vulsExporter disabled: no exporter container" "vuls-exporter" \
+  --show-only templates/deployment-vuls-server.yaml
+
+assert_absent "vulsExporter disabled: no exporter configmap" "vuls-exporter-config" \
+  --show-only templates/configmap-vuls-exporter.yaml 2>/dev/null || true
+
+run_test "vulsExporter enabled renders successfully" \
+  --set vulsExporter.enabled=true \
+  --set vulsExporter.obmondo.url=https://api.obmondo.com \
+  --set vulsExporter.tls.secretName=vuls-exporter-tls
+
+assert_present "vulsExporter: sidecar container present" "vuls-exporter" \
+  --set vulsExporter.enabled=true \
+  --set vulsExporter.obmondo.url=https://api.obmondo.com \
+  --set vulsExporter.tls.secretName=vuls-exporter-tls \
+  --show-only templates/deployment-vuls-server.yaml
+
+assert_present "vulsExporter: TLS secret volume mounted" "vuls-exporter-tls" \
+  --set vulsExporter.enabled=true \
+  --set vulsExporter.obmondo.url=https://api.obmondo.com \
+  --set vulsExporter.tls.secretName=vuls-exporter-tls \
+  --show-only templates/deployment-vuls-server.yaml
+
+assert_present "vulsExporter: configmap created" "vuls-exporter-config" \
+  --set vulsExporter.enabled=true \
+  --set vulsExporter.obmondo.url=https://api.obmondo.com \
+  --set vulsExporter.tls.secretName=vuls-exporter-tls \
+  --show-only templates/configmap-vuls-exporter.yaml
+
+assert_present "vulsExporter: config has obmondo URL" "https://api.obmondo.com" \
+  --set vulsExporter.enabled=true \
+  --set vulsExporter.obmondo.url=https://api.obmondo.com \
+  --set vulsExporter.tls.secretName=vuls-exporter-tls \
+  --show-only templates/configmap-vuls-exporter.yaml
+
+assert_present "vulsExporter: config has cert paths" "cert_file" \
+  --set vulsExporter.enabled=true \
+  --set vulsExporter.obmondo.url=https://api.obmondo.com \
+  --set vulsExporter.tls.secretName=vuls-exporter-tls \
+  --show-only templates/configmap-vuls-exporter.yaml
+
+run_test "vulsExporter without TLS secret renders successfully" \
+  --set vulsExporter.enabled=true \
+  --set vulsExporter.obmondo.url=https://api.obmondo.com
+
+assert_absent "vulsExporter no TLS: no TLS volume" "vuls-exporter-tls" \
+  --set vulsExporter.enabled=true \
+  --set vulsExporter.obmondo.url=https://api.obmondo.com \
+  --show-only templates/deployment-vuls-server.yaml
+
+assert_absent "vulsExporter no TLS: no cert_file in config" "cert_file" \
+  --set vulsExporter.enabled=true \
+  --set vulsExporter.obmondo.url=https://api.obmondo.com \
+  --show-only templates/configmap-vuls-exporter.yaml
+
 # --- Disable individual dictionaries ---
 run_test "CVE disabled renders successfully" \
   --set cve.enabled=false

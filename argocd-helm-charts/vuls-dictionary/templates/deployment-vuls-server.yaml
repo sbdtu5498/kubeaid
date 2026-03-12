@@ -64,6 +64,30 @@ spec:
               mountPath: /vuls/config.toml
               subPath: config.toml
               readOnly: true
+        {{- if .Values.vulsExporter.enabled }}
+        - name: vuls-exporter
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.vulsExporter.image.repository }}:{{ .Values.vulsExporter.image.tag }}"
+          imagePullPolicy: {{ .Values.vulsExporter.image.pullPolicy }}
+          args:
+            - -c
+            - /etc/vuls-exporter/config.yaml
+          resources:
+            {{- toYaml .Values.vulsExporter.resources | nindent 12 }}
+          volumeMounts:
+            - name: results
+              mountPath: /vuls
+              readOnly: true
+            - name: vuls-exporter-config
+              mountPath: /etc/vuls-exporter
+              readOnly: true
+            {{- if .Values.vulsExporter.tls.secretName }}
+            - name: vuls-exporter-tls
+              mountPath: /etc/ssl/vuls-exporter
+              readOnly: true
+            {{- end }}
+        {{- end }}
       volumes:
         - name: results
           persistentVolumeClaim:
@@ -71,6 +95,16 @@ spec:
         - name: config
           configMap:
             name: {{ include "vuls-dictionary.fullname" . }}-vuls-config
+        {{- if .Values.vulsExporter.enabled }}
+        - name: vuls-exporter-config
+          configMap:
+            name: {{ include "vuls-dictionary.fullname" . }}-vuls-exporter-config
+        {{- if .Values.vulsExporter.tls.secretName }}
+        - name: vuls-exporter-tls
+          secret:
+            secretName: {{ .Values.vulsExporter.tls.secretName }}
+        {{- end }}
+        {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
