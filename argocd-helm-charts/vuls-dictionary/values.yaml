@@ -83,7 +83,7 @@ tolerations: []
 
 affinity: {}
 
-schedule: "0 2 * * *"
+schedule: "0 2 1,15 * *"
 # Minutes between each CronJob's schedule to spread load
 scheduleSpreadMinutes: 5
 
@@ -119,9 +119,9 @@ cve:
   enabled: true
   fetchDB:
     - nvd
-    - mitre
-    - jvn
-    - fortinet
+  # Fetch CVEs starting from this year up to the current year.
+  # The seed job does a full historical fetch; the recurring job only refreshes recent years.
+  yearsFrom: 2022
   resources:
     requests:
       cpu: 100m

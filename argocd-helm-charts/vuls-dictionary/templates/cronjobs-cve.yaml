@@ -1,6 +1,8 @@
 {{- if .Values.cve.enabled }}
 {{- $dictionaries := .Values.cve.fetchDB -}}
 {{- $pgHost := printf "%s-pgsql-rw" (include "vuls-dictionary.fullname" .) -}}
+{{- $currentYear := now | date "2006" | atoi -}}
+{{- $yearsFrom := .Values.cve.yearsFrom | default 2022 | int -}}
 apiVersion: batch/v1
 kind: CronJob
 metadata:
@@ -31,6 +33,9 @@ spec:
                 - postgres
                 - --dbpath
                 - $(DB_PATH)
+                {{- range untilStep $yearsFrom (add1 $currentYear | int) 1 }}
+                - "{{ . }}"
+                {{- end }}
               env:
                 - name: DB_PASSWORD
                   valueFrom:
