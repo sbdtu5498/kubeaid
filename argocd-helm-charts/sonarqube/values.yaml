@@ -30,6 +30,31 @@ sonarqube:
 postgresql:
   size: 4Gi
 
+cnpg:
+  enabled: false
+  revision: 0
+  instances: 1
+  size: 8Gi
+
+  resources:
+    requests:
+      cpu: 100m
+      memory: 500Mi
+    limits:
+      memory: 800Mi
+
+  recover:
+    enabled: false
+    revision: 0
+
+  backups:
+    enabled: true
+    schedule: "0 0 0 * * *"
+    retentionPolicy: 30d
+    provider: aws
+    aws:
+      enableKube2IAMIntegration: true
+
 networkpolicies: false
 
 blackbox:

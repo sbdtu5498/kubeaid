@@ -1,0 +1,64 @@
+{{- if .Values.cnpg.enabled }}
+{{- $cnpg := .Values.cnpg }}
+
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: sonarqube-pgsql
+  {{- with $cnpg.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  labels:
+    velero.io/exclude-from-backup: "true"
+
+spec:
+  instances: {{ $cnpg.instances }}
+
+  {{- with $cnpg.resources }}
+  resources:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+
+  storage:
+    size: {{ $cnpg.size }}
+    {{- if $cnpg.storageClass }}
+    storageClass: {{ $cnpg.storageClass }}
+    {{- end }}
+
+  {{- if $cnpg.backups.enabled }}
+  plugins:
+    - enabled: true
+      isWALArchiver: true
+      name: barman-cloud.cloudnative-pg.io
+      parameters:
+        barmanObjectName: sonarqube-pgsql-backups
+        serverName: "revision-{{ $cnpg.revision }}"
+  {{- end }}
+
+  bootstrap:
+    {{- if $cnpg.recover.enabled }}
+    recovery: sonarqube-pgsql
+    {{- else }}
+    initdb:
+      database: sonarqube
+      owner: sonarqube
+    {{- end }}
+
+  {{- if $cnpg.recover.enabled }}
+  externalClusters:
+    - name: sonarqube-pgsql
+      plugin:
+        name: barman-cloud.cloudnative-pg.io
+        parameters:
+          barmanObjectName: sonarqube-pgsql-backups
+          serverName: "revision-{{ $cnpg.recover.revision }}"
+  {{- end }}
+
+  monitoring:
+    enablePodMonitor: {{ if hasKey (default dict $cnpg.monitoring) "enablePodMonitor" }}{{ $cnpg.monitoring.enablePodMonitor }}{{ else }}{{ $cnpg.backups.enabled }}{{ end }}
+    {{- $monitoringExtra := omit (default dict $cnpg.monitoring) "enablePodMonitor" }}
+    {{- if $monitoringExtra }}
+    {{- $monitoringExtra | toYaml | nindent 4 }}
+    {{- end }}
+{{- end }}
