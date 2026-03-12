@@ -1,0 +1,37 @@
+{{- if and .Values.cnpg.enabled .Values.cnpg.backups.enabled }}
+{{- $backups := .Values.cnpg.backups }}
+
+apiVersion: barmancloud.cnpg.io/v1
+kind: ObjectStore
+metadata:
+  name: sonarqube-pgsql-backups
+
+spec:
+  configuration:
+    {{- if $backups.endpointURL }}
+    endpointURL: {{ $backups.endpointURL }}
+    {{- end }}
+    {{- if $backups.destinationPath }}
+    destinationPath: {{ required ".cnpg.backups.destinationPath must be provided" $backups.destinationPath }}
+    {{- end }}
+    {{- if eq $backups.provider "aws" }}
+    s3Credentials:
+      {{- if $backups.aws.enableKube2IAMIntegration }}
+      inheritFromIAMRole: true
+      {{- else }}
+      accessKeyId:
+        name: sonarqube-pgsql-backup-creds
+        key: ACCESS_KEY_ID
+      secretAccessKey:
+        name: sonarqube-pgsql-backup-creds
+        key: ACCESS_SECRET_KEY
+      {{- end }}
+    {{- end }}
+
+    wal:
+      compression: gzip
+      encryption: AES256
+      maxParallel: 8
+
+  retentionPolicy: {{ $backups.retentionPolicy }}
+{{- end }}
