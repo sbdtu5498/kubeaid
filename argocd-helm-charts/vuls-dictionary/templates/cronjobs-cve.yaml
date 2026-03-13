@@ -1,6 +1,6 @@
 {{- if .Values.cve.enabled }}
 {{- $dictionaries := .Values.cve.fetchDB -}}
-{{- $pgHost := printf "%s-pgsql-rw" (include "vuls-dictionary.fullname" .) -}}
+{{- $pgHost := printf "%s-pgsql-cve-rw" (include "vuls-dictionary.fullname" .) -}}
 {{- $currentYear := now | date "2006" | atoi -}}
 {{- $yearsFrom := .Values.cve.yearsFrom | default 2022 | int -}}
 apiVersion: batch/v1
@@ -40,7 +40,7 @@ spec:
                 - name: DB_PASSWORD
                   valueFrom:
                     secretKeyRef:
-                      name: {{ include "vuls-dictionary.fullname" $ }}-pgsql-app
+                      name: {{ include "vuls-dictionary.fullname" $ }}-pgsql-cve-app
                       key: password
                 - name: DB_PATH
                   value: "host={{ $pgHost }} port=5432 user=vuls dbname=vuls password=$(DB_PASSWORD) sslmode=require"

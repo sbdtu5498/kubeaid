@@ -3,10 +3,6 @@ image:
     repository: vuls/go-cve-dictionary
     pullPolicy: IfNotPresent
     tag: "v0.16.0"
-  oval:
-    repository: vuls/goval-dictionary
-    pullPolicy: IfNotPresent
-    tag: "v0.15.1"
 
 # This is for the secretes for pulling an image from a private repository more information can be found here: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
 imagePullSecrets: []
@@ -42,8 +38,7 @@ service:
   # This sets the service type more information can be found here: https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types
   type: ClusterIP
   # This sets the ports more information can be found here: https://kubernetes.io/docs/concepts/services-networking/service/#field-spec-ports
-  govalDictionary:
-    port: 1324
+
   goCVEDictionary:
     port: 1323
 
@@ -55,9 +50,6 @@ ingress:
   hosts:
     - host: chart-example.local
       paths:
-        - path: /goval-dictionary
-          pathType: Prefix
-          servicePort: 1324
         - path: /go-cve-dictionary
           pathType: Prefix
           servicePort: 1323
@@ -84,36 +76,7 @@ tolerations: []
 affinity: {}
 
 schedule: "0 2 1,15 * *"
-# Minutes between each CronJob's schedule to spread load
-scheduleSpreadMinutes: 5
 
-oval:
-  enabled: true
-  fetchDB:
-    redhat:
-      - "8"
-      - "9"
-    debian:
-      - "12"
-      - "13"
-    ubuntu:
-      - "22.04"
-      - "24.04"
-    sles-server:
-      - "15"
-    alpine:
-      - "3.18"
-      - "3.19"
-      - "3.20"
-      - "3.21"
-    amazon:
-      - "2023"
-    oracle:
-      - "8"
-      - "9"
-    rocky:
-      - "8"
-      - "9"
 
 cve:
   enabled: true
@@ -130,10 +93,10 @@ cve:
       memory: 1Gi
 
 postgresql:
-  instances: 2
+  instances: 1
   size: 5Gi
   storageClass: ""
-  revision: "1"
+  revision: "3"
   resources:
     requests:
       cpu: 100m
@@ -151,7 +114,7 @@ vulsExporter:
   enabled: false
   image:
     repository: ghcr.io/obmondo/vuls-exporter
-    tag: "latest"
+    tag: 1.0.0-9bd9ca5
     pullPolicy: IfNotPresent
   obmondo:
     url: ""
@@ -160,7 +123,7 @@ vulsExporter:
     secretName: ""
     certFile: /etc/ssl/vuls-exporter/tls.crt
     keyFile: /etc/ssl/vuls-exporter/tls.key
-    caFile: /etc/ssl/vuls-exporter/ca.crt
+    caFile: ""
   resources:
     requests:
       cpu: 20m
@@ -168,6 +131,19 @@ vulsExporter:
     limits:
       cpu: 50m
       memory: 64Mi
+
+# vuls2 unified database.
+# In vuls v0.38.6+, vuls2 detection is ALWAYS active regardless of this flag.
+# This flag only controls whether init containers pre-fetch the vuls-nightly-db.
+# When false, no init containers run but vuls2 detection still executes (using
+# default path, which may fail if no db is present).
+# See: https://github.com/future-architect/vuls/issues/2457
+vuls2:
+  enabled: true
+  image:
+    repository: ghcr.io/vulsio/vuls-nightly-db
+    tag: "0"
+    pullPolicy: IfNotPresent
 
 vulsServer:
   enabled: true
@@ -185,5 +161,5 @@ vulsServer:
       memory: 512Mi
   resultsStorage:
     storageClass: ""
-    size: 2Gi
+    size: 15Gi
     accessMode: ReadWriteOnce

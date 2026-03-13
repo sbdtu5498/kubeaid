@@ -1,3 +1,4 @@
+{{- if .Values.cve.enabled }}
 apiVersion: v1
 kind: Service
 metadata:
@@ -12,10 +13,7 @@ spec:
       targetPort: http-go-cve
       protocol: TCP
       name: http-go-cve
-    - port: {{ .Values.service.govalDictionary.port }}
-      targetPort: http-goval
-      protocol: TCP
-      name: http-goval
   selector:
     {{- include "vuls-dictionary.selectorLabels" . | nindent 4 }}
     app.kubernetes.io/component: dict-server
+{{- end }}

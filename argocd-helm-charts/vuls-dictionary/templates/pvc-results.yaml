@@ -10,7 +10,7 @@ spec:
     - {{ .Values.vulsServer.resultsStorage.accessMode | default "ReadWriteMany" }}
   resources:
     requests:
-      storage: {{ .Values.vulsServer.resultsStorage.size | default "2Gi" }}
+      storage: {{ .Values.vulsServer.resultsStorage.size | default "15Gi" }}
 {{- if .Values.vulsServer.resultsStorage.storageClass }}
   storageClassName: "{{ .Values.vulsServer.resultsStorage.storageClass }}"
 {{- end }}

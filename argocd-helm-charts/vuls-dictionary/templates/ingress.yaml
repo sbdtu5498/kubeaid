@@ -24,6 +24,7 @@ spec:
     {{- end }}
   {{- end }}
   rules:
+    {{- if $.Values.cve.enabled }}
     {{- range .Values.ingress.hosts }}
     - host: {{ .host | quote }}
       http:
@@ -39,6 +40,7 @@ spec:
                 port:
                   number: {{ .servicePort }}
           {{- end }}
+    {{- end }}
     {{- end }}
   {{- if and .Values.vulsServer.enabled .Values.ingress.vulsServer.enabled }}
     {{- range .Values.ingress.vulsServer.hosts }}

@@ -14,6 +14,8 @@ data:
       {{- if .Values.vulsExporter.tls.secretName }}
       cert_file: {{ .Values.vulsExporter.tls.certFile | quote }}
       key_file: {{ .Values.vulsExporter.tls.keyFile | quote }}
+      {{- if .Values.vulsExporter.tls.caFile }}
       ca_file: {{ .Values.vulsExporter.tls.caFile | quote }}
+      {{- end }}
       {{- end }}
 {{- end }}

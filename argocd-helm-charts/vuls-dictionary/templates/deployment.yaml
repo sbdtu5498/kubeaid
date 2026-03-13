@@ -1,4 +1,5 @@
-{{- $pgHost := printf "%s-pgsql-rw" (include "vuls-dictionary.fullname" .) -}}
+{{- if .Values.cve.enabled }}
+{{- $pgHostCve := printf "%s-pgsql-cve-rw" (include "vuls-dictionary.fullname" .) -}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -40,11 +41,11 @@ spec:
             - -c
             - |
               echo "Waiting for PostgreSQL to be ready..."
-              until nc -z -w 2 {{ $pgHost }} 5432; do
-                echo "PostgreSQL not ready yet, retrying in 5s..."
+              until nc -z -w 2 {{ $pgHostCve }} 5432; do
+                echo "CVE PostgreSQL not ready yet, retrying in 5s..."
                 sleep 5
               done
-              echo "PostgreSQL is ready."
+              echo "CVE PostgreSQL is ready."
       containers:
         {{- if .Values.cve.enabled }}
         - name: {{ .Chart.Name }}-cve
@@ -64,10 +65,10 @@ spec:
             - name: DB_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: {{ include "vuls-dictionary.fullname" . }}-pgsql-app
+                  name: {{ include "vuls-dictionary.fullname" . }}-pgsql-cve-app
                   key: password
             - name: DB_PATH
-              value: "host={{ $pgHost }} port=5432 user=vuls dbname=vuls password=$(DB_PASSWORD) sslmode=require"
+              value: "host={{ $pgHostCve }} port=5432 user=vuls dbname=vuls password=$(DB_PASSWORD) sslmode=require"
           ports:
             - name: http-go-cve
               containerPort: {{ .Values.service.goCVEDictionary.port }}
@@ -85,45 +86,6 @@ spec:
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
         {{- end }}
-        {{- if .Values.oval.enabled }}
-        - name: {{ .Chart.Name }}-oval
-          securityContext:
-            {{- toYaml .Values.securityContext | nindent 12 }}
-          image: "{{ .Values.image.oval.repository }}:{{ .Values.image.oval.tag | default .Chart.AppVersion }}"
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
-          args:
-            - server
-            - --bind
-            - 0.0.0.0
-            - --dbtype
-            - postgres
-            - --dbpath
-            - $(DB_PATH)
-          env:
-            - name: DB_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: {{ include "vuls-dictionary.fullname" . }}-pgsql-app
-                  key: password
-            - name: DB_PATH
-              value: "host={{ $pgHost }} port=5432 user=vuls dbname=vuls password=$(DB_PASSWORD) sslmode=require"
-          ports:
-            - name: http-goval
-              containerPort: {{ .Values.service.govalDictionary.port }}
-              protocol: TCP
-          livenessProbe:
-            httpGet:
-              path: /health
-              port: http-goval
-            initialDelaySeconds: 30
-          readinessProbe:
-            httpGet:
-              path: /health
-              port: http-goval
-            initialDelaySeconds: 10
-          resources:
-            {{- toYaml .Values.resources | nindent 12 }}
-        {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
@@ -136,3 +98,4 @@ spec:
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
+{{- end }}
