@@ -7,12 +7,6 @@ metadata:
     {{- include "vuls-dictionary.labels" . | nindent 4 }}
 data:
   config.toml: |
-    {{- if .Values.cve.enabled }}
-    [cveDict]
-    type = "http"
-    url = "http://{{ include "vuls-dictionary.fullname" . }}-dict-server:{{ .Values.service.goCVEDictionary.port }}"
-    {{- end }}
-
     [vuls2]
     Path = "/vuls/vuls.db"
     SkipUpdate = true

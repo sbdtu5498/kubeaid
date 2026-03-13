@@ -1,9 +1,3 @@
-image:
-  cve:
-    repository: vuls/go-cve-dictionary
-    pullPolicy: IfNotPresent
-    tag: "v0.16.0"
-
 # This is for the secretes for pulling an image from a private repository more information can be found here: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
 imagePullSecrets: []
 # This is to override the chart name.
@@ -33,26 +27,11 @@ podSecurityContext: {}
 
 securityContext: {}
 
-# This is for setting up a service more information can be found here: https://kubernetes.io/docs/concepts/services-networking/service/
-service:
-  # This sets the service type more information can be found here: https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types
-  type: ClusterIP
-  # This sets the ports more information can be found here: https://kubernetes.io/docs/concepts/services-networking/service/#field-spec-ports
-
-  goCVEDictionary:
-    port: 1323
-
 # This block is for setting up the ingress for more information can be found here: https://kubernetes.io/docs/concepts/services-networking/ingress/
 ingress:
   enabled: false
   className: ""
   annotations: {}
-  hosts:
-    - host: chart-example.local
-      paths:
-        - path: /go-cve-dictionary
-          pathType: Prefix
-          servicePort: 1323
   vulsServer:
     enabled: false
     hosts:
@@ -62,53 +41,11 @@ ingress:
             pathType: Prefix
   tls: []
 
-resources:
-  requests:
-    cpu: 100m
-    memory: 256Mi
-  limits:
-    memory: 512Mi
-
 nodeSelector: {}
 
 tolerations: []
 
 affinity: {}
-
-schedule: "0 2 1,15 * *"
-
-
-cve:
-  enabled: true
-  fetchDB:
-    - nvd
-  # Fetch CVEs starting from this year up to the current year.
-  # The seed job does a full historical fetch; the recurring job only refreshes recent years.
-  yearsFrom: 2022
-  resources:
-    requests:
-      cpu: 100m
-      memory: 256Mi
-    limits:
-      memory: 1Gi
-
-postgresql:
-  instances: 1
-  size: 5Gi
-  storageClass: ""
-  revision: "3"
-  resources:
-    requests:
-      cpu: 100m
-      memory: 256Mi
-    limits:
-      memory: 512Mi
-  backups:
-    enabled: false
-  recover:
-    enabled: false
-    revision: "1"
-  monitoring: {}
 
 vulsExporter:
   enabled: false
@@ -133,11 +70,6 @@ vulsExporter:
       memory: 64Mi
 
 # vuls2 unified database.
-# In vuls v0.38.6+, vuls2 detection is ALWAYS active regardless of this flag.
-# This flag only controls whether init containers pre-fetch the vuls-nightly-db.
-# When false, no init containers run but vuls2 detection still executes (using
-# default path, which may fail if no db is present).
-# See: https://github.com/future-architect/vuls/issues/2457
 vuls2:
   enabled: true
   image:

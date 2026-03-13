@@ -24,24 +24,6 @@ spec:
     {{- end }}
   {{- end }}
   rules:
-    {{- if $.Values.cve.enabled }}
-    {{- range .Values.ingress.hosts }}
-    - host: {{ .host | quote }}
-      http:
-        paths:
-          {{- range .paths }}
-          - path: {{ .path }}
-            {{- with .pathType }}
-            pathType: {{ . }}
-            {{- end }}
-            backend:
-              service:
-                name: {{ include "vuls-dictionary.fullname" $ }}-dict-server
-                port:
-                  number: {{ .servicePort }}
-          {{- end }}
-    {{- end }}
-    {{- end }}
   {{- if and .Values.vulsServer.enabled .Values.ingress.vulsServer.enabled }}
     {{- range .Values.ingress.vulsServer.hosts }}
     - host: {{ .host | quote }}

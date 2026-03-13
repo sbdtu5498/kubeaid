@@ -1,6 +1,6 @@
 apiVersion: v2
 name: vuls-dictionary
-description: A Helm chart for deploying Vuls vulnerability scanning infrastructure (CVE/OVAL dictionaries and Vuls server)
+description: A Helm chart for deploying the Vuls vulnerability scan server backed by the vuls2 unified database
 
 # A chart can be either an 'application' or a 'library' chart.
 #
