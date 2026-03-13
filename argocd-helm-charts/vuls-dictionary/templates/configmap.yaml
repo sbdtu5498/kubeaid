@@ -7,11 +7,7 @@ metadata:
     {{- include "vuls-dictionary.labels" . | nindent 4 }}
 data:
   config.toml: |
-    [cveDict]
-    type = "http"
-    url = "http://{{ include "vuls-dictionary.fullname" . }}-dict-server:{{ .Values.service.goCVEDictionary.port }}"
-
-    [ovalDict]
-    type = "http"
-    url = "http://{{ include "vuls-dictionary.fullname" . }}-dict-server:{{ .Values.service.govalDictionary.port }}"
+    [vuls2]
+    Path = "/vuls/vuls.db"
+    SkipUpdate = true
 {{- end }}

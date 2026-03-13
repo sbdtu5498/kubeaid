@@ -1,75 +1,50 @@
 # vuls-dictionary
 
-Helm chart for deploying Vuls vulnerability scanning infrastructure: CVE and OVAL dictionary fetchers, dictionary servers, PostgreSQL storage, and the Vuls scan server.
+Helm chart for deploying [Vuls](https://github.com/future-architect/vuls), an agentless vulnerability scanner for Linux.
+
+## How it works
+
+Vuls uses a pre-built SQLite database ([vuls-nightly-db](https://github.com/vulsio/vuls-nightly-db)) that contains CVE, advisory, and detection data. The database (~7 GB uncompressed) is fetched once via init containers and cached on a PersistentVolume. The vuls server reads it locally at startup, so no outbound network access is needed at scan time.
+
+1. **Init containers** pull and decompress the database into `/vuls/vuls.db`
+2. **Vuls server** starts on port 5515 with a config pointing at the local database
+3. **Clients** POST their installed package lists and receive vulnerability results
 
 ## Components
 
 | Component | Description |
 |-----------|-------------|
-| **CVE dictionary** | CronJob fetching CVE data (NVD, MITRE, JVN, Fortinet) via [go-cve-dictionary](https://github.com/vulsio/go-cve-dictionary) |
-| **OVAL dictionary** | CronJobs fetching OVAL data per distro via [goval-dictionary](https://github.com/vulsio/goval-dictionary) |
-| **Dictionary servers** | HTTP servers exposing CVE (port 1323) and OVAL (port 1324) data to Vuls |
+| **Init containers** | Fetch and decompress the vuls-nightly-db into the PVC |
 | **Vuls server** | Scan server (port 5515) that accepts package lists and returns vulnerability results |
-| **Vuls exporter** | Sidecar that reads scan results and pushes them to the Obmondo API via mTLS |
-| **PostgreSQL** | CNPG-managed cluster storing all dictionary data |
+| **Vuls exporter** | Optional sidecar that reads scan results and pushes them to the Obmondo API via mTLS |
 
 ## Quick start
 
 ```yaml
 # values.yaml
-schedule: "0 2 * * *"
-
-cve:
+vuls2:
   enabled: true
-  fetchDB:
-    - nvd
-    - mitre
-
-oval:
-  enabled: true
-  fetchDB:
-    debian:
-      - "12"
-    ubuntu:
-      - "24.04"
 
 vulsServer:
   enabled: true
-
-postgresql:
-  instances: 2
-  size: 5Gi
 ```
 
 ## Configuration
 
-### Global
+### Database (`vuls2`)
 
 | Parameter | Description | Default |
 |-----------|-------------|---------|
-| `schedule` | Cron schedule for dictionary fetches | `"0 2 * * *"` |
-| `scheduleSpreadMinutes` | Minutes between OVAL CronJob schedules to spread load | `5` |
+| `vuls2.enabled` | Fetch the nightly database via init containers | `true` |
+| `vuls2.image.repository` | Database OCI image | `ghcr.io/vulsio/vuls-nightly-db` |
+| `vuls2.image.tag` | Database image tag | `"0"` |
+| `vuls2.image.pullPolicy` | Image pull policy | `IfNotPresent` |
 
-### CVE dictionary
+When enabled, two init containers run before the vuls server starts:
+1. **fetch-vuls2-db** -- pulls the compressed database via `oras`
+2. **decompress-vuls2-db** -- decompresses with `zstd`
 
-| Parameter | Description | Default |
-|-----------|-------------|---------|
-| `cve.enabled` | Enable CVE dictionary fetching | `true` |
-| `cve.fetchDB` | List of CVE sources to fetch | `[nvd, mitre, jvn, fortinet]` |
-| `cve.resources` | Resource requests/limits for CVE fetch containers | 100m CPU, 256Mi/1Gi |
-| `image.cve.repository` | CVE dictionary image | `vuls/go-cve-dictionary` |
-| `image.cve.tag` | CVE dictionary image tag | `v0.16.0` |
-
-### OVAL dictionary
-
-| Parameter | Description | Default |
-|-----------|-------------|---------|
-| `oval.enabled` | Enable OVAL dictionary fetching | `true` |
-| `oval.fetchDB` | Map of distro to version list | See `values.yaml` |
-| `image.oval.repository` | OVAL dictionary image | `vuls/goval-dictionary` |
-| `image.oval.tag` | OVAL dictionary image tag | `v0.15.1` |
-
-Supported distros: `redhat`, `debian`, `ubuntu`, `sles-server`, `alpine`, `amazon`, `oracle`, `rocky`.
+Both init containers skip work if a valid database (>5 GB) already exists on the PVC.
 
 ### Vuls server
 
@@ -78,43 +53,31 @@ Supported distros: `redhat`, `debian`, `ubuntu`, `sles-server`, `alpine`, `amazo
 | `vulsServer.enabled` | Deploy the Vuls scan server | `true` |
 | `vulsServer.image.repository` | Vuls server image | `vuls/vuls` |
 | `vulsServer.image.tag` | Vuls server image tag | `v0.38.6` |
-| `vulsServer.port` | Vuls server listen port | `5515` |
+| `vulsServer.port` | Listen port | `5515` |
 | `vulsServer.resources` | Resource requests/limits | 50m/100m CPU, 256Mi/512Mi |
-| `vulsServer.resultsStorage.size` | PVC size for scan results | `2Gi` |
+| `vulsServer.resultsStorage.size` | PVC size for scan results and database | `15Gi` |
 | `vulsServer.resultsStorage.accessMode` | PVC access mode | `ReadWriteOnce` |
+| `vulsServer.resultsStorage.storageClass` | Storage class (empty = default) | `""` |
 
 ### Vuls exporter
 
-The vuls-exporter runs as a sidecar in the vuls-server pod. It reads scan result JSON files and pushes them to the Obmondo API using mTLS client certificates.
+Optional sidecar that reads scan result JSON files from the results PVC and pushes them to the Obmondo API using mTLS client certificates.
 
 | Parameter | Description | Default |
 |-----------|-------------|---------|
 | `vulsExporter.enabled` | Enable the exporter sidecar | `false` |
 | `vulsExporter.image.repository` | Exporter image | `ghcr.io/obmondo/vuls-exporter` |
-| `vulsExporter.image.tag` | Exporter image tag | `latest` |
+| `vulsExporter.image.tag` | Exporter image tag | `1.0.0-9bd9ca5` |
 | `vulsExporter.obmondo.url` | Obmondo API URL | `""` |
 | `vulsExporter.interval` | Push interval | `"12h"` |
 | `vulsExporter.tls.secretName` | Kubernetes Secret containing TLS client certs | `""` |
 | `vulsExporter.tls.certFile` | Path to client certificate inside the container | `/etc/ssl/vuls-exporter/tls.crt` |
 | `vulsExporter.tls.keyFile` | Path to client key inside the container | `/etc/ssl/vuls-exporter/tls.key` |
-| `vulsExporter.tls.caFile` | Path to CA certificate inside the container | `/etc/ssl/vuls-exporter/ca.crt` |
+| `vulsExporter.tls.caFile` | Path to CA certificate (optional, omitted if empty) | `""` |
 | `vulsExporter.resources` | Resource requests/limits | 20m/50m CPU, 32Mi/64Mi |
 
-The TLS secret should contain `tls.crt`, `tls.key`, and `ca.crt` keys. When `tls.secretName` is empty, TLS is not configured.
-
-### PostgreSQL
-
-| Parameter | Description | Default |
-|-----------|-------------|---------|
-| `postgresql.instances` | Number of CNPG instances | `2` |
-| `postgresql.size` | PVC size per instance | `5Gi` |
-| `postgresql.storageClass` | Storage class (empty = default) | `""` |
-| `postgresql.backups.enabled` | Enable backups | `false` |
-
-### CronJob behavior
-
-All CronJobs use `concurrencyPolicy: Forbid` to prevent overlapping runs, and retain the last 3 successful and 3 failed jobs for debugging.
+The TLS secret should contain `tls.crt`, `tls.key`, and optionally `ca.crt` keys. When `tls.secretName` is empty, TLS is not configured.
 
 ## Client
 
-Linux hosts run [obmondo-security-exporter](https://github.com/Obmondo/security-exporter), a Prometheus exporter that collects installed packages, sends them to the Vuls server for scanning, and exposes CVE metrics. It can run as a daemon with scheduled scans or as a one-shot CLI tool.
+Linux hosts run [obmondo-security-exporter](https://github.com/Obmondo/security-exporter), a daemon that collects installed packages, sends them to the Vuls server for scanning, and exposes CVE metrics via Prometheus.

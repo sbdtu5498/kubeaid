@@ -57,7 +57,6 @@ echo ""
 run_test "default values render successfully"
 
 assert_present "default: CVE image tag is v0.16.0" "vuls/go-cve-dictionary:v0.16.0"
-assert_present "default: OVAL image tag is v0.15.1" "vuls/goval-dictionary:v0.15.1"
 assert_present "default: vuls-server deployment present" "vuls-server"
 assert_present "default: configmap present" "vuls-config"
 assert_present "default: results PVC present" "results-pvc"
@@ -76,17 +75,14 @@ assert_present "postgresql: dbtype postgres in deployment" "dbtype" \
 assert_present "postgresql: wait-for-postgres init container" "wait-for-postgres" \
   --show-only templates/deployment.yaml
 
-assert_present "postgresql: pgsql-app secret ref in deployment" "pgsql-app" \
+assert_present "postgresql: pgsql-cve-app secret ref in deployment" "pgsql-cve-app" \
   --show-only templates/deployment.yaml
 
 assert_present "postgresql: dbtype postgres in CVE cronjob" "dbtype" \
   --show-only templates/cronjobs-cve.yaml
 
-assert_present "postgresql: dbtype postgres in OVAL cronjob" "dbtype" \
-  --show-only templates/cronjobs-oval.yaml
-
-assert_present "postgresql: dbtype postgres in CVE seed hook" "dbtype" \
-  --show-only templates/hook-cve-seed.yaml
+assert_present "postgresql: dbtype postgres in CVE seed job" "dbtype" \
+  --show-only templates/job-cve-seed.yaml
 
 # --- vulsServer enabled ---
 run_test "vulsServer enabled renders successfully" \
@@ -112,9 +108,6 @@ assert_present "vulsServer: listens on port 5515" "containerPort: 5515" \
 
 # --- config.toml URLs point to dictionary services ---
 assert_present "config.toml: CVE dict URL correct" "http://test-vuls-dictionary-dict-server:1323" \
-  --set vulsServer.enabled=true
-
-assert_present "config.toml: OVAL dict URL correct" "http://test-vuls-dictionary-dict-server:1324" \
   --set vulsServer.enabled=true
 
 # --- Ingress variations ---
@@ -211,13 +204,6 @@ run_test "CVE disabled renders successfully" \
 
 assert_absent "CVE disabled: no CVE container in deployment" "vuls/go-cve-dictionary" \
   --set cve.enabled=false \
-  --show-only templates/deployment.yaml
-
-run_test "OVAL disabled renders successfully" \
-  --set oval.enabled=false
-
-assert_absent "OVAL disabled: no OVAL container in deployment" "vuls/goval-dictionary" \
-  --set oval.enabled=false \
   --show-only templates/deployment.yaml
 
 # --- Custom values ---

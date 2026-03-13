@@ -8,6 +8,8 @@ metadata:
     app.kubernetes.io/component: vuls-server
 spec:
   replicas: 1
+  strategy:
+    type: Recreate
   selector:
     matchLabels:
       {{- include "vuls-dictionary.selectorLabels" . | nindent 6 }}
@@ -32,6 +34,66 @@ spec:
       serviceAccountName: {{ include "vuls-dictionary.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      {{- if .Values.vuls2.enabled }}
+      initContainers:
+        - name: fetch-vuls2-db
+          image: ghcr.io/oras-project/oras:v1.2.2
+          command: ["sh", "-c"]
+          args:
+            - |
+              MIN_SIZE=$((5 * 1024 * 1024 * 1024))
+              if [ -f /vuls/vuls.db ]; then
+                FILE_SIZE=$(stat -c%s /vuls/vuls.db)
+                if [ "$FILE_SIZE" -gt "$MIN_SIZE" ]; then
+                  echo "vuls2 db already exists ($(du -h /vuls/vuls.db | cut -f1)), skipping fetch"
+                  exit 0
+                fi
+                echo "vuls2 db exists but too small (${FILE_SIZE} bytes), re-fetching"
+                rm -f /vuls/vuls.db
+              fi
+              echo "pulling vuls2 nightly db..."
+              oras pull -o /vuls "{{ .Values.vuls2.image.repository }}:{{ .Values.vuls2.image.tag }}"
+          volumeMounts:
+            - name: results
+              mountPath: /vuls
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              cpu: 200m
+              memory: 128Mi
+        - name: decompress-vuls2-db
+          image: alpine:3.21
+          command: ["sh", "-c"]
+          args:
+            - |
+              MIN_SIZE=$((5 * 1024 * 1024 * 1024))
+              if [ -f /vuls/vuls.db ]; then
+                FILE_SIZE=$(stat -c%s /vuls/vuls.db)
+                if [ "$FILE_SIZE" -gt "$MIN_SIZE" ]; then
+                  echo "vuls2 db already decompressed ($(du -h /vuls/vuls.db | cut -f1))"
+                  exit 0
+                fi
+                echo "vuls2 db exists but too small (${FILE_SIZE} bytes), re-decompressing"
+                rm -f /vuls/vuls.db
+              fi
+              apk add --no-cache zstd
+              echo "decompressing vuls.db.zst..."
+              unzstd /vuls/vuls.db.zst -o /vuls/vuls.db
+              rm -f /vuls/vuls.db.zst
+              ls -lh /vuls/vuls.db
+          volumeMounts:
+            - name: results
+              mountPath: /vuls
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+      {{- end }}
       containers:
         - name: vuls-server
           securityContext:
@@ -42,6 +104,8 @@ spec:
             - server
             - -listen
             - "0.0.0.0:{{ .Values.vulsServer.port }}"
+            - -config=/vuls/config.toml
+            - -results-dir=/vuls/results
             - -to-localfile
           ports:
             - name: http-vuls
