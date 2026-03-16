@@ -34,35 +34,12 @@ For macOS users or to ensure a clean environment, use the provided Docker workfl
 
 ## 2. Publish a New Release of KubeAid
 once the Pull Request from Step 1 is merged into `master`, generate the release notes and tag the release.
-    
-    ```sh
-    ./bin/release.sh
-    Generating release notes since 22.0.0..23.0.0
-    Release notes generated: CHANGELOG.md
-    [master 22bed5336] chore(doc): Update changelog
-    2 files changed, 178 insertions(+), 115 deletions(-)
-    rewrite .release-notes.md (97%)
-    ```
 
-## 2A. Manual Minor/Patch Release (Without Chart Updates)
-Use this process when you need to publish a minor or patch release without running `manage-helm-chart.sh` (for example: feature changes, bug fixes, documentation updates, or internal improvements).
-
-### Steps
-
-1. Pull latest master
-   ```bash
-   git checkout master
-   git pull origin master
-   ```
-
-2. Update the VERSION file
-
-3. Stage the version change
-   ```bash
-   git add VERSION
-   ```
-
-4. Run release script
-   ```bash
+   ```sh
    ./bin/release.sh
+   Generating release notes since 22.0.0..23.0.0
+   Release notes generated: CHANGELOG.md
+   [master 22bed5336] chore(doc): Update changelog
+   2 files changed, 178 insertions(+), 115 deletions(-)
+   rewrite .release-notes.md (97%)
    ```
