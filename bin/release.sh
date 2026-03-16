@@ -20,12 +20,24 @@ if [[ "${CURRENT_BRANCH}" != "master" ]]; then
   exit 1
 fi
 
+# Pull latest changes to ensure we're up to date
+if ! git pull origin master; then
+  echo "Error: Failed to pull latest changes from origin master. Please resolve any issues and try again."
+  exit 1
+fi
+
 if [ -z "$PREVIOUS_TAG" ]; then
   echo "No previous tag found, using all commits"
   COMMIT_RANGE="HEAD"
 else
   echo "Generating release notes since $PREVIOUS_TAG..$NEW_TAG"
   COMMIT_RANGE="$PREVIOUS_TAG..HEAD"
+fi
+
+# Check if the new tag already exists
+if git rev-parse -q --verify "refs/tags/$NEW_TAG" >/dev/null; then
+  echo "ERROR: Tag '$NEW_TAG' already exists. Update the VERSION file before releasing."
+  exit 1
 fi
 
 # Initialize arrays for categorization
@@ -188,7 +200,7 @@ echo "Release notes generated: $CHANGELOG_FILE"
 rm -fr $CHANGELOG_FILE.tmp
 
 if [[ -n "$(git status --porcelain)" ]]; then
-  git add -A "$CHANGELOG_FILE" "$RELEASE_NOTES_FILE"
+  git add -A "$CHANGELOG_FILE" "$RELEASE_NOTES_FILE" VERSION
   git commit -m "chore(release): update CHANGELOG and Release Notes for Kubeaid ${NEW_TAG}"
 fi
 
