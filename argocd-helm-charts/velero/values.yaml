@@ -24,3 +24,7 @@ velero:
     limits:
       cpu: 100m
       memory: 300Mi
+  kubectl:
+    image:
+      repository: docker.io/bitnamilegacy/kubectl
+      tag: 1.33.4
