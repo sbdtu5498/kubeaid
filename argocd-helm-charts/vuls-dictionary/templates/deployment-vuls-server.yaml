@@ -41,16 +41,6 @@ spec:
           command: ["sh", "-c"]
           args:
             - |
-              MIN_SIZE=$((5 * 1024 * 1024 * 1024))
-              if [ -f /vuls/vuls.db ]; then
-                FILE_SIZE=$(stat -c%s /vuls/vuls.db)
-                if [ "$FILE_SIZE" -gt "$MIN_SIZE" ]; then
-                  echo "vuls2 db already exists ($(du -h /vuls/vuls.db | cut -f1)), skipping fetch"
-                  exit 0
-                fi
-                echo "vuls2 db exists but too small (${FILE_SIZE} bytes), re-fetching"
-                rm -f /vuls/vuls.db
-              fi
               echo "pulling vuls2 nightly db..."
               oras pull -o /vuls "{{ .Values.vuls2.image.repository }}:{{ .Values.vuls2.image.tag }}"
           volumeMounts:
@@ -68,19 +58,9 @@ spec:
           command: ["sh", "-c"]
           args:
             - |
-              MIN_SIZE=$((5 * 1024 * 1024 * 1024))
-              if [ -f /vuls/vuls.db ]; then
-                FILE_SIZE=$(stat -c%s /vuls/vuls.db)
-                if [ "$FILE_SIZE" -gt "$MIN_SIZE" ]; then
-                  echo "vuls2 db already decompressed ($(du -h /vuls/vuls.db | cut -f1))"
-                  exit 0
-                fi
-                echo "vuls2 db exists but too small (${FILE_SIZE} bytes), re-decompressing"
-                rm -f /vuls/vuls.db
-              fi
               apk add --no-cache zstd
               echo "decompressing vuls.db.zst..."
-              unzstd /vuls/vuls.db.zst -o /vuls/vuls.db
+              unzstd -f /vuls/vuls.db.zst -o /vuls/vuls.db
               rm -f /vuls/vuls.db.zst
               ls -lh /vuls/vuls.db
           volumeMounts:
