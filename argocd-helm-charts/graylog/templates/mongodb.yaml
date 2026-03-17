@@ -54,6 +54,14 @@ spec:
       modes: ["SCRAM"]
   statefulSet:
     spec:
+      template:
+        spec:
+          containers:
+            - name: mongod
+              {{- if .Values.mongodb.resources }}
+              resources:
+                {{- toYaml .Values.mongodb.resources | nindent 16 }}
+              {{- end }}
       volumeClaimTemplates:
         - metadata:
             name: logs-volume
