@@ -1,16 +1,16 @@
-{{- if .Values.oncall.ciliumNetworkPolicy.enabled }}
+{{- if and .Values.global.netpol.enabled .Values.global.celery.netpol }}
 ---
 apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy
 metadata:
-  name: {{ .Values.oncall.releaseName }}-celery-networkpolicy
+  name: {{ .Values.global.netpol.releaseName }}-celery-networkpolicy
   namespace: {{ .Release.Namespace }}
   labels:
     app.kubernetes.io/component: cilium-networkpolicy
 spec:
   endpointSelector:
     matchLabels:
-      app.kubernetes.io/instance: {{ .Values.oncall.releaseName }}
+      app.kubernetes.io/instance: {{ .Values.global.netpol.releaseName }}
       app.kubernetes.io/component: celery
 
 # =========
@@ -21,7 +21,7 @@ spec:
     - toEndpoints:
         - matchLabels:
             k8s:app.kubernetes.io/name: grafana
-            app.kubernetes.io/instance: {{ .Values.oncall.releaseName }}
+            app.kubernetes.io/instance: {{ .Values.global.netpol.releaseName }}
       toPorts:
         - ports:
             - port: "3000"
@@ -33,7 +33,7 @@ spec:
             io.kubernetes.pod.namespace: {{ .Release.Namespace }}
       toPorts:
         - ports:
-            - port: "{{ .Values.oncall.externalPostgresql.port | default 5432 }}"
+            - port: "{{ .Values.global.netpol.externalPostgresql.port | default 5432 }}"
               protocol: TCP
 
     - toEndpoints:
@@ -41,14 +41,14 @@ spec:
             app.kubernetes.io/name: oncall-rabbitmq
       toPorts:
         - ports:
-            - port: "{{ .Values.oncall.externalRabbitmq.port | default 5672 }}"
+            - port: "{{ .Values.global.netpol.externalRabbitmq.port | default 5672 }}"
               protocol: TCP
 
-  {{- if .Values.oncall.redis.enabled }}
+  {{- if .Values.global.redis.enabled }}
     - toEndpoints:
         - matchLabels:
             app.kubernetes.io/name: redis
-            app.kubernetes.io/instance: {{ .Values.oncall.releaseName }}
+            app.kubernetes.io/instance: {{ .Values.global.netpol.releaseName }}
       toPorts:
         - ports:
             - port: "6379"
@@ -57,19 +57,19 @@ spec:
     # Allow to external Redis service
     - toEndpoints:
         - matchLabels:
-            app.kubernetes.io/name: {{ .Values.oncall.externalRedis.host }}
+            app.kubernetes.io/name: {{ .Values.global.netpol.externalRedis.host }}
       toPorts:
         - ports:
-            - port: "{{ .Values.oncall.externalRedis.port | default 6379 }}"
+            - port: "{{ .Values.global.netpol.externalRedis.port | default 6379 }}"
               protocol: TCP
   {{- end }}
 
   # Allow to external services
-  {{- if .Values.oncall.ciliumNetworkPolicy.fqdns.enabled }}
+  {{- if .Values.global.netpol.fqdns.enabled }}
     # DNS proxy intercepts these queries to build IP-to-domain cache
     - toEndpoints:
         - matchLabels:
-            k8s:io.kubernetes.pod.namespace: {{ .Values.oncall.ciliumNetworkPolicy.dns.namespace }}
+            k8s:io.kubernetes.pod.namespace: {{ .Values.global.netpol.dns.namespace }}
             k8s:k8s-app: kube-dns
       toPorts:
         - ports:
@@ -80,9 +80,9 @@ spec:
               - matchPattern: "*"
 
     - toFQDNs:
-        - matchName: "{{ .Values.oncall.ciliumNetworkPolicy.fqdns.telegram }}"
-      {{- if .Values.oncall.ciliumNetworkPolicy.fqdns.keycloak }}
-        - matchName: "{{ .Values.oncall.ciliumNetworkPolicy.fqdns.keycloak }}"
+        - matchName: "{{ .Values.global.netpol.fqdns.telegram }}"
+      {{- if .Values.global.netpol.fqdns.keycloak }}
+        - matchName: "{{ .Values.global.netpol.fqdns.keycloak }}"
       {{- end }}
       toPorts:
         - ports:

@@ -1,13 +1,13 @@
-{{- range $instanceName, $config := .Values.postgres }}
-{{- if $config.netpol }}
+{{- if .Values.global.netpol.enabled }}
+{{- range $instanceName, $config := .Values.global.netpol.mongodb }}
+{{- if and (kindIs "map" $config) $config.netpol }}
 ---
 apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy
 metadata:
-  name: {{ $instanceName }}-postgresql-networkpolicy
+  name: {{ $instanceName }}-mongodbql-networkpolicy
   namespace: {{ $.Release.Namespace }}
   labels:
-    {{- include "kubeaid-addons.postgres-netpol.labels" $ | nindent 4 }}
     app.kubernetes.io/component: cilium-networkpolicy
 spec:
   endpointSelector:
@@ -29,7 +29,7 @@ spec:
             - port: "6443"
               protocol: TCP
 
-    # Communication between PostgreSQL pods (cluster replication)
+    # Communication between mongodbQL pods (cluster replication)
     - toEndpoints:
         - matchLabels:
             cnpg.io/cluster: {{ $instanceName }}
@@ -73,7 +73,7 @@ spec:
               protocol: TCP
     {{- end }}
 
-    # Communication between PostgreSQL pods (cluster replication)
+    # Communication between mongodbQL pods (cluster replication)
     - fromEndpoints:
         - matchLabels:
             cnpg.io/cluster: {{ $instanceName }}
@@ -84,5 +84,6 @@ spec:
             - port: "8000"
               protocol: TCP
 
+{{- end }}
 {{- end }}
 {{- end }}

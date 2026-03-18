@@ -1,18 +1,18 @@
-{{- if .Values.oncall.ciliumNetworkPolicy.enabled }}
+{{- if and .Values.global.netpol.enabled .Values.global.defaultDeny.netpol }}
 ---
 # Namespace-wide default deny with DNS egress
 # Applies to all pods in the namespace except excluded pods
 apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy
 metadata:
-  name: {{ .Values.oncall.releaseName }}-default-deny
+  name: {{ .Values.global.netpol.releaseName }}-default-deny
   namespace: {{ .Release.Namespace }}
   labels:
     app.kubernetes.io/component: cilium-networkpolicy
 spec:
   endpointSelector:
     matchExpressions:
-    {{- range .Values.oncall.ciliumNetworkPolicy.defaultDeny.excludedPods }}
+    {{- range .Values.global.netpol.defaultDeny.excludedPods }}
     {{- range $key, $value := . }}
     - key: {{ $key }}
       operator: NotIn
@@ -29,7 +29,7 @@ spec:
   egress:
   - toEndpoints:
     - matchLabels:
-        io.kubernetes.pod.namespace: {{ .Values.oncall.ciliumNetworkPolicy.dns.namespace | default "kube-system" }}
+        io.kubernetes.pod.namespace: {{ .Values.global.netpol.dns.namespace | default "kube-system" }}
         k8s-app: kube-dns
       toPorts:
       - ports:

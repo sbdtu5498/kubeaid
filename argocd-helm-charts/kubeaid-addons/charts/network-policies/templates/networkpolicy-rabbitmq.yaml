@@ -1,9 +1,9 @@
-{{- if .Values.oncall.ciliumNetworkPolicy.enabled }}
+{{- if and .Values.global.netpol.enabled .Values.global.rabbitmq.netpol }}
 ---
 apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy
 metadata:
-  name: {{ .Values.oncall.releaseName }}-rabbitmq-networkpolicy
+  name: {{ .Values.global.netpol.releaseName }}-rabbitmq-networkpolicy
   namespace: {{ .Release.Namespace }}
   labels:
     app.kubernetes.io/component: cilium-networkpolicy
@@ -11,7 +11,7 @@ spec:
   endpointSelector:
     matchLabels:
       app.kubernetes.io/name: rabbitmq
-      app.kubernetes.io/instance: {{ .Values.oncall.releaseName }}
+      app.kubernetes.io/instance: {{ .Values.global.netpol.releaseName }}
 
 # =========
 # EGRESS
@@ -37,7 +37,7 @@ spec:
     - fromEndpoints:
         - matchLabels:
             k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
-            app.kubernetes.io/instance: {{ .Values.oncall.releaseName }}
+            app.kubernetes.io/instance: {{ .Values.global.netpol.releaseName }}
             app.kubernetes.io/component: engine
       toPorts:
         - ports:
@@ -46,7 +46,7 @@ spec:
     - fromEndpoints:
         - matchLabels:
             k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
-            app.kubernetes.io/instance: {{ .Values.oncall.releaseName }}
+            app.kubernetes.io/instance: {{ .Values.global.netpol.releaseName }}
             app.kubernetes.io/component: celery
       toPorts:
         - ports:

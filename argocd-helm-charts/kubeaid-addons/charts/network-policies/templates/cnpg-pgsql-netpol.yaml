@@ -1,0 +1,89 @@
+{{- if .Values.global.netpol.enabled }}
+{{- range $instanceName, $config := .Values.global.netpol.postgres }}
+{{- if and (kindIs "map" $config) $config.netpol }}
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: {{ $instanceName }}-postgresql-networkpolicy
+  namespace: {{ $.Release.Namespace }}
+  labels:
+    app.kubernetes.io/component: cilium-networkpolicy
+spec:
+  endpointSelector:
+    matchLabels:
+      cnpg.io/cluster: {{ $instanceName }}
+
+# =========
+# EGRESS
+# =========
+
+  egress:
+    # Allow egress to kube-apiserver
+    - toEntities:
+        - kube-apiserver
+      toPorts:
+        - ports:
+            - port: "443"
+              protocol: TCP
+            - port: "6443"
+              protocol: TCP
+
+    # Communication between PostgreSQL pods (cluster replication)
+    - toEndpoints:
+        - matchLabels:
+            cnpg.io/cluster: {{ $instanceName }}
+      toPorts:
+        - ports:
+            - port: "5432"
+              protocol: TCP
+            - port: "8000"
+              protocol: TCP
+
+# ========
+# INGRESS
+# ========
+
+  ingress:
+    {{- if $config.clients }}
+    # Allow ingress from client applications
+    {{- range $config.clients }}
+    - fromEndpoints:
+        - matchLabels:
+            {{- range $key, $value := .labels }}
+            {{ $key }}: {{ $value }}
+            {{- end }}
+      toPorts:
+        - ports:
+            - port: "5432"
+              protocol: TCP
+    {{- end }}
+    {{- end }}
+
+    {{- if $config.cnpg }}
+    # Allow ingress from CNPG operator
+    - fromEndpoints:
+        - matchLabels:
+            {{- range $key, $value := $config.cnpg.labels }}
+            {{ $key }}: {{ $value }}
+            {{- end }}
+      toPorts:
+        - ports:
+            - port: "8000"
+              protocol: TCP
+    {{- end }}
+
+    # Communication between PostgreSQL pods (cluster replication)
+    - fromEndpoints:
+        - matchLabels:
+            cnpg.io/cluster: {{ $instanceName }}
+      toPorts:
+        - ports:
+            - port: "5432"
+              protocol: TCP
+            - port: "8000"
+              protocol: TCP
+
+{{- end }}
+{{- end }}
+{{- end }}

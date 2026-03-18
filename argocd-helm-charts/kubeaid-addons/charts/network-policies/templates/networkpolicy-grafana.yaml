@@ -1,11 +1,11 @@
-{{- if and .Values.oncall.ciliumNetworkPolicy.enabled .Values.oncall.grafana.enabled }}
+{{- if and .Values.global.netpol.enabled .Values.global.grafana.netpol }}
 ---
 # EGRESS
 # Allow oncall-grafana egress to oncall-engine and external auth services
 apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy
 metadata:
-  name: {{ .Values.oncall.releaseName }}-grafana-networkpolicy
+  name: {{ .Values.global.netpol.releaseName }}-grafana-networkpolicy
   namespace: {{ .Release.Namespace }}
   labels:
     app.kubernetes.io/component: cilium-networkpolicy
@@ -13,7 +13,7 @@ spec:
   endpointSelector:
     matchLabels:
       k8s:app.kubernetes.io/name: grafana
-      app.kubernetes.io/instance: {{ .Values.oncall.releaseName }}
+      app.kubernetes.io/instance: {{ .Values.global.netpol.releaseName }}
 
 # =========
 # EGRESS
@@ -23,18 +23,18 @@ spec:
     # Allow to oncall-engine API
     - toEndpoints:
         - matchLabels:
-            app.kubernetes.io/instance: {{ .Values.oncall.releaseName }}
+            app.kubernetes.io/instance: {{ .Values.global.netpol.releaseName }}
             app.kubernetes.io/component: engine
       toPorts:
         - ports:
             - port: "8080"
               protocol: TCP
 
-    {{- if .Values.oncall.ciliumNetworkPolicy.fqdns.enabled }}
+    {{- if .Values.global.netpol.fqdns.enabled }}
     # DNS proxy intercepts these queries to build IP-to-domain cache
     - toEndpoints:
         - matchLabels:
-            k8s:io.kubernetes.pod.namespace: {{ .Values.oncall.ciliumNetworkPolicy.dns.namespace }}
+            k8s:io.kubernetes.pod.namespace: {{ .Values.global.netpol.dns.namespace }}
             k8s:k8s-app: kube-dns
       toPorts:
         - ports:
@@ -45,15 +45,15 @@ spec:
               - matchPattern: "*"
 
     - toFQDNs:
-        - matchName: "{{ .Values.oncall.ciliumNetworkPolicy.fqdns.telegram }}"
-      {{- if .Values.oncall.ciliumNetworkPolicy.fqdns.keycloak }}
-        - matchName: "{{ .Values.oncall.ciliumNetworkPolicy.fqdns.keycloak }}"
+        - matchName: "{{ .Values.global.netpol.fqdns.telegram }}"
+      {{- if .Values.global.netpol.fqdns.keycloak }}
+        - matchName: "{{ .Values.global.netpol.fqdns.keycloak }}"
       {{- end }}
-      {{- if .Values.oncall.ciliumNetworkPolicy.fqdns.grafana }}
-        - matchName: "{{ .Values.oncall.ciliumNetworkPolicy.fqdns.grafana }}"
+      {{- if .Values.global.netpol.fqdns.grafana }}
+        - matchName: "{{ .Values.global.netpol.fqdns.grafana }}"
       {{- end }}
-      {{- if .Values.oncall.ciliumNetworkPolicy.fqdns.googleStorage }}
-        - matchName: "{{ .Values.oncall.ciliumNetworkPolicy.fqdns.googleStorage }}"
+      {{- if .Values.global.netpol.fqdns.googleStorage }}
+        - matchName: "{{ .Values.global.netpol.fqdns.googleStorage }}"
       {{- end }}
       toPorts:
         - ports:
@@ -69,8 +69,8 @@ spec:
     # Allow from Traefik ingress controller
     - fromEndpoints:
         - matchLabels:
-            k8s:io.kubernetes.pod.namespace: {{ .Values.oncall.ciliumNetworkPolicy.traefik.namespace }}
-            {{- range $key, $value := .Values.oncall.ciliumNetworkPolicy.traefik.labels }}
+            k8s:io.kubernetes.pod.namespace: {{ .Values.global.netpol.traefik.namespace }}
+            {{- range $key, $value := .Values.global.netpol.traefik.labels }}
             {{ $key }}: {{ $value }}
             {{- end }}
       toPorts:
@@ -82,7 +82,7 @@ spec:
     - fromEndpoints:
         - matchLabels:
             k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
-            app.kubernetes.io/instance: {{ .Values.oncall.releaseName }}
+            app.kubernetes.io/instance: {{ .Values.global.netpol.releaseName }}
             app.kubernetes.io/component: engine
       toPorts:
         - ports:
@@ -91,7 +91,7 @@ spec:
     - fromEndpoints:
         - matchLabels:
             app.kubernetes.io/component: celery
-            app.kubernetes.io/instance: {{ .Values.oncall.releaseName }}
+            app.kubernetes.io/instance: {{ .Values.global.netpol.releaseName }}
       toPorts:
         - ports:
             - port: "3000"

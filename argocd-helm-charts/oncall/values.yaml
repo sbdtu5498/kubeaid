@@ -89,39 +89,36 @@ rabbitmq:
     repository: bitnamilegacy/rabbitmq
     tag: 3.12.0-debian-11-r0
 
-postgresql:
-  instance: 2
-  size: 2Gi
-  logicalBackup: true
-  resources:
-    limits:
-      memory: 800Mi
-    requests:
-      memory: 500Mi
-      cpu: 100m
-
-# CiliumNetworkPolicy configuration
-ciliumNetworkPolicy:
-  traefik:
-    namespace: traefik
-    labels:
-      app.kubernetes.io/instance: traefik
-  
-  dns:
-    namespace: kube-system
-  
-  # Pods to exclude from default-deny network policy
-  defaultDeny:
-    excludedPods:
-      - app: teleport-kube-agent
-      - app.kubernetes.io/instance: obmondo-k8s-agent
-      - app: gitea-stats-exporter
-      - app.kubernetes.io/instance: gitea-stats-exporter
-    
-  fqdns:
+global:
+  netpol:
     enabled: true
-    telegram: "api.telegram.org"
-    keycloak: "keycloak.obmondo.com"
-    grafana: "grafana.com"
-    googleStorage: "storage.googleapis.com"
 
+  celery:
+    netpol: true
+
+  engine:
+    netpol: true
+
+  defaultDeny:
+    netpol: true
+
+  redis:
+    netpol: true
+
+  grafana:
+    netpol: true
+
+  rabbitmq:
+    netpol: true
+
+  postgresql:
+    instance: 2
+    netpol: true
+    size: 2Gi
+    logicalBackup: true
+    resources:
+      limits:
+        memory: 800Mi
+      requests:
+        memory: 500Mi
+        cpu: 100m
