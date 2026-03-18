@@ -8,6 +8,8 @@ loki-stack:
     enabled: true
     isDefault: true
     url: http://{{(include "loki.serviceName" .)}}:{{ .Values.loki.service.port }}
+    image:
+      tag: 2.9.15
     persistence:
       enabled: true
     readinessProbe:
