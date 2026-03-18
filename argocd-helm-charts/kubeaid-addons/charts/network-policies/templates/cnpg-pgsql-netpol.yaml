@@ -1,18 +1,16 @@
-{{- if .Values.global.netpol.enabled }}
-{{- range $instanceName, $config := .Values.global.netpol.postgres }}
-{{- if and (kindIs "map" $config) $config.netpol }}
+{{- if and ((.Values.global).netpol).enabled ((.Values.global).postgresql).netpol }}
 ---
 apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy
 metadata:
-  name: {{ $instanceName }}-postgresql-networkpolicy
-  namespace: {{ $.Release.Namespace }}
+  name: {{ .Values.global.postgresql.instanceName | default "postgresql" }}-networkpolicy
+  namespace: {{ .Release.Namespace }}
   labels:
     app.kubernetes.io/component: cilium-networkpolicy
 spec:
   endpointSelector:
     matchLabels:
-      cnpg.io/cluster: {{ $instanceName }}
+      cnpg.io/cluster: {{ .Values.global.postgresql.instanceName | default "postgresql" }}
 
 # =========
 # EGRESS
@@ -32,7 +30,7 @@ spec:
     # Communication between PostgreSQL pods (cluster replication)
     - toEndpoints:
         - matchLabels:
-            cnpg.io/cluster: {{ $instanceName }}
+            cnpg.io/cluster: {{ .Values.global.postgresql.instanceName | default "postgresql" }}
       toPorts:
         - ports:
             - port: "5432"
@@ -45,9 +43,9 @@ spec:
 # ========
 
   ingress:
-    {{- if $config.clients }}
+    {{- if .Values.global.postgresql.clients }}
     # Allow ingress from client applications
-    {{- range $config.clients }}
+    {{- range .Values.global.postgresql.clients }}
     - fromEndpoints:
         - matchLabels:
             {{- range $key, $value := .labels }}
@@ -60,11 +58,11 @@ spec:
     {{- end }}
     {{- end }}
 
-    {{- if $config.cnpg }}
+    {{- if .Values.global.postgresql.cnpg }}
     # Allow ingress from CNPG operator
     - fromEndpoints:
         - matchLabels:
-            {{- range $key, $value := $config.cnpg.labels }}
+            {{- range $key, $value := .Values.global.postgresql.cnpg.labels }}
             {{ $key }}: {{ $value }}
             {{- end }}
       toPorts:
@@ -76,7 +74,7 @@ spec:
     # Communication between PostgreSQL pods (cluster replication)
     - fromEndpoints:
         - matchLabels:
-            cnpg.io/cluster: {{ $instanceName }}
+            cnpg.io/cluster: {{ .Values.global.postgresql.instanceName | default "postgresql" }}
       toPorts:
         - ports:
             - port: "5432"
@@ -84,6 +82,4 @@ spec:
             - port: "8000"
               protocol: TCP
 
-{{- end }}
-{{- end }}
 {{- end }}

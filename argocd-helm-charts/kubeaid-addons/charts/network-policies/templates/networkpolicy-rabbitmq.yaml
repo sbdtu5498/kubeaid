@@ -1,4 +1,4 @@
-{{- if and .Values.global.netpol.enabled .Values.global.rabbitmq.netpol }}
+{{- if and ((.Values.global).netpol).enabled ((.Values.global).rabbitmq).netpol }}
 ---
 apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy

@@ -1,38 +1,5 @@
-{{- if and .Values.global.netpol.enabled .Values.global.redis.netpol }}
-# Network Policy for Redis Master
-apiVersion: cilium.io/v2
-kind: CiliumNetworkPolicy
-metadata:
-  name: {{ .Values.global.netpol.releaseName }}-redis-master-networkpolicy
-  namespace: {{ .Release.Namespace }}
-  labels:
-    app.kubernetes.io/component: cilium-networkpolicy
-spec:
-  endpointSelector:
-    matchLabels:
-      app.kubernetes.io/component: master
-
-# =========
-# EGRESS
-# =========
-
-  egress:
-    - toEndpoints:
-        - matchLabels:
-          app.kubernetes.io/component: replica
-          app.kubernetes.io/instance: {{ .Values.global.netpol.releaseName }}
-
-# ========
-# INGRESS
-# ========
-
-  ingress:
-    - fromEndpoints:
-      - matchLabels:
-          app.kubernetes.io/component: replica
-          app.kubernetes.io/instance: {{ .Values.global.netpol.releaseName }}
----
-# Network Policy for Redis Master and Redis Replicas
+{{- if and ((.Values.global).netpol).enabled ((.Values.global).redis).netpol }}
+# Network Policy for Redis (Master and Replicas)
 apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy
 metadata:
@@ -44,6 +11,19 @@ spec:
   endpointSelector:
     matchLabels:
       app.kubernetes.io/instance: {{ .Values.global.netpol.releaseName }}
+
+# =========
+# EGRESS
+# =========
+
+  egress:
+    - toEndpoints:
+        - matchLabels:
+            app.kubernetes.io/instance: {{ .Values.global.netpol.releaseName }}
+            app.kubernetes.io/component: replica
+        - matchLabels:
+            app.kubernetes.io/instance: {{ .Values.global.netpol.releaseName }}
+            app.kubernetes.io/component: master
 
 # ========
 # INGRESS
@@ -62,37 +42,12 @@ spec:
         - ports:
             - port: "6379"
               protocol: TCP
----
-# Network Policy for Redis Replicas ingress from master
-apiVersion: cilium.io/v2
-kind: CiliumNetworkPolicy
-metadata:
-  name: {{ .Values.global.netpol.releaseName }}-redis-ingress-replicas
-  namespace: {{ .Release.Namespace }}
-  labels:
-    app.kubernetes.io/component: cilium-networkpolicy
-spec:
-  endpointSelector:
-    matchLabels:
-      app.kubernetes.io/component: replica
 
-# =========
-# EGRESS
-# =========
-
-  egress:
-    - toEndpoints:
-        - matchLabels:
-          app.kubernetes.io/component: master
-          app.kubernetes.io/instance: {{ .Values.global.netpol.releaseName }}
-
-# ========
-# INGRESS
-# ========
-
-  ingress:
     - fromEndpoints:
-      - matchLabels:
-          app.kubernetes.io/component: master
-          app.kubernetes.io/instance: {{ .Values.global.netpol.releaseName }}
+        - matchLabels:
+            app.kubernetes.io/instance: {{ .Values.global.netpol.releaseName }}
+            app.kubernetes.io/component: replica
+        - matchLabels:
+            app.kubernetes.io/instance: {{ .Values.global.netpol.releaseName }}
+            app.kubernetes.io/component: master
 {{- end }}

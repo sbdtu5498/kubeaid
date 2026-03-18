@@ -1,4 +1,4 @@
-{{- if and .Values.global.netpol.enabled .Values.global.celery.netpol }}
+{{- if and ((.Values.global).netpol).enabled ((.Values.global).celery).netpol }}
 ---
 apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy
@@ -33,7 +33,7 @@ spec:
             io.kubernetes.pod.namespace: {{ .Release.Namespace }}
       toPorts:
         - ports:
-            - port: "{{ .Values.global.netpol.externalPostgresql.port | default 5432 }}"
+            - port: "5432"
               protocol: TCP
 
     - toEndpoints:
@@ -41,10 +41,10 @@ spec:
             app.kubernetes.io/name: oncall-rabbitmq
       toPorts:
         - ports:
-            - port: "{{ .Values.global.netpol.externalRabbitmq.port | default 5672 }}"
+            - port: "5672"
               protocol: TCP
 
-  {{- if .Values.global.redis.enabled }}
+  {{- if ((.Values.global).redis).enabled }}
     - toEndpoints:
         - matchLabels:
             app.kubernetes.io/name: redis
@@ -57,19 +57,18 @@ spec:
     # Allow to external Redis service
     - toEndpoints:
         - matchLabels:
-            app.kubernetes.io/name: {{ .Values.global.netpol.externalRedis.host }}
+            app.kubernetes.io/name: redis
       toPorts:
         - ports:
-            - port: "{{ .Values.global.netpol.externalRedis.port | default 6379 }}"
+            - port: "6379"
               protocol: TCP
   {{- end }}
 
   # Allow to external services
-  {{- if .Values.global.netpol.fqdns.enabled }}
-    # DNS proxy intercepts these queries to build IP-to-domain cache
+  # DNS proxy intercepts these queries to build IP-to-domain cache
     - toEndpoints:
         - matchLabels:
-            k8s:io.kubernetes.pod.namespace: {{ .Values.global.netpol.dns.namespace }}
+            k8s:io.kubernetes.pod.namespace: kube-system
             k8s:k8s-app: kube-dns
       toPorts:
         - ports:
@@ -80,13 +79,14 @@ spec:
               - matchPattern: "*"
 
     - toFQDNs:
-        - matchName: "{{ .Values.global.netpol.fqdns.telegram }}"
-      {{- if .Values.global.netpol.fqdns.keycloak }}
-        - matchName: "{{ .Values.global.netpol.fqdns.keycloak }}"
+      {{- if ((.Values.global.telegram).url) }}
+        - matchName: "{{ .Values.global.telegram.url }}"
+      {{- end }}
+      {{- if ((.Values.global.keycloak).url) }}
+        - matchName: "{{ .Values.global.keycloak.url }}"
       {{- end }}
       toPorts:
         - ports:
             - port: "443"
               protocol: TCP
-  {{- end }}
 {{- end }}

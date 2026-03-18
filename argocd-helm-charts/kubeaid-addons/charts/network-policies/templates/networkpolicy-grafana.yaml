@@ -1,4 +1,4 @@
-{{- if and .Values.global.netpol.enabled .Values.global.grafana.netpol }}
+{{- if and ((.Values.global).netpol).enabled ((.Values.global).grafana).netpol }}
 ---
 # EGRESS
 # Allow oncall-grafana egress to oncall-engine and external auth services
@@ -30,11 +30,10 @@ spec:
             - port: "8080"
               protocol: TCP
 
-    {{- if .Values.global.netpol.fqdns.enabled }}
     # DNS proxy intercepts these queries to build IP-to-domain cache
     - toEndpoints:
         - matchLabels:
-            k8s:io.kubernetes.pod.namespace: {{ .Values.global.netpol.dns.namespace }}
+            k8s:io.kubernetes.pod.namespace: kube-system
             k8s:k8s-app: kube-dns
       toPorts:
         - ports:
@@ -45,21 +44,22 @@ spec:
               - matchPattern: "*"
 
     - toFQDNs:
-        - matchName: "{{ .Values.global.netpol.fqdns.telegram }}"
-      {{- if .Values.global.netpol.fqdns.keycloak }}
-        - matchName: "{{ .Values.global.netpol.fqdns.keycloak }}"
+      {{- if ((.Values.global.telegram).url) }}
+        - matchName: "{{ .Values.global.telegram.url }}"
       {{- end }}
-      {{- if .Values.global.netpol.fqdns.grafana }}
-        - matchName: "{{ .Values.global.netpol.fqdns.grafana }}"
+      {{- if ((.Values.global.keycloak).url) }}
+        - matchName: "{{ .Values.global.keycloak.url }}"
       {{- end }}
-      {{- if .Values.global.netpol.fqdns.googleStorage }}
-        - matchName: "{{ .Values.global.netpol.fqdns.googleStorage }}"
+      {{- if ((.Values.global.grafana).url) }}
+        - matchName: "{{ .Values.global.grafana.url }}"
+      {{- end }}
+      {{- if ((.Values.global.googleStorage).url) }}
+        - matchName: "{{ .Values.global.googleStorage.url }}"
       {{- end }}
       toPorts:
         - ports:
             - port: "443"
               protocol: TCP
-    {{- end }}
 
 # ========
 # INGRESS
