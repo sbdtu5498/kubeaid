@@ -44,3 +44,4 @@ mariadb:
   database: matomo-mariadb
   logicalbackup:
     enabled: true
+    failedJobsHistoryLimit: 3
