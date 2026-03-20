@@ -20,6 +20,31 @@ act-runner:
 
 * Doc is [here](https://gitea.com/gitea/act_runner)
 
+## Private registry auth for job images
+
+Provide a registry secret (sealed or normal) that contains `.dockerconfigjson` so the runner can pull images referenced in `act_runner.labels`.
+
+Example sealed secret creation:
+
+```sh
+kubectl create secret docker-registry gitea-runner-registry \
+  --namespace gitea \
+  --docker-server=registry.example.com \
+  --docker-username=example-user \
+  --docker-password=example-token \
+  --dry-run=client -o yaml | \
+  kubeseal --controller-namespace system --controller-name sealed-secrets -o yaml
+```
+
+Values example:
+
+```yaml
+act-runner:
+  act_runner:
+    registrySecretName: gitea-runner-registry
+    registrySecretMountPath: /runner/.docker
+```
+
 ## Create kube config secret
 
 ```bash

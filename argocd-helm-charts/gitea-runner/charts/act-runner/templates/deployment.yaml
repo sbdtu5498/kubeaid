@@ -42,6 +42,10 @@ spec:
               value: "{{ .Values.act_runner.parallel_jobs }}"
             - name: GITEA_RUNNER_LABELS
               value: {{ join "," .Values.act_runner.labels }}
+            {{ if .Values.act_runner.registrySecretName }}
+            - name: DOCKER_CONFIG
+              value: {{ .Values.act_runner.registrySecretMountPath | quote }}
+            {{ end }}
             - name: GITEA_RUNNER_REGISTRATION_TOKEN
               valueFrom:
                 secretKeyRef:
@@ -54,10 +58,23 @@ spec:
           volumeMounts:
             - mountPath: /data
               name: {{ include "act_runner.fullname" . }}-pvc
+            {{ if .Values.act_runner.registrySecretName }}
+            - name: {{ include "act_runner.fullname" . }}-registry
+              mountPath: {{ .Values.act_runner.registrySecretMountPath | quote }}
+              readOnly: true
+            {{ end }}
       volumes:
         - name: {{ include "act_runner.fullname" . }}-pvc
           persistentVolumeClaim:
             claimName: {{ include "act_runner.fullname" . }}-pvc
+        {{ if .Values.act_runner.registrySecretName }}
+        - name: {{ include "act_runner.fullname" . }}-registry
+          secret:
+            secretName: {{ .Values.act_runner.registrySecretName }}
+            items:
+              - key: .dockerconfigjson
+                path: config.json
+        {{ end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

@@ -69,6 +69,8 @@ act_runner:
   parallel_jobs: 2
   existingToken: ""
   token: ""
+  registrySecretName: ""
+  registrySecretMountPath: "/runner/.docker"
   labels:
     - "ubuntu-latest:docker://node:16-bullseye"
     - "ubuntu-22.04:docker://node:16-bullseye"
