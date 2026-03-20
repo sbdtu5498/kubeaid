@@ -37,18 +37,18 @@ spec:
   externalClusters:
     - name: relate-pgsql
       barmanObjectStore:
-        destinationPath: {{ ((.Values.cnpg).backup).destinationPath }}
-        endpointURL: {{ ((.Values.cnpg).backup).endpointURL }}
-        {{- if eq ((.Values.cnpg).backup).cloud "aws" }}
+        destinationPath: {{ ((.Values.cnpg).recover).destinationPath }}
+        endpointURL: {{ ((.Values.cnpg).recover).endpointURL }}
+        {{- if eq ((.Values.cnpg).recover).cloud "aws" }}
         s3Credentials:
           accessKeyId:
-            name: relate-secret
+            name: {{ ((.Values.cnpg).recover).s3SecretName | default "relate-secret" }}
             key: ACCESS_KEY_ID
           secretAccessKey:
-            name: relate-secret
+            name: {{ ((.Values.cnpg).recover).s3SecretName | default "relate-secret" }}
             key: ACCESS_SECRET_KEY
         {{- end }}
-      {{- if eq ((.Values.cnpg).backup).cloud "azure" }}
+      {{- if eq ((.Values.cnpg).recover).cloud "azure" }}
         azureCredentials:
           connectionString:
             name: relate-pgsql-backup-creds
@@ -69,15 +69,15 @@ spec:
   {{- if (.Values.cnpg).backup }}
   backup:
     barmanObjectStore:
-      destinationPath: {{ ((.Values.cnpg).backup).destinationPath }}
+      destinationPath: {{ ((.Values.cnpg).backup).destinationPath}}
       endpointURL: {{ ((.Values.cnpg).backup).endpointURL }}
       {{- if eq ((.Values.cnpg).backup).cloud "aws" }}
       s3Credentials:
         accessKeyId:
-          name: relate-secret
+          name: {{ ((.Values.cnpg).backup).s3SecretName | default "relate-secret" }}
           key: ACCESS_KEY_ID
         secretAccessKey:
-          name: relate-secret
+          name: {{ ((.Values.cnpg).backup).s3SecretName | default "relate-secret" }} 
           key: ACCESS_SECRET_KEY
       {{- end }}
       {{- if eq ((.Values.cnpg).backup).cloud "azure" }}
