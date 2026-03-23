@@ -1,0 +1,25 @@
+rule_files:
+  - prometheus.yaml
+
+evaluation_interval: 1m
+
+tests:
+  - interval: 1m
+    input_series:
+      # SCENARIO 1: service-a has 10% 403 errors (Triggers TraefikImmediateFailure)
+      - series: 'traefik_service_requests_total{service="service-a", code="200"}'
+        values: '0+90x20'
+      - series: 'traefik_service_requests_total{service="service-a", code="403"}'
+        values: '0+10x20'
+
+      # SCENARIO 2: service-b has 15% 404 errors (Triggers TraefikHigh4xxErrorRate)
+      - series: 'traefik_service_requests_total{service="service-b", code="200"}'
+        values: '0+85x20'
+      - series: 'traefik_service_requests_total{service="service-b", code="404"}'
+        values: '0+15x20'
+
+      # SCENARIO 3: service-c has 1% 401 errors (Below 5% threshold, NO alerts)
+      - series: 'traefik_service_requests_total{service="service-c", code="200"}'
+        values: '0+99x20'
+      - series: 'traefik_service_requests_total{service="service-c", code="401"}'
+        values: '0+1x20'
