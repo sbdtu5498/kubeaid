@@ -2,8 +2,8 @@ dependencies:
 - name: oncall
   repository: https://grafana.github.io/helm-charts
   version: 1.16.5
-- name: network-policies
-  repository: file://../kubeaid-addons/charts/network-policies
-  version: 1.0.0
-digest: sha256:17db63a3ef586f3380703ef5b5188f33f69ab4cb470f5d81d70f320a8dc6228f
-generated: "2026-03-18T09:57:34.739480237+05:30"
+- name: kubeaid-addons
+  repository: file://../kubeaid-addons
+  version: 0.1.0
+digest: sha256:865ceb3b1e095c0e4ed246207ed252bfab7f17a47f49014038f1909975da8add
+generated: "2026-03-23T23:12:20.401811353+05:30"

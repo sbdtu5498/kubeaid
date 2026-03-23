@@ -5,6 +5,6 @@ dependencies:
   - name: oncall
     version: 1.16.5
     repository: https://grafana.github.io/helm-charts
-  - name: network-policies
-    version: 1.0.0
-    repository: file://../kubeaid-addons/charts/network-policies
+  - name: kubeaid-addons
+    version: 0.1.0
+    repository: file://../kubeaid-addons
