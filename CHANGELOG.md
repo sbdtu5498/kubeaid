@@ -2,6 +2,54 @@
 
 All releases and the changes included in them (pulled from git commits added since last release) will be detailed in this file.
 
+## KubeAid Release Version 25.0.0
+
+### Major Version Upgrades
+- 3afcb918e Updated mariadb-operator from version 25.10.4 to 26.3.0
+- 3afcb918e Updated opensearch-operator from version 2.8.4 to 3.0.1
+- 3afcb918e Updated velero from version 11.4.0 to 12.0.0
+
+### Minor Version Upgrades
+- 3afcb918e Updated aws-ebs-csi-driver from version 2.56.1 to 2.57.1
+- 3afcb918e Updated cert-manager from version v1.19.4 to v1.20.0
+- 3afcb918e Updated gatekeeper from version 3.21.1 to 3.22.0
+- 3afcb918e Updated gitlab-runner from version 0.86.0 to 0.87.0
+- 3afcb918e Updated ingress-nginx from version 4.14.3 to 4.15.1
+- 3afcb918e Updated opentelemetry-operator from version 0.106.0 to 0.108.0
+- 3afcb918e Updated opentelemetry-collector from version 0.146.1 to 0.147.1
+- 3afcb918e Updated peertube from version 1.6.2 to 1.7.1
+- 3afcb918e Updated redis-operator from version 0.23.0 to 0.24.0
+- 3afcb918e Updated seaweedfs from version 4.15.0 to 4.17.0
+- 3afcb918e Updated step-issuer from version 1.9.11 to 1.10.1
+- 3afcb918e Updated step-certificates from version 1.29.0 to 1.30.0
+- 3afcb918e Updated trust-manager from version v0.21.1 to v0.22.0
+
+### Patch Version Upgrades
+- 3afcb918e Updated argo-cd from version 9.4.9 to 9.4.15
+- 3afcb918e Updated argocd-image-updater from version 1.1.1 to 1.1.3
+- 3afcb918e Updated aws-efs-csi-driver from version 3.4.0 to 3.4.1
+- 3afcb918e Updated ccm-hetzner from version 2.0.4 to 2.0.5
+- 3afcb918e Updated erpnext from version 8.0.31 to 8.0.36
+- 3afcb918e Updated harbor from version 1.18.2 to 1.18.3
+- 3afcb918e Updated keycloakx from version 7.1.8 to 7.1.9
+- 3afcb918e Updated mattermost-team-edition from version 6.6.93 to 6.6.94
+- 3afcb918e Updated opencost from version 2.5.10 to 2.5.12
+- 3afcb918e Updated sealed-secrets from version 2.18.3 to 2.18.4
+- 3afcb918e Updated autocert from version 1.20.5 to 1.20.6
+- 3afcb918e Updated teleport-cluster from version 18.7.2 to 18.7.3
+- 3afcb918e Updated teleport-kube-agent from version 18.7.2 to 18.7.3
+- 3afcb918e Updated traefik from version 39.0.5 to 39.0.6
+- 3afcb918e Updated yetibot from version 1.0.120 to 1.0.173
+
+### Features
+- 804b29269 feat: add registry secret for label images
+
+### Other Changes
+- eb543c715 loki version bump
+- 912b9f612 Fix: mailcow-backup container has a short execution time (~3 mins), which trips the generic 'monitor::system::docker::status' alert
+- fc573a5ce Add support for setting resources to mongodb
+- 0671a266f Improve restore and backup logic for CNPG
+
 ## KubeAid Release Version 24.4.0
 
 ### New Charts Added
