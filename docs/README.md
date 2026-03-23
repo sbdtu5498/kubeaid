@@ -9,7 +9,7 @@ Welcome to the KubeAid documentation. This is the central hub for all KubeAid gu
 The complete installation guide for setting up a KubeAid-managed Kubernetes cluster:
 
 | Guide | Description |
-|-------|-------------|
+| ------- | ------------- |
 | [Getting Started Guide](./getting-started/README.md) | Complete installation walkthrough |
 | [Prerequisites](./getting-started/prerequisites.md) | Required tools and setup |
 | [Pre-Configuration](./getting-started/pre-configuration.md) | Configuration file setup |
@@ -22,7 +22,7 @@ The complete installation guide for setting up a KubeAid-managed Kubernetes clus
 Hosting-specific details and considerations:
 
 | Guide | Description |
-|-------|-------------|
+| ------- | ------------- |
 | [Cloud Providers](./hosting/cloud-providers.md) | AWS, Azure, Hetzner HCloud |
 | [Bare Metal](./hosting/bare-metal.md) | On-premise dedicated servers |
 | [Single Host K8s](./hosting/single-host-k8s.md) | Single-node deployments |
@@ -33,7 +33,7 @@ Hosting-specific details and considerations:
 Guides for ongoing cluster management:
 
 | Guide | Description |
-|-------|-------------|
+| ------- | ------------- |
 | [Backup & Restore](./operations/backup-restore.md) | Disaster recovery procedures |
 | [Node Reboot](./operations/node-reboot.md) | Safe node maintenance |
 | [AWS Private Link Setup](./operations/aws-private-link-setup.md) | Cross-account connectivity |
@@ -42,14 +42,14 @@ Guides for ongoing cluster management:
 #### Monitoring
 
 | Guide | Description |
-|-------|-------------|
+| ------- | ------------- |
 | [Pod Autoscaling](./operations/monitoring/pod-autoscaling.md) | HPA and VPA configuration |
 | [Prometheus Namespaces](./operations/monitoring/prometheus-namespaces.md) | Namespace-level monitoring |
 
 ### Development
 
 | Guide | Description |
-|-------|-------------|
+| ------- | ------------- |
 | [CI/CD Setup](./development/ci-cd-setup.md) | Pipeline configuration |
 | [Helm Charts](./development/helm_charts.md) | Chart development |
 | [Release Procedure](./development/release-procedure.md) | Release workflow |
@@ -58,14 +58,14 @@ Guides for ongoing cluster management:
 ### Access Tokens
 
 | Guide | Description |
-|-------|-------------|
+| ------- | ------------- |
 | [GitHub Token](./access_token/github.md) | GitHub PAT setup |
 | [GitLab Token](./access_token/gitlab.md) | GitLab PAT setup |
 
 ### About KubeAid
 
 | Guide | Description |
-|-------|-------------|
+| ------- | ------------- |
 | [Why KubeAid](./kubeaid/why-kubeaid.md) | The problem KubeAid solves |
 | [Features Technical Details](./kubeaid/features-technical-details.md) | In-depth feature documentation |
 | [Helm Umbrella Pattern](./kubeaid/helm-umbrella-pattern.md) | How KubeAid manages applications |

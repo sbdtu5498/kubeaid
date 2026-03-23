@@ -4,9 +4,11 @@ This guide outlines the steps to update managed charts and publish a new release
 
 ## 1. Update Managed Helm Charts
 
-The first step is to synchronize all managed Helm charts with their upstream sources. This script will update the charts and automatically switch you to a new branch for your Pull Request.
+The first step is to synchronize all managed Helm charts with their upstream sources. This script will update the charts
+and automatically switch you to a new branch for your Pull Request.
 
 ### Option A: Standard (Linux/Native)
+
 If you have `yq` (Go version), `helm`, and `git` installed locally:
 
 ```bash
@@ -17,13 +19,21 @@ Switched to a new branch 'Helm_Update_20260119_MjA5NDkK'
 Current KubeAid version: 23.0.0
 Helm chart argo-cd is cached and on latest version 9.2.4...
 ```
+
 ### Option B: Docker Environment (macOS)
+
 For macOS users or to ensure a clean environment, use the provided Docker workflow.
-1. Start the Builder Container Run this from the root of the repo to mount your current directory into an Ubuntu container:
+
+1. Start the Builder Container Run this from the root of the repo to mount your current directory into an Ubuntu
+   container:
+
    ```bash
    docker run --rm -it -v $(pwd):/build -w /build ubuntu:24.04 bash
    ```
-2. Configure Environment Inside the running container, execute the following block to install dependencies and trigger the update:
+
+2. Configure Environment Inside the running container, execute the following block to install dependencies and trigger
+   the update:
+
    ```bash
    apt-get update && apt-get install -y git curl
    curl -L https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 -o /usr/bin/yq && chmod +x /usr/bin/yq
@@ -33,6 +43,7 @@ For macOS users or to ensure a clean environment, use the provided Docker workfl
    ```
 
 ## 2. Publish a New Release of KubeAid
+
 once the Pull Request from Step 1 is merged into `master`, generate the release notes and tag the release.
 
    ```sh

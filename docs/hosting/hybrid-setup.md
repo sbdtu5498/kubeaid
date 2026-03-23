@@ -1,6 +1,7 @@
 # Hybrid Setup
 
-Connect multiple Kubernetes clusters across different cloud providers using **Cilium Cluster Mesh** for seamless cross-cluster workload communication.
+Connect multiple Kubernetes clusters across different cloud providers using
+**Cilium Cluster Mesh** for seamless cross-cluster workload communication.
 
 ## Cilium Cluster Mesh
 
@@ -14,7 +15,7 @@ Connect multiple Kubernetes clusters across different cloud providers using **Ci
 ## Use Cases
 
 | Use Case | Description |
-|----------|-------------|
+| ---------- | ------------- |
 | Multi-cloud resilience | Run workloads across Hetzner + Azure for redundancy |
 | Geographic distribution | Place clusters close to users in different regions |
 | Cost optimization | Use cheaper providers for burst capacity |
@@ -23,7 +24,7 @@ Connect multiple Kubernetes clusters across different cloud providers using **Ci
 
 ## Example: Hetzner + Azure
 
-```
+```text
 ┌─────────────────┐         ┌─────────────────┐
 │  Hetzner Cluster │◄──────►│  Azure Cluster  │
 │                 │ Cilium  │                 │
@@ -49,7 +50,7 @@ cilium clustermesh enable --context <cluster1-context>
 cilium clustermesh enable --context <cluster2-context>
 ```
 
-2. **Connect clusters:**
+1. **Connect clusters:**
 
 ```bash
 cilium clustermesh connect \
@@ -57,7 +58,7 @@ cilium clustermesh connect \
   --destination-context <cluster2-context>
 ```
 
-3. **Verify connectivity:**
+1. **Verify connectivity:**
 
 ```bash
 cilium clustermesh status --context <cluster1-context>
@@ -70,6 +71,7 @@ For detailed configuration, see the [Cilium Cluster Mesh documentation](https://
 > **Note:** This is different from Cilium Cluster Mesh.
 
 Hetzner's built-in hybrid mode creates a **single cluster** with mixed node types:
+
 - Control plane in HCloud (VMs)
 - Worker nodes in HCloud and/or Bare Metal
 

@@ -17,11 +17,11 @@ jobs:
     - name: Setup Node.js
       uses: actions/setup-node@v4
       with:
-        node-version: 14
+        node-version: 20
 
     - name: Install dependencies
-      run: npm install -g markdownlint-cli
+      run: npm install -g markdownlint-cli2@0.21.0
 
     - name: Run markdownlint
       if: ${{ github.event_name == 'pull_request' }}
-      run: markdownlint --config .markdownlint --ignore 'argocd-helm-charts/*/*/**' --ignore 'build/vendor/**' --ignore 'build/kube-prometheus/**' .
+      run: markdownlint-cli2 "**/*.md" --config .markdownlint-cli2.yaml

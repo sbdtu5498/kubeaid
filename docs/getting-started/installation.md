@@ -1,6 +1,8 @@
 # Installation
 
-This guide covers bootstrapping your KubeAid-managed Kubernetes cluster. The installation process is **the same for all providers** and the configuration files you prepared in the previous step contain all provider-specific details.
+This guide covers bootstrapping your KubeAid-managed Kubernetes cluster.
+The installation process is **the same for all providers**
+and the configuration files you prepared in the previous step contain all provider-specific details.
 
 ## Before You Begin
 
@@ -10,6 +12,7 @@ Ensure you have completed:
 - [x] [Pre-Configuration](./pre-configuration.md) - `general.yaml` and `secrets.yaml` configured or,
 
 Make sure :
+
 - Docker is running locally
 - Your configuration files are in `outputs/configs/`
 - Your `secrets.yaml` is backed up in your password store
@@ -30,7 +33,8 @@ sudo chmod +x /usr/local/bin/kubeaid-cli
 rm kubeaid-cli_${OS}_${CPU_ARCHITECTURE}.tar.gz
 ```
 
-> **Note:** This script works on both Linux and macOS. For Linux users who prefer native package managers, see the [Native Package Installation](#native-package-installation) section below.
+> **Note:** This script works on both Linux and macOS. For Linux users who prefer native package managers,
+> see the [Native Package Installation](#native-package-installation) section below.
 
 Verify the installation:
 
@@ -45,7 +49,7 @@ You can also manually download the appropriate tar.gz package for your platform 
 #### Available tar.gz Packages
 
 | Platform | Architecture | Package Name |
-|----------|--------------|--------------|
+| ---------- | -------------- | -------------- |
 | macOS | ARM64 (Apple Silicon) | `kubeaid-cli_Darwin_arm64.tar.gz` |
 | macOS | x86_64 (Intel) | `kubeaid-cli_Darwin_x86_64.tar.gz` |
 | Linux | ARM64 | `kubeaid-cli_Linux_arm64.tar.gz` |
@@ -84,7 +88,7 @@ You can also manually download the appropriate tar.gz package for your platform 
 Native packages are available for Linux distributions in both `amd64` and `arm64` architectures:
 
 | Format | Architecture | Package Name | Distribution |
-|--------|--------------|--------------|--------------|
+| -------- | -------------- | -------------- | -------------- |
 | `.deb` | amd64 | `kubeaid-cli_v<VERSION>_linux_amd64.deb` | Debian, Ubuntu |
 | `.deb` | arm64 | `kubeaid-cli_v<VERSION>_linux_arm64.deb` | Debian, Ubuntu |
 | `.rpm` | amd64 | `kubeaid-cli_v<VERSION>_linux_amd64.rpm` | RHEL, Fedora, CentOS |
@@ -168,7 +172,8 @@ flowchart TB
     InfraProv -->|Creates<br/>Infrastructure| CP
 ```
 
-> **Note:** For KubeOne (SSH-only bare metal), there is no management cluster. KubeOne connects directly to your servers via SSH.
+> **Note:** For KubeOne (SSH-only bare metal), there is no management cluster. KubeOne connects directly
+> to your servers via SSH.
 
 ### Monitoring Progress
 
@@ -180,7 +185,7 @@ flowchart TB
 
 Upon successful completion, you'll see:
 
-```
+```text
 ✓ Cluster bootstrap complete!
   Kubeconfig saved to: outputs/kubeconfigs/clusters/main.yaml
 ```
@@ -196,7 +201,7 @@ kubectl cluster-info
 
 Expected output:
 
-```
+```text
 Kubernetes control plane is running at https://<cluster-endpoint>:6443
 CoreDNS is running at https://<cluster-endpoint>:6443/api/v1/namespaces/kube-system/services/kube-dns:dns/proxy
 ```
@@ -224,7 +229,7 @@ kubectl get applications -n argocd
 ### Common Issues
 
 | Issue | Cause | Solution |
-|-------|-------|----------|
+| ------- | ------- | ---------- |
 | Bootstrap hangs | Network issues or resource constraints | Check logs in `outputs/.log` |
 | Management cluster fails to create | Docker not running | Start Docker and retry |
 | Cloud resources fail to provision | Invalid credentials | Verify `secrets.yaml` credentials |
@@ -258,6 +263,7 @@ kubeaid-cli cluster bootstrap
 ### AWS
 
 The bootstrap creates:
+
 - VPC with public/private subnets
 - NAT Gateway for private subnet egress
 - Security groups for control plane and workers
@@ -267,6 +273,7 @@ The bootstrap creates:
 ### Azure
 
 The bootstrap creates:
+
 - Resource group for all resources
 - Virtual network with subnets
 - Network security groups
@@ -276,11 +283,13 @@ The bootstrap creates:
 ### Hetzner
 
 #### HCloud
+
 - Creates cloud servers for control plane and workers
 - Sets up private network for inter-node communication
 - Configures load balancer for API server
 
 #### Bare Metal
+
 - Connects to existing servers via SSH
 - Configures networking and disk layout
 - Does not create new infrastructure

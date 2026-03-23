@@ -2,7 +2,8 @@
 
 ## Overview
 
-This document describes the design principles, architectural decisions, and best practices for Kubernetes clusters managed with KubeAid. It covers:
+This document describes the design principles, architectural decisions, and best practices
+for Kubernetes clusters managed with KubeAid. It covers:
 
 1. Control plane architecture and security isolation
 2. Storage strategies (Cloud CSI vs Local PV vs Ceph)
@@ -59,7 +60,7 @@ graph LR
 **Key Design Principles:**
 
 | Component | Architecture | Purpose |
-|-----------|--------------|---------|
+| ----------- | -------------- | --------- |
 | **Control Plane** | 3× ARM64 (Ampere) | Dedicated cluster management, cost-effective |
 | **Worker Nodes** | N× AMD64 | Application workloads, scalable |
 | **Taint** | `NoSchedule` | Prevents workloads on control plane |
@@ -73,7 +74,7 @@ graph LR
 **Why use dedicated control plane nodes?**
 
 | Benefit | Description |
-|---------|-------------|
+| --------- | ------------- |
 | **Security Isolation** | Workloads cannot access control plane components directly |
 | **Resource Protection** | Control plane has guaranteed resources, no OOM from workloads |
 | **Stability** | Misbehaving applications cannot crash the cluster |
@@ -82,7 +83,7 @@ graph LR
 **Why ARM64 (Ampere) for control planes?**
 
 | Benefit | Description |
-|---------|-------------|
+| --------- | ------------- |
 | **Cost Effective** | ARM servers are typically 20-40% cheaper than x86 equivalents |
 | **Lower Power** | Better power efficiency for always-on control plane |
 | **Security Boundary** | Different architecture = harder to exploit from x86 workloads |
@@ -114,14 +115,15 @@ kubectl taint nodes <control-plane-node> node-role.kubernetes.io/control-plane:N
 ### ⚠️ Risks of NOT Having Dedicated Controllers
 
 | Risk | Impact | Severity |
-|------|--------|----------|
+| ------ | -------- | ---------- |
 | **OOM Kills** | Workload pods consume memory, causing control plane OOM | 🔴 Critical |
 | **CPU Starvation** | Scheduler/controller-manager become slow or unresponsive | 🔴 Critical |
 | **etcd Latency** | Disk I/O from workloads impacts etcd performance | 🔴 Critical |
 | **Security Breach** | Compromised pod can access etcd data/apiserver | 🔴 Critical |
 | **Cluster Instability** | Random failures, kubectl timeouts, deployment failures | 🟡 High |
 
-**Real-world example:** When worker nodes are full (e.g., volume limit reached), pods may get scheduled on control plane nodes if taints are removed, causing OOM kills and cluster instability.
+**Real-world example:** When worker nodes are full (e.g., volume limit reached), pods may get scheduled on
+control plane nodes if taints are removed, causing OOM kills and cluster instability.
 
 ---
 
@@ -130,7 +132,7 @@ kubectl taint nodes <control-plane-node> node-role.kubernetes.io/control-plane:N
 ### Storage Types Comparison
 
 | Storage Type | Failover | Per-Node Limit | HA Strategy | Best For |
-|--------------|----------|----------------|-------------|----------|
+| -------------- | ---------- | ---------------- | ------------- | ---------- |
 | **Hetzner CSI** | ✅ Automatic | ❌ 16 volumes | Single replica DB | Small/Dev clusters |
 | **AWS EBS** | ✅ Automatic | ❌ 28 volumes | Single replica DB | AWS workloads |
 | **Azure Disk** | ✅ Automatic | ❌ Varies | Single replica DB | Azure workloads |
@@ -173,10 +175,10 @@ We intentionally limit supported storage solutions to **Cloud CSI** and **Ceph**
 **Why not support other options?**
 > "Too much choice just means too many combinations and options for problems in production."
 
-1.  **Maturity Wins**: Ceph is the industry standard for self-hosted Kubernetes storage. It is battle-tested at massive scale.
-2.  **Reduced Complexity**: By standardizing on fewer, better tools, we reduce the "surface area" for bugs.
-3.  **Easier Debugging**: When things fail (and they will), having a simple, well-understood stack makes recovery faster.
-4.  **Production Safety**: We prioritize stability and data integrity over "easy setup" solutions.
+1. **Maturity Wins**: Ceph is the industry standard for self-hosted Kubernetes storage. It is battle-tested at massive scale.
+2. **Reduced Complexity**: By standardizing on fewer, better tools, we reduce the "surface area" for bugs.
+3. **Easier Debugging**: When things fail (and they will), having a simple, well-understood stack makes recovery faster.
+4. **Production Safety**: We prioritize stability and data integrity over "easy setup" solutions.
 
 **Our Rule:** If it's not rock-solid for production, it's not in KubeAid.
 
@@ -185,12 +187,13 @@ We intentionally limit supported storage solutions to **Cloud CSI** and **Ceph**
 ⚠️ **Critical Limitation:** Each Hetzner Cloud server can only attach **16 volumes maximum**.
 
 This is a hardware limitation of Hetzner Cloud (HCloud) servers, not the CSI driver:
+
 - [GitHub Issue #240](https://github.com/hetznercloud/csi-driver/issues/240)
 
 **Impact:**
 
 | Scenario | Volumes Used | Issues |
-|----------|--------------|--------|
+| ---------- | ------------ | ------ |
 | 5 Odoo instances (Odoo PV + 2 PG replicas each) | 5 × 3 = 15 volumes | ⚠️ Almost at limit |
 | 6 Odoo instances | 18 volumes | ❌ Exceeds limit |
 | Add monitoring/logging PVs | +2-4 volumes | ❌ No capacity |
@@ -213,7 +216,7 @@ This is a hardware limitation of Hetzner Cloud (HCloud) servers, not the CSI dri
 ### Why This Matters
 
 | Storage Type | Failover Mechanism | DB Replicas Needed | Reason |
-|--------------|-------------------|-------------------|--------|
+| -------------- | ------------------- | ------------------- | -------- |
 | **Local PV** | ❌ None | 2+ replicas | Data loss if node fails |
 | **Hetzner CSI** | ✅ Volume reattaches | 1 replica | Volume moves to new node |
 | **Ceph** | ✅ Data replicated 3x | 1 replica | Storage handles HA |
@@ -224,14 +227,15 @@ This is a hardware limitation of Hetzner Cloud (HCloud) servers, not the CSI dri
 > 💡 **Key Insight:** Read replicas are for **performance scaling**, not for HA when using failover-capable storage.
 
 | Scenario | Need Read Replicas? | Reason |
-|----------|--------------------|---------|
+| ---------- | -------------------- | --------- |
 | **Read-heavy workload** (10,000+ queries/sec) | ✅ Yes | Distribute read load |
 | **HA with cloud storage** | ❌ No | Storage handles failover |
 | **HA with local storage** | ✅ Yes | No storage-level failover |
 | **Small/Medium apps** | ❌ No | Single instance sufficient |
 | **Backups available** | ❌ No | Can restore from backup |
 
-**Real-world example:** None of our current workloads (Obmondo, Image2Work) have the scale requiring read replicas. Backups + failover storage provides sufficient data protection.
+**Real-world example:** None of our current workloads (Obmondo, Image2Work) have the scale requiring read replicas.
+Backups + failover storage provides sufficient data protection.
 
 ### Backups vs Replicas
 
@@ -379,7 +383,7 @@ postgres:
 > ⚠️ **CRITICAL:** Never reduce memory **limits** to save resources. Only adjust **requests**.
 
 | Setting | Purpose | Safe to Reduce? |
-|---------|---------|----------------|
+| --------- | --------- | -------------- |
 | **Memory Request** | Scheduling guarantee | ✅ Yes (carefully) |
 | **Memory Limit** | OOM kill threshold | ❌ **NO** |
 | **CPU Request** | Scheduling guarantee | ✅ Yes |
@@ -453,7 +457,7 @@ kubectl get pods --all-namespaces -o json | jq -r '
 ### Hetzner Cloud (HCloud)
 
 | Aspect | Details | Impact |
-|--------|---------|--------|
+| -------- | --------- | -------- |
 | **Volume Limit** | 16 volumes per server | Plan capacity carefully |
 | **Volume Failover** | ✅ Automatic reattachment | Use single DB replica |
 | **Stability** | Occasional API timeouts | May cause PV attach delays |
@@ -466,7 +470,7 @@ kubectl get pods --all-namespaces -o json | jq -r '
 ### Hetzner Bare Metal (Dedicated) - Recommended for Production
 
 | Aspect | Details | Impact |
-|--------|---------|--------|
+| -------- | --------- | -------- |
 | **Volume Limit** | ✅ No cloud volume limit | Use local PV or Ceph |
 | **Local Storage** | Fast NVMe/SSD | Great for databases |
 | **Ceph** | ✅ Recommended | No per-node limits |
@@ -476,7 +480,7 @@ kubectl get pods --all-namespaces -o json | jq -r '
 #### Recommended Hardware: AX52
 
 | Component | Specification | Purpose |
-|-----------|---------------|---------|
+| ----------- | --------------- | --------- |
 | **CPU** | AMD Ryzen 9 5950X (16c/32t) | High-performance workloads |
 | **RAM** | 128 GB DDR4 ECC | Large memory for apps + Ceph |
 | **Storage** | 2× 3.84 TB NVMe | Ceph OSD + Local PV |
@@ -513,6 +517,7 @@ graph TB
 ```
 
 **Why 10G NIC?**
+
 - Ceph replication requires high bandwidth between nodes
 - Reduces latency for distributed storage operations
 - Enables fast recovery when OSD fails
@@ -549,7 +554,9 @@ flowchart LR
     style cloud fill:#667eea,stroke:#a3bffa,color:#fff
 ```
 
-> **Key Insight:** Hetzner Cloud CSI is suitable for dev/small workloads but hits limitations (16 volumes/node) for larger deployments. Migrate to Ceph on bare metal for production scale.
+> **Key Insight:** Hetzner Cloud CSI is suitable for dev/small workloads but hits limitations
+> (16 volumes/node) for larger deployments.
+> Migrate to Ceph on bare metal for production scale.
 
 ---
 
@@ -558,7 +565,7 @@ flowchart LR
 ### Storage Selection
 
 | Question | If Yes | If No |
-|----------|--------|-------|
+| ---------- | ------ | ----- |
 | Over 10 stateful applications? | Use Ceph | Cloud CSI may work |
 | Need >16 volumes per node? | Use Ceph/Local PV | Cloud CSI OK |
 | Using Hetzner dedicated servers? | Use Ceph | N/A |
@@ -567,7 +574,7 @@ flowchart LR
 ### Database Replica Count
 
 | Storage Type | Use 1 Replica | Use 2+ Replicas |
-|--------------|---------------|-----------------|
+| -------------- | --------------- | ----------------- |
 | Hetzner CSI | ✅ | ❌ |
 | AWS EBS/EFS | ✅ | ❌ |
 | Azure Disk | ✅ | ❌ |
@@ -578,7 +585,7 @@ flowchart LR
 ### Control Plane Configuration
 
 | Environment | Dedicated CP? | ARM64 CP? | Taints? |
-|-------------|---------------|-----------|---------|
+| ------------- | --------------- | ----------- | --------- |
 | Development | Optional | Optional | ✅ Required |
 | Staging | ✅ Recommended | Optional | ✅ Required |
 | Production | ✅ Required | ✅ Recommended | ✅ Required |
@@ -647,6 +654,7 @@ databases:
 **Cause:** Missing taints on control plane nodes
 
 **Fix:**
+
 ```bash
 kubectl taint nodes <cp-node> node-role.kubernetes.io/control-plane:NoSchedule
 ```
@@ -656,6 +664,7 @@ kubectl taint nodes <cp-node> node-role.kubernetes.io/control-plane:NoSchedule
 **Cause:** Hetzner CSI 16-volume limit
 
 **Fix:**
+
 1. Reduce DB replicas: `postgres.instance: 1`
 2. Add more worker nodes
 3. Migrate to Ceph storage
@@ -667,6 +676,7 @@ See: [Hetzner CSI Volume Limit Debugging](../guides/storage/hetzner/hetzner-csi-
 **Cause:** Using local PV with single replica
 
 **Fix:** With local PV, use 2+ replicas:
+
 ```yaml
 postgres:
   instance: 2
@@ -677,22 +687,30 @@ postgres:
 ## Related Documentation
 
 **Hetzner Storage Guides:**
-- [Hetzner CSI Volume Limit Debugging](https://gitea.obmondo.com/EnableIT/wiki/src/branch/master/guides/storage/hetzner/hetzner-csi-volume-limit-debugging.md) - 16 volumes/node limit
-- [Hetzner Block Storage Debugging](https://gitea.obmondo.com/EnableIT/wiki/src/branch/master/guides/storage/hetzner/hetzner-block-storage-debugging.md) - Volume mount issues
+
+- [Hetzner CSI Volume Limit Debugging](https://gitea.obmondo.com/EnableIT/wiki/src/branch/master/guides/storage/hetzner/hetzner-csi-volume-limit-debugging.md)
+  16 volumes/node limit
+- [Hetzner Block Storage Debugging](https://gitea.obmondo.com/EnableIT/wiki/src/branch/master/guides/storage/hetzner/hetzner-block-storage-debugging.md)
+  Volume mount issues
 
 **Alert Handling:**
-- [KubeContainerWaiting](https://gitea.obmondo.com/EnableIT/wiki/src/branch/master/procedures/alerts/KubeContainerWaiting.md) - Pods stuck in ContainerCreating
-- [KubePodNotReady](https://gitea.obmondo.com/EnableIT/wiki/src/branch/master/procedures/alerts/KubePodNotReady.md) - Pod scheduling issues
+
+- [KubeContainerWaiting](https://gitea.obmondo.com/EnableIT/wiki/src/branch/master/procedures/alerts/KubeContainerWaiting.md)
+  Pods stuck in ContainerCreating
+- [KubePodNotReady](https://gitea.obmondo.com/EnableIT/wiki/src/branch/master/procedures/alerts/KubePodNotReady.md)
+  Pod scheduling issues
 
 **Application Guides:**
-- [CSS/JS Asset Loading Failures](https://gitea.obmondo.com/EnableIT/wiki/src/branch/master/guides/debugging/css-js-asset-loading-failures.md) - Volume path mismatches
+
+- [CSS/JS Asset Loading Failures](https://gitea.obmondo.com/EnableIT/wiki/src/branch/master/guides/debugging/css-js-asset-loading-failures.md)
+  Volume path mismatches
 
 ---
 
 ## Summary
 
 | Design Decision | Recommendation |
-|-----------------|----------------|
+| ----------------- | -------------- |
 | Control Plane | Dedicated ARM64 nodes with `NoSchedule` taint |
 | Storage (HCloud) | Hetzner CSI for small, Ceph for large |
 | Storage (Bare Metal) | Always Ceph |

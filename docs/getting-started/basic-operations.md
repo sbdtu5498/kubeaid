@@ -1,15 +1,18 @@
 # Basic Operations
 
-This guide covers the essential KubeAid CLI commands for managing your Kubernetes cluster. All operations are **provider-agnostic** and work the same way regardless of your deployment platform.
+This guide covers the essential KubeAid CLI commands for managing your Kubernetes cluster.
+All operations are **provider-agnostic** and work the same way regardless of your deployment platform.
 
-> **Note:** All `kubeaid-cli` commands are run on your **local machine** (the same machine where you installed the CLI during the [installation step](./installation.md)). The CLI connects to your cluster remotely via kubeconfig or SSH.
+> **Note:** All `kubeaid-cli` commands are run on your **local machine** (the same machine where you installed the CLI
+> during the [installation step](./installation.md)). The CLI connects to your cluster remotely
+> via kubeconfig or SSH.
 
 ## KubeAid CLI Command Reference
 
 Here's a quick reference of the most common `kubeaid-cli` commands:
 
 | Command | Description |
-|---------|-------------|
+| --------- | ------------- |
 | `kubeaid-cli config generate <provider>` | Generate configuration templates |
 | `kubeaid-cli cluster bootstrap` | Create and provision a new cluster |
 | `kubeaid-cli cluster delete main` | Delete the main cluster |
@@ -18,7 +21,8 @@ Here's a quick reference of the most common `kubeaid-cli` commands:
 | `kubeaid-cli --version` | Show CLI version |
 | `kubeaid-cli --help` | Show help and available commands |
 
-> **Note:** KubeAid CLI does not have start/stop/pause/enable/disable commands. Cluster lifecycle is managed through `bootstrap`, `upgrade`, and `delete` operations. For workload management, use standard `kubectl` commands.
+> **Note:** KubeAid CLI does not have start/stop/pause/enable/disable commands. Cluster lifecycle is managed
+> through `bootstrap`, `upgrade`, and `delete` operations. For workload management, use standard `kubectl` commands.
 
 ---
 
@@ -65,7 +69,8 @@ To upgrade the Kubernetes version of your cluster:
 kubeaid-cli cluster upgrade --new-k8s-version v1.32.0
 ```
 
-> **Note:** Replace `v1.32.0` with your target Kubernetes version. Always review the [Kubernetes changelog](https://kubernetes.io/releases/) before upgrading.
+> **Note:** Replace `v1.32.0` with your target Kubernetes version. Always review the
+> [Kubernetes changelog](https://kubernetes.io/releases/) before upgrading.
 
 ---
 
@@ -76,6 +81,7 @@ This section covers how to delete and clean up your KubeAid-managed Kubernetes c
 ### Before You Begin
 
 > **Warning:** Cluster deletion is **irreversible**. Ensure you have:
+>
 > - Backed up any important data (especially `general.yaml` if you want to recreate the cluster later)
 > - Exported any sealed secrets you want to preserve
 > - Saved your `secrets.yaml` in your password store
@@ -87,16 +93,21 @@ kubeaid-cli cluster delete main
 ```
 
 This command will:
+
 - Drain and remove all worker nodes
 - Delete the control plane
 - Remove cloud resources (for cloud providers)
 
 ### Step 2: Delete the Management Cluster (ClusterAPI only)
 
-> **Note:** This step only applies to **ClusterAPI-based installations** (AWS, Azure, Hetzner). If you used **KubeOne** for a bare metal (SSH-only) cluster, skip this step - there is no management cluster.
+> **Note:** This step only applies to **ClusterAPI-based installations** (AWS, Azure, Hetzner). If you used
+> **KubeOne** for a bare metal (SSH-only) cluster, skip this step -
+> there is no management cluster.
 
 **What is the management cluster?**  
-ClusterAPI uses a temporary local Kubernetes cluster (running in Docker via K3D) to orchestrate the provisioning of your actual "main" cluster. This management cluster runs the ClusterAPI controllers that create and manage your cloud infrastructure.
+ClusterAPI uses a temporary local Kubernetes cluster (running in Docker via K3D) to orchestrate the provisioning
+of your actual "main" cluster. This management cluster runs the ClusterAPI controllers
+that create and manage your cloud infrastructure.
 
 ```bash
 kubeaid-cli cluster delete management
@@ -243,7 +254,8 @@ k3d cluster list
 
 To create a new cluster with the same configuration:
 
-1. Retrieve your `general.yaml` (which you saved in your kubeaid-config repo during [pre-configuration](./pre-configuration.md), right?)
+1. Retrieve your `general.yaml` (which you saved in your kubeaid-config repo during [pre-configuration](./pre-configuration.md),
+   right?)
 2. Retrieve your `secrets.yaml` from your password store
 3. Follow the [Pre-Configuration](./pre-configuration.md) and [Installation](./installation.md) guides
 
@@ -262,7 +274,7 @@ kubeaid-cli cluster bootstrap
 ### Common Issues
 
 | Issue | Cause | Solution |
-|-------|-------|----------|
+| ------- | ------- | ---------- |
 | CLI command not found | CLI not installed or not in PATH | Re-run the [CLI installation](./installation.md#installing-kubeaid-cli) |
 | Delete hangs | Resources stuck or network issues | Check cloud provider console for stuck resources |
 | Management cluster already deleted | Running delete twice | This is safe to ignore |

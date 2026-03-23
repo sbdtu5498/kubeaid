@@ -18,7 +18,7 @@ An instance-wide maximum lifetime setting can limit the maximum allowable lifeti
 ### Scopes
 
 |Scope|Description|
-|---|---|
+| --- | --- |
 |api|Grants complete read and write access to the scoped project API, including the Package Registry.|
 |read_api|Grants read access to the scoped project API, including the Package Registry.|
 |read_registry|Allows read access (pull) to the Container Registry images if a project is private and authorization is required.|
@@ -33,4 +33,4 @@ for more information.
 
 If you are unable to create the Project Access Token, please create a separate user called
 `obmondo-<service>-user` and provide Personal Access Token of that user.
-Check how to create PAT [here](https://docs.gitlab.com/ee/user/profile/personal_access_tokens.html).
+Check how to create a PAT in the [GitLab documentation](https://docs.gitlab.com/ee/user/profile/personal_access_tokens.html).

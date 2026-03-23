@@ -1,6 +1,8 @@
 # Prometheus Configuration in KubeAid
 
-KubeAid uses [kube-prometheus](https://github.com/prometheus-operator/kube-prometheus) to provide a comprehensive monitoring stack including Prometheus, Grafana, and Alertmanager. This guide explains how to configure monitoring for your cluster.
+KubeAid uses [kube-prometheus](https://github.com/prometheus-operator/kube-prometheus) to provide a comprehensive
+monitoring stack including Prometheus, Grafana, and Alertmanager. This guide explains how to configure monitoring for
+your cluster.
 
 ## Overview
 
@@ -42,7 +44,7 @@ flowchart LR
 
 Each cluster has a Jsonnet variables file at:
 
-```
+```text
 kubeaid-config/k8s/<cluster-name>/<cluster-name>-vars.jsonnet
 ```
 
@@ -117,7 +119,7 @@ From the KubeAid repository root:
 
 This generates manifests in:
 
-```
+```text
 kubeaid-config/k8s/<cluster-name>/kube-prometheus/
 ```
 
@@ -176,7 +178,9 @@ grafana_dashboards: {
 },
 ```
 
-See the [build/kube-prometheus README](../../build/kube-prometheus/README.md#adding-support-for-custom-dashboards-in-grafana) for detailed instructions.
+See the [build/kube-prometheus
+README](../../build/kube-prometheus/README.md#adding-support-for-custom-dashboards-in-grafana) for detailed
+instructions.
 
 ### Alertmanager Configuration
 
@@ -205,7 +209,7 @@ KubeAid supports automatic PR creation when monitoring configurations change.
 Set these repository secrets:
 
 | Variable | Description |
-|----------|-------------|
+| ---------- | ------------- |
 | `API_TOKEN_GITHUB` | GitHub PAT with `repo` permission |
 | `OBMONDO_DEPLOY_REPO_TARGET` | Target repo (e.g., `org/kubeaid-config`) |
 | `OBMONDO_DEPLOY_REPO_TARGET_BRANCH` | Branch name (e.g., `main`) |
@@ -215,7 +219,7 @@ Set these repository secrets:
 Set these CI/CD variables:
 
 | Variable | Description |
-|----------|-------------|
+| ---------- | ------------- |
 | `KUBERNETES_CONFIG_REPO_TOKEN` | GitLab token with `api` and `read_repository` |
 | `KUBERNETES_CONFIG_REPO_URL` | Full repo URL |
 
@@ -229,15 +233,15 @@ To upgrade to a new version:
 kube_prometheus_version: 'v0.14.0',  // Update this
 ```
 
-2. Run the build script:
+1. Run the build script:
 
 ```bash
 ./build/kube-prometheus/build.sh ../kubeaid-config/k8s/<cluster-name>
 ```
 
-3. Review generated changes and commit
+1. Review generated changes and commit
 
-4. Sync via ArgoCD
+2. Sync via ArgoCD
 
 ## Troubleshooting
 

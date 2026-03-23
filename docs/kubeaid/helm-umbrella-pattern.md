@@ -1,10 +1,12 @@
 # Helm Umbrella Pattern in KubeAid
 
-KubeAid uses the **Helm Umbrella Pattern** to manage applications in your Kubernetes clusters. This document explains how this pattern works and why it's beneficial.
+KubeAid uses the **Helm Umbrella Pattern** to manage applications in your Kubernetes clusters. This document explains
+how this pattern works and why it's beneficial.
 
 ## What is the Helm Umbrella Pattern?
 
-The Helm Umbrella Pattern is an architectural approach where a single "parent" or "root" Helm chart (the "umbrella") manages multiple "child" charts as dependencies. In KubeAid's context:
+The Helm Umbrella Pattern is an architectural approach where a single "parent" or "root" Helm chart (the "umbrella")
+manages multiple "child" charts as dependencies. In KubeAid's context:
 
 - **Root Application**: The main ArgoCD Application that manages all other applications in the cluster
 - **Child Applications**: Individual applications (Prometheus, Cilium, Ingress, etc.) that are managed by the root
@@ -40,9 +42,10 @@ flowchart TB
 
 ### Directory Structure
 
-In KubeAid, the `argocd-helm-charts/` directory contains **wrapper charts** for upstream applications. Each directory is a self-contained Helm chart that wraps an upstream chart as a dependency.
+In KubeAid, the `argocd-helm-charts/` directory contains **wrapper charts** for upstream applications. Each directory is
+a self-contained Helm chart that wraps an upstream chart as a dependency.
 
-```
+```text
 argocd-helm-charts/
 ├── cert-manager/            # Wrapper for cert-manager
 │   ├── Chart.yaml           # Declares dependency on upstream chart
@@ -58,17 +61,19 @@ argocd-helm-charts/
 
 ### The Root Application
 
-The "Root" application (the Umbrella) is defined in your **`kubeaid-config` repository**. It is typically an "App of Apps" pattern that:
+The "Root" application (the Umbrella) is defined in your **`kubeaid-config` repository**. It is typically an "App of
+Apps" pattern that:
 
-1.  Is generated/configured when you set up your cluster
-2.  Contains manifest files (ApplicationSets or Applications) that point to the wrapper charts in KubeAid
-3.  Manages the lifecycle of the entire cluster's software stack
+1. Is generated/configured when you set up your cluster
+2. Contains manifest files (ApplicationSets or Applications) that point to the wrapper charts in KubeAid
+3. Manages the lifecycle of the entire cluster's software stack
 
 When ArgoCD syncs this Root Application:
-1.  It sees the list of child applications (e.g., Cilium, Cert-Manager)
-2.  It creates ArgoCD Applications for each one
-3.  Those Applications then point to the implementation in `argocd-helm-charts/`
-4.  The wrapper charts in `argocd-helm-charts/` then pull in the actual upstream Helm charts
+
+1. It sees the list of child applications (e.g., Cilium, Cert-Manager)
+2. It creates ArgoCD Applications for each one
+3. Those Applications then point to the implementation in `argocd-helm-charts/`
+4. The wrapper charts in `argocd-helm-charts/` then pull in the actual upstream Helm charts
 
 ## Benefits of This Pattern
 
@@ -108,6 +113,7 @@ metadata:
 ### 4. GitOps Compliance
 
 Every change flows through Git:
+
 1. Make changes in your `kubeaid-config` repository
 2. Create a Pull Request
 3. Review and merge
@@ -141,7 +147,7 @@ applications:
       # Your custom values here
 ```
 
-3. Commit and push - ArgoCD will deploy it
+1. Commit and push - ArgoCD will deploy it
 
 ### Customizing an Application
 

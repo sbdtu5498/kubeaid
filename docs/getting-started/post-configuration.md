@@ -1,6 +1,7 @@
 # Post-Configuration
 
-After your cluster is bootstrapped, this guide covers verification, accessing services, and initial configuration. These steps are **the same for all providers**.
+After your cluster is bootstrapped, this guide covers verification, accessing services, and initial configuration.
+These steps are **the same for all providers**.
 
 ## Step 1: Verify Cluster Health
 
@@ -40,6 +41,7 @@ kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.pas
 ```
 
 **Default credentials:**
+
 - Username: `admin`
 - Password: Set in your `secrets.yaml` or retrieve from the secret above
 
@@ -96,6 +98,7 @@ kubectl get svc -n ingress-nginx
 ```
 
 Create DNS records (A or CNAME) for:
+
 - `argocd.your-domain.com`
 - `grafana.your-domain.com`
 - `prometheus.your-domain.com`
@@ -123,7 +126,8 @@ kubectl apply -f my-sealed-secret.yaml
 ### Where Secrets Are Stored
 
 Sealed secrets should be committed to your `kubeaid-config` repository:
-```
+
+```text
 k8s/<cluster-name>/sealed-secrets/<namespace>/<secret-name>.json
 ```
 
@@ -151,7 +155,8 @@ git push origin main
 
 ### Hetzner HCloud
 
-> **Storage Limitation:** HCloud storage only allows a maximum of 16 buckets (PersistentVolumes) per physical node. Monitor PV usage to avoid exhausting storage before node resources.
+> **Storage Limitation:** HCloud storage only allows a maximum of 16 buckets (PersistentVolumes) per physical node.
+> Monitor PV usage to avoid exhausting storage before node resources.
 
 ### Azure
 
@@ -174,7 +179,7 @@ kubectl get pods -n kube-system -l app=kube2iam
 ### Common Issues
 
 | Issue | Solution |
-|-------|----------|
+| ------- | ---------- |
 | Nodes not ready | Check kubelet logs: `kubectl describe node <node-name>` |
 | Pods stuck in Pending | Check for resource constraints: `kubectl describe pod <pod-name>` |
 | ArgoCD apps not syncing | Check ArgoCD logs: `kubectl logs -n argocd deployment/argocd-application-controller` |

@@ -181,7 +181,7 @@ Parameter                             | Description                             
 `peer_name`                           | Specifies the name of the wireguard peer                                                        | `az_wg`
 `wg_resource_group`                   | Specifies the resource group name where the wireguard will be created                           | `alz-network-hub`
 `wg_vnet_name`                        | Specifies the name of the virtual network where the wireguard will be created                   | `wg_vnet`
-`wg_vnet_id`                          | Specifies the id of an existing wireguard virtual network . It will be used for peering from cluster to wireguard                                        | `/subscriptions/xxxxx/resourceGroups/obmondo/providers/Microsoft.Network/virtualNetworks/obmondo`
+`wg_vnet_id`                          | Specifies the id of a wireguard virtual network for peering from cluster to wireguard           | `/subscriptions/xxxxx/resourceGroups/obmondo/providers/Microsoft.Network/virtualNetworks/obmondo`
 `argocd_admin_password`               | Specifies the argocd admin password                                                             | `sdfdsfdsf234234234`
 `argocd_admin_bcrypt_password`        | Specifies the argocd admin bcrypt password                                                      | `$2a$12$sdfdsf2334234.tGewzImV5Hi05x7.9/3WbfS`
-`environment`                         | Specifies the tag name of the cluster                                                                   | `prod`
+`environment`                         | Specifies the tag name of the cluster                                                           | `prod`

@@ -1,6 +1,7 @@
 # Prerequisites
 
-This guide helps you prepare everything needed to deploy a KubeAid-managed Kubernetes cluster. Whether you're setting up a production environment in the cloud or a local development cluster, start here.
+This guide helps you prepare everything needed to deploy a KubeAid-managed Kubernetes cluster.
+Whether you're setting up a production environment in the cloud or a local development cluster, start here.
 
 ---
 
@@ -9,7 +10,7 @@ This guide helps you prepare everything needed to deploy a KubeAid-managed Kuber
 KubeAid supports two deployment paths. Choose based on your use case:
 
 | Deployment Type | Best For | What You Need |
-|-----------------|----------|---------------|
+| ----------------- | ---------- | --------------- |
 | **Cloud / Distributed** | Production workloads, multi-node clusters | Cloud provider account (AWS, Azure, Hetzner) or bare metal servers |
 | **Local (K3D)** | Development, testing, learning KubeAid | Docker running on your local machine |
 
@@ -22,7 +23,7 @@ KubeAid supports two deployment paths. Choose based on your use case:
 ### Minimum Compute Requirements
 
 | Component | Local (K3D) | Cloud / Bare Metal (per node) |
-|-----------|-------------|-------------------------------|
+| ----------- | ------------- | ------------------------------- |
 | **RAM** | 8GB (16GB recommended) | 16GB+ |
 | **CPU** | 4 cores | 4+ cores |
 | **Storage** | 50GB free disk space | 100GB+ |
@@ -34,7 +35,7 @@ KubeAid supports two deployment paths. Choose based on your use case:
 KubeAid runs on the following CPU architectures:
 
 | Architecture | Also Known As | Examples |
-|--------------|---------------|----------|
+| -------------- | --------------- | ---------- |
 | **amd64** | x86_64 | Intel Core, AMD Ryzen, most cloud VMs |
 | **arm64** | aarch64 | Apple Silicon (M1/M2/M3/M4), Raspberry Pi 4+ |
 
@@ -72,17 +73,20 @@ The following packages must be installed on your local machine:
   
 ### Docker  
   
-Ensure [Docker](https://docs.docker.com/get-docker/) is installed and running locally on your machine. Docker Desktop is recommended for Linux, macOS, and Windows users for ease of use.
+Ensure [Docker](https://docs.docker.com/get-docker/) is installed and running locally on your machine.
+Docker Desktop is recommended for Linux, macOS, and Windows users for ease of use.
   
 ### Git Repositories  
   
 You need to set up two Git repositories:  
   
-1. **KubeAid Repository**: Fork or mirror the [KubeAid repository](https://github.com/Obmondo/KubeAid) from Obmondo.   
-     
-   **Important**: Never make changes on the master/main branch of your mirror of the KubeAid repository, as this branch is used to deliver updates. All customizations should happen in your `kubeaid-config` repository.
+1. **KubeAid Repository**: Fork or mirror the [KubeAid repository](https://github.com/Obmondo/KubeAid) from Obmondo.
+
+  **Important**: Never make changes on the master/main branch of your mirror of the KubeAid repository,
+  as this branch is used to deliver updates. All customizations should happen in your `kubeaid-config` repository.
   
-2. **KubeAid Config Repository**: Fork the [KubeAid Config repository](https://github.com/Obmondo/kubeaid-config), which will contain your cluster-specific configurations.
+1. **KubeAid Config Repository**: Fork the [KubeAid Config repository](https://github.com/Obmondo/kubeaid-config),
+   which will contain your cluster-specific configurations.
 
 #### Repository Structure Overview
 
@@ -123,7 +127,8 @@ flowchart LR
     ArgoApps -.->|references charts| HelmCharts
 ```
 
-> **Key Concept:** The KubeAid repo contains Helm charts and templates. Your KubeAid Config repo contains values files and ArgoCD Application manifests that reference those charts.
+> **Key Concept:** The KubeAid repo contains Helm charts and templates.
+> Your KubeAid Config repo contains values files and ArgoCD Application manifests that reference those charts.
   
 ### Git Provider Credentials  
   
@@ -131,13 +136,16 @@ Keep your Git provider credentials ready. These will be used by ArgoCD for GitOp
   
 #### GitHub  
   
-Create a [Personal Access Token (PAT)](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens#creating-a-fine-grained-personal-access-token) with permission to write to your KubeAid Config fork. This PAT will be used as the password.
+Create a [Personal Access Token (PAT)](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens#creating-a-fine-grained-personal-access-token)
+with permission to write to your KubeAid Config fork. This PAT will be used as the password.
   
-**Best Practice**: Create a separate user called `obmondo-<service>-user` and use its Personal Access Token instead of your personal account token.
+**Best Practice**: Create a separate user called `obmondo-<service>-user`
+and use its Personal Access Token instead of your personal account token.
   
 #### GitLab  
   
-For GitLab, you can create a Project Access Token (available in self-hosted and enterprise GitLab) or create a separate user called `obmondo-<service>-user` and provide its Personal Access Token.
+For GitLab, you can create a Project Access Token (available in self-hosted and enterprise GitLab)
+or create a separate user called `obmondo-<service>-user` and provide its Personal Access Token.
   
 ## Provider-Specific Prerequisites  
   
@@ -147,46 +155,60 @@ For GitLab, you can create a Project Access Token (available in self-hosted and 
   
 ### Azure  
   
-- **System Requirements**: A Linux or MacOS computer with at least 16GB of RAM (8GB might work but may encounter Out of memory (OOM) issues).
+- **System Requirements**: A Linux or MacOS computer with at least 16GB of RAM
+  (8GB might work but may encounter Out of memory (OOM) issues).
   
-- **Service Principal**: [Register an application (Service Principal) in Microsoft Entra ID](https://learn.microsoft.com/en-us/entra/identity-platform/quickstart-register-app).  
+- **Service Principal**: [Register an application (Service Principal) in Microsoft Entra ID](https://learn.microsoft.com/en-us/entra/identity-platform/quickstart-register-app).
   
-- **SSH Keypairs**:   
+- **SSH Keypairs**:
   - An OpenSSH type SSH keypair (private key for SSH access to VMs). You can generate this using:
+
     ```bash
     ssh-keygen -t ed25519 -f azure-ssh-key -C "azure-cluster-key"
     ```
-  - A key pair in PEM format (required for [Azure Workload Identity setup](https://learn.microsoft.com/en-us/azure/aks/workload-identity-deploy-cluster)). You can generate this using:
+
+  - A key pair in PEM format (required for [Azure Workload Identity setup](https://learn.microsoft.com/en-us/azure/aks/workload-identity-deploy-cluster)).
+    You can generate this using:
+
     ```bash
     openssl genpkey -algorithm ed25519 -out jwt-signing-key.pem
     openssl pkey -in jwt-signing-key.pem -pubout -out jwt-signing-pub.pem
     ```
 
-  > **Note:** ed25519 keys are shorter and more secure than RSA keys, though not quantum-safe. If RSA is preferred by you or your organization, use `ssh-keygen -t rsa -b 4096` and `openssl genrsa -out jwt-signing-key.pem 4096` instead.
+  > **Note:** ed25519 keys are shorter and more secure than RSA keys, though not quantum-safe.
+  > If RSA is preferred by you or your organization, use `ssh-keygen -t rsa -b 4096`
+  > and `openssl genrsa -out jwt-signing-key.pem 4096` instead.
   
 ### Bare Metal  
   
-For general bare metal setups (non-Hetzner), only the common dependencies are required. The bare metal provider uses [Kubermatic KubeOne](https://github.com/kubermatic/kubeone) under the hood for SSH-only access platforms without API host management support.   
+For general bare metal setups (non-Hetzner), only the common dependencies are required.
+The bare metal provider uses [Kubermatic KubeOne](https://github.com/kubermatic/kubeone) under the hood for SSH-only access
+platforms without API host management support.
   
 ### Hetzner  
   
 #### Hetzner HCloud  
   
-- **HCloud SSH KeyPair**: Create an HCloud SSH KeyPair. Note that no two HCloud SSH KeyPairs can have the same SSH public key. 
+- **HCloud SSH KeyPair**: Create an HCloud SSH KeyPair.
+  Note that no two HCloud SSH KeyPairs can have the same SSH public key.
   
 #### Hetzner Bare Metal  
   
-- **Hetzner Bare Metal SSH KeyPair**: Create a Hetzner Bare Metal SSH KeyPair at https://robot.hetzner.com/key/index. Note that no two Hetzner Bare Metal SSH KeyPairs can have the same SSH public key.   
+- **Hetzner Bare Metal SSH KeyPair**: Create a Hetzner Bare Metal SSH KeyPair at
+  https://robot.hetzner.com/key/index. Note that no two Hetzner Bare Metal SSH KeyPairs can have the same SSH public key.
   
-- **RAID Cleanup** (if applicable): If you plan to set `cloud.hetzner.bareMetal.wipeDisks: True` in your configuration, remove any pre-existing RAID setup from your Hetzner Bare Metal servers by executing `wipefs -fa <partition-name>` for each partition.   
+- **RAID Cleanup** (if applicable): If you plan to set `cloud.hetzner.bareMetal.wipeDisks: True` in your configuration,
+  remove any pre-existing RAID setup from your Hetzner Bare Metal servers by executing
+  `wipefs -fa <partition-name>` for each partition.
   
 #### Hetzner Hybrid  
   
-Requires both HCloud and Hetzner Bare Metal prerequisites listed above.   
+Requires both HCloud and Hetzner Bare Metal prerequisites listed above.
   
 ### Local K3D  
   
-For local testing with K3D, only the common dependencies are required. Note that this setup does not support cluster upgrades and disaster recovery.
+For local testing with K3D, only the common dependencies are required.
+Note that this setup does not support cluster upgrades and disaster recovery.
   
 ## Notes  
   
