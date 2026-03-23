@@ -3,15 +3,15 @@ name: step-ca
 version: 1.0.0
 dependencies:
   - name: step-issuer
-    version: 1.9.11
+    version: 1.10.1
     repository: https://smallstep.github.io/helm-charts
   - name: step-certificates
-    version: 1.29.0
+    version: 1.30.0
     repository: https://smallstep.github.io/helm-charts
   - name: autocert
-    version: 1.20.5
+    version: 1.20.6
     repository: https://smallstep.github.io/helm-charts
     condition: autocert.enabled
   - name: trust-manager
-    version: v0.21.1
+    version: v0.22.0
     repository: https://charts.jetstack.io
