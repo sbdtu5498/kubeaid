@@ -1,12 +1,14 @@
 
 # **How to work on a Service Window and inform Stakeholders - for Cluster's KubeAid Application Upgrades**
 
+## **1. Service Window**
 
-### **1. Service Window** 
+Servicewindow: Updates should happen within service windows - that you have advertised to relevant system owners and
+stakeholders - just in case any downtime occurs - so you know how much time you have before you have to use your backup
+plan.
 
-Servicewindow: Updates should happen within service windows - that you have advertised to relevant system owners and stakeholders - just in case any downtime occurs - so you know how much time you have before you have to use your backup plan.
-
-If you're a subscriber at [Obmondo](https://obmondo.com/customer/service-window/bookings) we'll take care of this for you automaticly.
+If you're a subscriber at [Obmondo](https://obmondo.com/customer/service-window/bookings) we'll take care of this for
+you automaticly.
 
 ### **2. Book the Service Window**
 
@@ -19,9 +21,9 @@ If you're a subscriber at [Obmondo](https://obmondo.com/customer/service-window/
 ### **3. Notify the Customer/stakeHolder**
 
 * Send a detailed service window notification email.
-* Use the templates available 
+* Use the templates available
 
-```
+```text
 Hi,
 This is to inform you that the following service window has been 
 created:
@@ -48,14 +50,19 @@ XYZ
 ---
 
 ### **4. Prepare PRs, Merge in Git, Push Upstream & Update KubeAid Apps**
+
 * Run the KubeAid update script:
   [https://github.com/Obmondo/KubeAid/blob/master/docs/update_kubeaid_argocd_apps.md](https://github.com/Obmondo/KubeAid/blob/master/docs/update_kubeaid_argocd_apps.md)
-> If a customer chooses to deploy the Helm chart using different application names—such as traefik-external or traefik-internal—we must manually add each of these names to:
 
-```
+> If a customer chooses to deploy the Helm chart using different application names—such as traefik-external or
+  traefik-internal—we must manually add each of these names to:
+
+```text
 k8s/<cluster-name>/kube-prometheus/argocd-application-prometheus-rulesprometheusRuleExample.yaml
 ```
-> This has to be done manually because a single Helm chart can be reused to deploy multiple applications under different names. For example, in Obmondo, traefik is deployed as external, private, etc., each requiring its own entry.
+
+> This has to be done manually because a single Helm chart can be reused to deploy multiple applications under different
+  names. For example, in Obmondo, traefik is deployed as external, private, etc., each requiring its own entry.
 
 * Ensure all relevant PRs are:
   * **Created**
@@ -70,7 +77,9 @@ k8s/<cluster-name>/kube-prometheus/argocd-application-prometheus-rulesprometheus
 
 ### **5. Start With Root App Sync in ArgoCD**
 
-* Start a thread in the customer’s channel(or any other mode of communication) to inform them about the service window and provide the details of  each application along with the version upgrades. separately maintain a list of issues faced in internal channel and discuss it out.
+* Start a thread in the customer’s channel(or any other mode of communication) to inform them about the service window
+  and provide the details of  each application along with the version upgrades. separately maintain a list of issues
+  faced in internal channel and discuss it out.
 
 * Locate the **root application** in ArgoCD.
 * Ensure the apps listed in the merged PR match the apps defined under the root app.
@@ -83,9 +92,10 @@ k8s/<cluster-name>/kube-prometheus/argocd-application-prometheus-rulesprometheus
 
 * In ArgoCD, apply a filter:
 
-  ```
+```text
   project = kubeaid
   ```
+
 * This ensures you work only on **KubeAid-managed apps**.
 * Do **not** sync customer-specific apps unless specifically instructed.
 
@@ -135,4 +145,6 @@ k8s/<cluster-name>/kube-prometheus/argocd-application-prometheus-rulesprometheus
   * **Ensure all desired replicas come back up and enter a Ready state** after the sync.
   * Verify leader election, replication roles, and cluster health.
 
-> if you're using Obmondo(https://obmondo.com/why-obmondo), we will handle your service windows end-to-end — including notifications and coordination with stakeholders or technical contacts. If not, you will need to manage service window planning and communication on your own.
+> if you're using Obmondo(https://obmondo.com/why-obmondo), we will handle your service windows end-to-end — including
+  notifications and coordination with stakeholders or technical contacts. If not, you will need to manage service window
+  planning and communication on your own.

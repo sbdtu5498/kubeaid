@@ -29,24 +29,25 @@ To see available options, run:
 ```
 
 | Option | Description | Default / Notes |
-|-|-|-|
+| --- | --- | --- |
 | --update-helm-chart | Update a specific Helm chart | Requires path to chart |
 | --update-all | Update all Helm charts | Default: false |
-| --pull-request | Raise a pull request  | Default: false (Only in CI)|
-| --actions| Run inside a GitHub or Gitea Action  | Default: false (Only in CI)|
-| --skip-charts  | Skip updating certain charts| Default: none  |
-| --chart-version| Set chart version  | Default: latest|
-| --add-commits  | Add commits since last tag in changelog| Default: false |
-| -h, --help  | Show help message  | |
+| --pull-request | Raise a pull request | Default: false (Only in CI) |
+| --actions | Run inside a GitHub or Gitea Action | Default: false (Only in CI) |
+| --skip-charts | Skip updating certain charts | Default: none |
+| --chart-version | Set chart version | Default: latest |
+| --add-commits | Add commits since last tag in changelog | Default: false |
+| -h, --help | Show help message | |
 
 ### 🧪 Examples
 
-# Update a specific chart
+#### Update a specific chart
 
 ```bash
 ./bin/helm-repo-update.sh --update-helm-chart traefik
 ```
-# Update all charts and skip some
+
+#### Update all charts and skip some
 
 ```bash
 ./bin/helm-repo-update.sh --update-all --skip-charts 'aws-efs-csi-driver,capi-cluster,grafana-operator,strimzi-kafka-operator'
@@ -60,5 +61,5 @@ Once PR is merged create and push new tag to repo.
 
 Request Klavs or Ashish to do the following:
 
-  - Push this new tag to Github.
-  - Publish new release to Github.
+- Push this new tag to Github.
+- Publish new release to Github.

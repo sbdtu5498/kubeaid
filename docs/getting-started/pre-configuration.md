@@ -1,18 +1,19 @@
 # Pre-Configuration
 
-This step covers generating and configuring the `general.yaml` and `secrets.yaml` files required for cluster setup. The configuration process is **the same across all providers**-only some field values differ.
+This step covers generating and configuring the `general.yaml` and `secrets.yaml` files required for cluster setup.
+The configuration process is **the same across all providers** - only some field values differ.
 
 ## Overview
 
 KubeAid uses two configuration files:
 
 | File | Contains | Storage |
-|------|----------|---------|
+| ------ | ---------- | --------- |
 | `general.yaml` | Cluster specs, node configs, networking settings | Version-controlled in `kubeaid-config` repo |
 | `secrets.yaml` | Credentials for cloud providers and Git | **Store in password manager** (e.g., [pass](https://www.passwordstore.org/)) |
 
-> **Tip:** If you want to be able to recreate this cluster setup after it has been deleted, you must save `general.yaml` to your kubeaid-config repository.
-
+> **Tip:** If you want to be able to recreate this cluster setup after it has been deleted,
+> you must save `general.yaml` to your kubeaid-config repository.
 > **Important:** Always save your `secrets.yaml` in a secure password store for easy recovery. Never commit secrets to Git.
 
 ## Step 1: Generate Configuration Files
@@ -26,7 +27,7 @@ kubeaid-cli config generate <provider>
 Replace `<provider>` with one of:
 
 | Provider | Command |
-|----------|---------|
+| ---------- | ------- |
 | AWS | `kubeaid-cli config generate aws` |
 | Azure | `kubeaid-cli config generate azure` |
 | Hetzner HCloud | `kubeaid-cli config generate hetzner hcloud` |
@@ -37,7 +38,7 @@ Replace `<provider>` with one of:
 
 The generated templates are saved in `outputs/configs/`.
 
-#### Generated Directory Structure
+### Generated Directory Structure
 
 After running the config generate command, your working directory will look like:
 
@@ -140,7 +141,8 @@ cloud:
           maxSize: 10
 ```
 
-> **Note:** HCloud storage only allows a maximum of 16 buckets per physical node. Plan your PV usage accordingly to avoid running out of PVs before node resources are exhausted.
+> **Note:** HCloud storage only allows a maximum of 16 buckets per physical node. Plan your PV usage accordingly
+> to avoid running out of PVs before node resources are exhausted.
 
 #### Hetzner Bare Metal
 
@@ -159,7 +161,8 @@ cloud:
           taints: []
 ```
 
-> **Note:** Server IDs must be unique within a cluster. Each server can only belong to one node pool (either control plane or a worker pool).
+> **Note:** Server IDs must be unique within a cluster. Each server can only belong to one node pool
+> (either control plane or a worker pool).
 
 #### Hetzner Hybrid
 
@@ -203,12 +206,16 @@ cloud:
         taints: []
 ```
 
-> **Note:** The IP addresses shown above (e.g., `10.0.0.1`) are examples. You can use any valid private IP range (RFC 1918) such as:
+> **Note:** The IP addresses shown above (e.g., `10.0.0.1`) are examples. You can use any valid private IP range
+> (RFC 1918) such as:
+>
 > - `10.0.0.0/8` (10.0.0.0 – 10.255.255.255)
 > - `172.16.0.0/12` (172.16.0.0 – 172.31.255.255)
 > - `192.168.0.0/16` (192.168.0.0 – 192.168.255.255)
 >
-> These addresses are for **internal cluster communication** and should not be publicly routable. The control plane addresses are used for the Kubernetes API server and etcd cluster, while worker addresses are for node-to-node and pod networking.
+> These addresses are for **internal cluster communication** and should not be publicly routable.
+> The control plane addresses are used for the Kubernetes API server and etcd cluster,
+> while worker addresses are for node-to-node and pod networking.
 
 #### Local K3D
 
@@ -242,7 +249,7 @@ argocd:
 
 ### Provider-Specific Secrets
 
-#### AWS
+#### AWS Secrets
 
 ```yaml
 aws:
@@ -250,7 +257,7 @@ aws:
   secretAccessKey: <aws-secret-key>
 ```
 
-#### Azure
+#### Azure Secrets
 
 ```yaml
 azure:
@@ -268,7 +275,7 @@ hetzner:
   robotPassword: <robot-password>       # For bare metal only
 ```
 
-#### Bare Metal (SSH-only)
+#### Bare Metal (SSH-only) Secrets
 
 ```yaml
 ssh:
@@ -283,6 +290,7 @@ ssh:
 Before proceeding, verify your configuration:
 
 1. **Check file locations:**
+
    ```bash
    ls -la outputs/configs/
    # Should show: general.yaml, secrets.yaml
@@ -292,12 +300,14 @@ Before proceeding, verify your configuration:
    ```
 
 2. **Validate YAML syntax:**
+
    ```bash
    yq eval '.' outputs/configs/general.yaml > /dev/null && echo "general.yaml is valid"
    yq eval '.' outputs/configs/secrets.yaml > /dev/null && echo "secrets.yaml is valid"
    ```
 
 3. **Store secrets securely:**
+
    ```bash
    # Example using pass
    pass insert kubeaid/my-cluster/secrets.yaml < outputs/configs/secrets.yaml

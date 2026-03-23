@@ -15,7 +15,7 @@ The local provider provisions a KubeAid-managed **K3D** cluster on your local ma
 ## Prerequisites
 
 - Fork the [KubeAid Config](https://github.com/Obmondo/kubeaid-config) repository
-- Git provider credentials (e.g., [GitHub PAT](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens#creating-a-fine-grained-personal-access-token) with write access)
+- [GitHub PAT](https://github.com/settings/tokens) with write access
 - [Docker](https://www.docker.com/products/docker-desktop/) running locally
 
 ## Install KubeAid CLI
@@ -46,7 +46,7 @@ export KUBECONFIG=./outputs/kubeconfigs/main.yaml
 kubectl cluster-info
 ```
 
-Logs are saved in `outputs/.log`. Access [ArgoCD]() and [Grafana]() dashboards.
+Logs are saved in `outputs/.log`. Access the ArgoCD and Grafana dashboards.
 
 ## Cleanup
 

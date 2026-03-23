@@ -1,10 +1,15 @@
 config:
-  line-length:
+  MD013:
     line_length: 120
     code_blocks: false
     tables: false
-  no-bare-urls: false
+
+  MD034: false
+
 ignores:
   - 'argocd-helm-charts/*/*/**'
+  - 'argocd-helm-charts/*/*.md'
+  - 'CHANGELOG.md'
   - 'build/vendor/**'
   - 'build/kube-prometheus/**'
+  - 'build/opendesk/**'

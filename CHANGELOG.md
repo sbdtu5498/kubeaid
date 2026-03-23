@@ -1,6 +1,7 @@
 # Changelog
 
-All releases and the changes included in them (pulled from git commits added since last release) will be detailed in this file.
+All releases and the changes included in them (pulled from git commits added since last release)
+will be detailed in this file.
 
 ## KubeAid Release Version 25.0.0
 
@@ -53,9 +54,11 @@ All releases and the changes included in them (pulled from git commits added sin
 ## KubeAid Release Version 24.4.0
 
 ### New Charts Added
+
 - e45166d19 chore(new): Added new helm chart kubescape-operator 1.30.5
 
 ### Minor Version Upgrades
+
 - cd83704fa Updated cluster-api-operator from version 0.25.0 to 0.26.0
 - cd83704fa Updated cluster-autoscaler from version 9.55.1 to 9.56.0
 - cd83704fa Updated fluent-bit from version 0.55.0 to 0.56.0
@@ -65,6 +68,7 @@ All releases and the changes included in them (pulled from git commits added sin
 - cd83704fa Updated strimzi-kafka-operator from version 0.50.1 to 0.51.0
 
 ### Patch Version Upgrades
+
 - cd83704fa Updated argo-cd from version 9.4.4 to 9.4.9
 - cd83704fa Updated azuredisk-csi-driver from version 1.34.1 to 1.34.2
 - cd83704fa Updated erpnext from version 8.0.24 to 8.0.31
@@ -83,6 +87,7 @@ All releases and the changes included in them (pulled from git commits added sin
 - cd83704fa Updated traefik from version 39.0.2 to 39.0.5
 
 ### Features
+
 - 30d83362c feat: add CNPG support for sonarqube PostgreSQL
 - b1c026ce6 feat: set custom openvox worker count per repo basis
 - 7f375cd5b feat: add readiness probe, service, and service monitor for gfetch
@@ -90,6 +95,7 @@ All releases and the changes included in them (pulled from git commits added sin
 - d22a78501 feat: adding support for gfetch to sync git repos
 
 ### Bug Fixes
+
 - b8453eecc fix health probe paths for dictionary server containers
 - 80d0c346e fix dictionary servers to listen on all interfaces
 - 3f1dea835 fix find regex to pick up proper tar file
@@ -101,6 +107,7 @@ All releases and the changes included in them (pulled from git commits added sin
 - 4a6250bea fix: change the repos type from list to map, so we can merge the repos from multiple values file
 
 ### Configuration Changes
+
 - 6308a695c chore(fix): removed the check of vuls-db in the init container, its a small image to download
 - 49fbd1391 chore: fixed shellcheck related bugs in opendesk build.sh script
 - 85f55b308 chore: uncomment git switch comment
@@ -108,7 +115,8 @@ All releases and the changes included in them (pulled from git commits added sin
 - bc01b69cd chore: address the lint issue in kubeaid-addons chart
 - b88996547 chore(fix): handle linuxaid tag with a simple regex
 - 6bfa1b39d chore: added a sane default for linuxaid url
-- cbfe54710 chore: added some sane defaults for gfetch in openvox fix: added required securitycontext and default setting for git clone
+- cbfe54710 chore: added some sane defaults for gfetch in openvox fix: added required securitycontext and default setting
+  for git clone
 - b9b13c8f5 chore: removed old g10k implementation
 - 06fdd4d55 chore(fix): updated the beta tag
 - f2d7bcc62 chore(fix): moved branches into global section
@@ -116,6 +124,7 @@ All releases and the changes included in them (pulled from git commits added sin
 - 50b46ed34 chore(fix): code pvc claim name
 
 ### Other Changes
+
 - d7007e949 Allow disabling cnpg barman backups
 - ec0efd161 use latest kubectl image for velero
 - 0b6b8cbcc rewrite vuls-dictionary README for clarity
@@ -141,7 +150,8 @@ All releases and the changes included in them (pulled from git commits added sin
 - 108e48b70 add kyverno policy for secret duplication
 - 2187f759e Add a cronjob to Enable MariaDB logical backup for Matomo
 - 37020652a update opendesk build script to use master_password
-- 671b1fbd6 Doc: Grafana OnCall talks to grafana.com at startup to download UI plugin - we need make it work for air-gapped clusters
+- 671b1fbd6 Doc: Grafana OnCall talks to grafana.com at startup to download UI plugin - we need make it work
+  for air-gapped clusters
 - cb92ebf5b add service window handling guide
 - 6ab6a5c21 (chore): use configmap to provide the init contianer with the script
 - 39439f75d Add missing vales.yaml for netbird operator
@@ -152,11 +162,13 @@ All releases and the changes included in them (pulled from git commits added sin
 ## KubeAid Release Version 24.3.0
 
 ### Minor Version Upgrades
+
 - 198444315 Updated fluent-bit from version 0.55.0 to 0.56.0
 - 198444315 Updated hcloud-csi from version 2.19.1 to 2.20.0
 - 198444315 Updated kubernetes-operator from version 0.1.15 to 0.2.2
 
 ### Patch Version Upgrades
+
 - 198444315 Updated argo-cd from version 9.4.4 to 9.4.6
 - 198444315 Updated erpnext from version 8.0.24 to 8.0.28
 - 198444315 Updated mattermost-team-edition from version 6.6.92 to 6.6.93
@@ -169,9 +181,11 @@ All releases and the changes included in them (pulled from git commits added sin
 - 198444315 Updated teleport-kube-agent from version 18.7.0 to 18.7.1
 
 ### Bug Fixes
+
 - 249599fdd fix(localpv-provisioner): Make OpenEBS dynamic LocalPV provisioner StorageClass non-default
 
 ### Other Changes
+
 - 2b370b663 Update argocd-helm-charts/sealed-secrets/README.md
 - 732b2cc06 (chore): add a doc on how customers can enable Grafana OnCall to not download UI plugin for air-gapped clusters
 - e3e7637ea Add values file
@@ -181,6 +195,7 @@ All releases and the changes included in them (pulled from git commits added sin
 ## KubeAid Release Version 24.2.0
 
 ### Minor Version Upgrades
+
 - 5e2ff9ecd Updated aws-ebs-csi-driver from version 2.55.1 to 2.56.1
 - 5e2ff9ecd Updated gitlab-runner from version 0.85.0 to 0.86.0
 - 5e2ff9ecd Updated opentelemetry-operator from version 0.105.1 to 0.106.0
@@ -190,6 +205,7 @@ All releases and the changes included in them (pulled from git commits added sin
 - 5e2ff9ecd Updated velero from version 11.3.2 to 11.4.0
 
 ### Patch Version Upgrades
+
 - 5e2ff9ecd Updated argo-cd from version 9.4.3 to 9.4.4
 - 5e2ff9ecd Updated hcloud-cloud-controller-manager from version 1.30.0 to 1.30.1
 - 5e2ff9ecd Updated cert-manager from version v1.19.3 to v1.19.4
@@ -201,6 +217,7 @@ All releases and the changes included in them (pulled from git commits added sin
 - a60a6f9ef chore(patch update): Updated ccm-hetzner from version 2.0.1 to 2.0.4
 
 ### Features
+
 - 6b79d349c feat(lemmy): Add secret injection via ArgoCD PostSync Job
 - 53a007b16 feat(funkwhale): Presync job to remove plain text secrets
 - c46c90e0e feat(castopod): Add PVC template with storageClass support
@@ -209,6 +226,7 @@ All releases and the changes included in them (pulled from git commits added sin
 - 1ebcf87df feat: Add comprehensive CNPG backup monitoring and alerting
 
 ### Other Changes
+
 - 14ebb0d54 add how to buy hetzner servers guide
 - 51a70bd78 lint fix
 - 51062bff3 convert ccm-hetzner helm chart to wrapper style
@@ -217,25 +235,30 @@ All releases and the changes included in them (pulled from git commits added sin
 ## KubeAid Release Version 24.1.1
 
 ### Features
+
 - c7b727b6a feat(erpnext): add podMetadata support to MariaDB template for velero backup annotations
 
 ### Other Changes
+
 - 39f963fb4 update release.md with edgecase of new release without helm update
 - 9d12ce359 Fix kyverno chart breaking the helm template
 
 ## KubeAid Release Version 24.1.0
 
 ### Bug Fixes
+
 - edfe138b8 fix: alert expression fixed to look only tag and fixed the prom reporter to read all the environment
 - de260b819 fix: add secret references for hostkey and sshprivatekey for kubeaid agent
 - 75dd30d6a fix broken helm render
 
 ### Configuration Changes
+
 - b00ff82dc chore: update k8s act runner image version to dind-0.3.0
 - dded72f0a chore: update netbird image version to latest
 - dd045bf9e chore(doc): updated git commit msg for changelog update
 
 ### Other Changes
+
 - 9505fc107 add ports config back to traefik
 - db185449f add backup and restore section in opendesk readme
 - ee315bcbf update build.sh to render specific applicationa and updated opendesk doc
@@ -248,18 +271,22 @@ All releases and the changes included in them (pulled from git commits added sin
 ## KubeAid Release Version 24.0.1
 
 ### Bug Fixes
+
 - 67d95252d fix: lets take tag from positional args, if none given, pick from the VERSION file
 
 ### Other Changes
+
 - 1e9260f30 remove deprecated traefik values
 
 ## KubeAid Release Version 24.0.0
 
 ### New Charts Added
+
 - ecc532894 chore(new): Added new helm chart garage 0.2.1
 - 81d5d6027 chore(new): Added new helm chart calcom 0.8.6
 
 ### Features
+
 - a2905d029 feat: add support for HPA maxed out alerts and update prometheus rule filtering
 - 2fc829267 feat(capi-cluster/hetzner): allow disabling public IPs for HCloud instances
 - 6652e112b feat: added garage helm chart manually from a git clone
@@ -267,6 +294,7 @@ All releases and the changes included in them (pulled from git commits added sin
 - 9f657aa9a feat: added release doc
 
 ### Bug Fixes
+
 - 5263a98d0 fix in the hardcoded namespace
 - c84ab227f fix: typo in doc and renamed the readme files
 - bc7f0acb7 fix(ci): add credentials for pulling private ci image
@@ -274,9 +302,11 @@ All releases and the changes included in them (pulled from git commits added sin
 - 77a96ab15 fix the logs/errors of the pod
 
 ### Configuration Changes
+
 - ffb9ddd25 chore: add kubeaid agent helm chart
 
 ### Other Changes
+
 - 8405e64b4 upgrade traefik chart and fix update script
 - 3d8507cef remove traefik and fix argocd from helm cache
 - b3ae470c9 Upgrade helm charts
@@ -298,19 +328,23 @@ All releases and the changes included in them (pulled from git commits added sin
 ## KubeAid Release Version 23.0.0
 
 ### New Charts Added
+
 - 07c0076c9 chore(new): Added new helm chart castopod 1.12.10
 - 7aa0b82db chore(new): Added new helm chart lemmy 0.6.10
 
 ### Major Version Upgrades
+
 - 2ffbe15ad Updated snapshot-controller from version 4.2.0 to 5.0.1
 
 ### Minor Version Upgrades
+
 - 2ffbe15ad Updated opentelemetry-collector from version 0.142.2 to 0.143.0
 - 2ffbe15ad Updated redis-operator from version 0.22.2 to 0.23.0
 - 2ffbe15ad Updated strimzi-kafka-operator from version 0.49.1 to 0.50.0
 - 2ffbe15ad Updated traefik-forward-auth from version <empty string> to 0.3.10
 
 ### Patch Version Upgrades
+
 - 2ffbe15ad Updated mariadb-operator from version 25.10.3 to 25.10.4
 - 2ffbe15ad Updated mattermost-team-edition from version 6.6.89 to 6.6.90
 - 2ffbe15ad Updated opencost from version 2.5.1 to 2.5.3
@@ -320,6 +354,7 @@ All releases and the changes included in them (pulled from git commits added sin
 - 2ffbe15ad Updated traefik from version 38.0.1 to 38.0.2
 
 ### Features
+
 - ae840535f feat(friendica): Add Friendica helm chart v1.0.0 with latest image
 - ccc1439c3 feat: add opendesk version 1.11.2
 - 1e4e48ccb feat: Add Lemmy helm chart with CNPG support
@@ -327,6 +362,7 @@ All releases and the changes included in them (pulled from git commits added sin
 - 9d1f63d49 feat:- Add alerts for slurmjob, slurm node failure and pending jobs for long time
 
 ### Bug Fixes
+
 - 7eebee3bd fix: handled more edge cases in kubeaid helm chart script
 - a8414980b fix links for backup and recovery docs
 - b831e921f fix: opendesk build script and ignore opendesk helmfiles yamllint
@@ -335,11 +371,13 @@ All releases and the changes included in them (pulled from git commits added sin
 - fd83b372c fix lint
 
 ### Configuration Changes
+
 - ee2d1630d chore: update global group interval for alertmanager alerts
 - 4f627942d chore: add o2 troubleshooting guide
 - de464eee7 chore: add flexible configuration of queue config for prometheus
 
 ### Other Changes
+
 - f3d261369 doc: fix kube config secret generation in gitea/gitlab runner
 - 4a3bbcd3c Removed the grafana ingressroute since we will now use ingress directly and updated the grafana root_url
 - 0170069ee Upgraded odoo logical backup image
@@ -387,9 +425,11 @@ All releases and the changes included in them (pulled from git commits added sin
 ## KubeAid Release Version 22.0.0
 
 ### Major Version Upgrades
+
 - 7668fab2c Updated traefik from version 37.4.0 to 38.0.1
 
 ### Minor Version Upgrades
+
 - 7668fab2c Updated argo-cd from version 9.1.6 to 9.2.4
 - 7668fab2c Updated aws-ebs-csi-driver from version 2.53.0 to 2.54.1
 - 7668fab2c Updated aws-efs-csi-driver from version 3.2.6 to 3.3.0
@@ -412,6 +452,7 @@ All releases and the changes included in them (pulled from git commits added sin
 - 7668fab2c Updated velero from version 11.2.0 to 11.3.2
 
 ### Patch Version Upgrades
+
 - 7668fab2c Updated argocd-image-updater from version 1.0.1 to 1.0.4
 - 7668fab2c Updated cloud-provider-azure from version 1.34.2 to 1.34.3
 - 7668fab2c Updated cert-manager from version v1.19.1 to v1.19.2
@@ -430,6 +471,7 @@ All releases and the changes included in them (pulled from git commits added sin
 - 7668fab2c Updated tigera-operator from version v3.31.2 to v3.31.3
 
 ### Features
+
 - db517617d feat: add sealed-secrets support with cpng backup for openobserve
 - a0cc8dae3 feat: Update Odoo chart defaults for Odoo 19
 - 6f50ab527 feat: add product and certname labels to all alerts
@@ -439,6 +481,7 @@ All releases and the changes included in them (pulled from git commits added sin
 - 13e0bfc81 feat(pixelfed): add Pixelfed helm chart with patched upstream v0.23.0
 
 ### Bug Fixes
+
 - 7f14afc30 fix: release script can handle individual helm chart addition/updation commits as well and some sanity check
 - 3e97956bd fix: yamllint in pixelfed helm chart.yaml
 - 0f0c2d495 fix: handle the helm update script to match correct helm chart name in the cache file, grep was missing the end character
@@ -466,12 +509,14 @@ All releases and the changes included in them (pulled from git commits added sin
 - aa7f87ad2 fix: speed up volume mount on pvc which has more file, like g10k code
 
 ### Configuration Changes
+
 - cf01cf32b chore: update helm charts to v21.1.0
 - ae53e55f6 chore: add keycloak user guide in netbird guide
 - 864d6ac55 chore: update netbird docs with client setup
 - 237c5057f chore(lint): yaml .gitea/workflows/helm-update.yaml
 
 ### Other Changes
+
 - f32a607b7 Revert "fix(rbac): add pods list permission for prometheus-k8s service account"
 - 5eed0ccb5 docs: remove setup guide link and placeholder section as per review
 - d0386f9c4 add opendesk coturn helm chart
@@ -502,11 +547,13 @@ All releases and the changes included in them (pulled from git commits added sin
 ## KubeAid Release Version 21.0.0
 
 ### Major Version Upgrades
+
 - 44217e3b3 Updated argocd-image-updater from version 1.0.1 to 1.0.1
 - 44217e3b3 Updated erpnext from version 8.0.0 to 8.0.0
 - 44217e3b3 Updated matomo from version 11.0.0 to 11.0.0
 
 ### Minor Version Upgrades
+
 - 44217e3b3 Updated argo-cd from version 9.1.6 to 9.1.6
 - 44217e3b3 Updated aws-ebs-csi-driver from version 2.53.0 to 2.53.0
 - 44217e3b3 Updated hcloud-cloud-controller-manager from version 1.28.0 to 1.28.0
@@ -532,6 +579,7 @@ All releases and the changes included in them (pulled from git commits added sin
 - 44217e3b3 Updated zfs-localpv from version 2.9.0 to 2.9.0
 
 ### Patch Version Upgrades
+
 - 44217e3b3 Updated aws-efs-csi-driver from version 3.2.6 to 3.2.6
 - 44217e3b3 Updated azuredisk-csi-driver from version 1.33.7 to 1.33.7
 - 44217e3b3 Updated cloud-provider-azure from version 1.34.2 to 1.34.2
@@ -558,6 +606,7 @@ All releases and the changes included in them (pulled from git commits added sin
 - 44217e3b3 Updated tigera-operator from version v3.31.2 to v3.31.2
 
 ### Features
+
 - 633f904c2 feat: add changelog and release not via git commit in release script
 - 52085f5ab feat: add changelog.md changes via git commit in release script
 - eea77b0e1 feat: removed commented lines in the release script
@@ -566,6 +615,7 @@ All releases and the changes included in them (pulled from git commits added sin
 - cf6f9182f feat: added gorelease setup
 
 ### Bug Fixes
+
 - f9af16217 fix: changelog and gorelease config and workflow fix: removed release section from gorelease, since we have our own release note feat: added CI to run on schedule on Sunday
 - 2be7ad6d9 fix(cert-manager): remove cached readme.md file
 - 346d91596 fix: add the version file in git, so it can be tracked
@@ -573,6 +623,7 @@ All releases and the changes included in them (pulled from git commits added sin
 - b5b74a01f fix: removed unwanted git-push workflow
 
 ### Configuration Changes
+
 - bcacb5320 chore(doc): changelog removed, which was added by the script while testing
 - 44217e3b3 chore: update helm charts to v21.0.0
 - d47555a7e chore(ci): removed some obsolete workflow and fixed some
@@ -584,7 +635,9 @@ All releases and the changes included in them (pulled from git commits added sin
 - 3b35e8e0c chore: static script for internal usecase
 
 ## 20.1.2
+
 ### Features
+
 - [`4e23594a81ea25d125ac0cd56ebee84f17998b7e`](../../commit/4e23594a81ea25d125ac0cd56ebee84f17998b7e) Add support for adding extra ports
 - [`95222a31d6d5814b5603c8e8bff802fd8bed1c36`](../../commit/95222a31d6d5814b5603c8e8bff802fd8bed1c36) feat: Add Mastodon Helm chart
 - [`a171cd469544fffe023e880ee7c733cc631a89f1`](../../commit/a171cd469544fffe023e880ee7c733cc631a89f1) feat: g10k puppet/openvox code support added
@@ -595,6 +648,7 @@ All releases and the changes included in them (pulled from git commits added sin
 - [`8b006109f8148174aed509d6cd5a28b9d20b071c`](../../commit/8b006109f8148174aed509d6cd5a28b9d20b071c) Support CAPI clusters with different folder and cluster names
 
 ### Fixes
+
 - [`174588109c4fcaae893e08720efd132b3dda70ef`](../../commit/174588109c4fcaae893e08720efd132b3dda70ef) Add: out of shared memory case
 - [`caa524960d4aa06721dd883a2c8e6895c7028403`](../../commit/caa524960d4aa06721dd883a2c8e6895c7028403) fix(keycloakx): creating ObjectStore and BackupSchedule resources only when backups are enabled
 - [`85bece48c8f1ab09a8b18bb7e051046f460bc6a8`](../../commit/85bece48c8f1ab09a8b18bb7e051046f460bc6a8) fix: Hardcoded AWS_ACCESS_KEY_ID  and mount from Kubernetes Secret
@@ -606,6 +660,7 @@ All releases and the changes included in them (pulled from git commits added sin
 - [`633f4bb370bf5f2a78a2cf08dfac519b4ccc07aa`](../../commit/633f4bb370bf5f2a78a2cf08dfac519b4ccc07aa) Remove legacy redisCluster section from Mastodon - not needed here
 
 ### Docs
+
 - [`9961e7bcd1fd267a1855109b8eaaa56736fb391e`](../../commit/9961e7bcd1fd267a1855109b8eaaa56736fb391e) feat: add certificate issuer configuration documentation and example templates for cert-manager
 - [`b9cc8928a6d891b934c1742efbe9ffcbea670a9d`](../../commit/b9cc8928a6d891b934c1742efbe9ffcbea670a9d) Added docs for rebooting a kubernetes node
 - [`86c67bca9f3e6e1547e54c1a7be66ca8ada45852`](../../commit/86c67bca9f3e6e1547e54c1a7be66ca8ada45852) Improved guide of redis-operator helm chart
@@ -614,12 +669,16 @@ All releases and the changes included in them (pulled from git commits added sin
 - [`638bb44ebb672e19ea7acd7472779d7258a8aa58`](../../commit/638bb44ebb672e19ea7acd7472779d7258a8aa58) add note  on kubeaid-argocd-apps.sh script usage
 
 ## 20.1.1
+
 ### Fixes
+
 - [`fa2628f34235afc67392f8b9d0a5ca11462d7a76`](../../commit/fa2628f34235afc67392f8b9d0a5ca11462d7a76) fix(capi-cluster/hetzner): disabling Hetzner network for HCloud servers | upgrading ClusterAPI component versions
 - [`60e412b6fe0bc767484cffe95d6dd56d2863b60b`](../../commit/60e412b6fe0bc767484cffe95d6dd56d2863b60b) fix(capi-cluster/hetzner): Cilium installation command in postKubeadm section
 
 ## 20.1.0
+
 ### Minor Version Upgrades
+
 - Updated traefik from version 37.1.2 to 37.2.0
 - Updated tigera-operator from version v3.30.4 to v3.31.0
 - Updated prometheus-adapter from version 5.1.0 to 5.2.0
@@ -630,6 +689,7 @@ All releases and the changes included in them (pulled from git commits added sin
 - Updated argocd-image-updater from version 0.13.0 to 0.14.0
 
 ### Patch Version Upgrades
+
 - Updated teleport-kube-agent from version 18.2.7 to 18.2.10
 - Updated teleport-cluster from version 18.2.7 to 18.2.10
 - Updated seaweedfs from version 4.0.393 to 4.0.399
@@ -645,6 +705,7 @@ All releases and the changes included in them (pulled from git commits added sin
 - Updated argo-cd from version 9.0.3 to 9.0.5
 
 ### Improvements
+
 - [`813aa6ef`](../../commit/813aa6ef) Add seaweedfs to Kubeaid
 - [`fc2defaa`](../../commit/fc2defaa) add support for Adding Cpu and Mem resources for mattermost
 - [`b7e9570d`](../../commit/b7e9570d) docs: add instructions for restoring Mattermost DB and updating DB connection string in version 10.11.4
@@ -652,10 +713,13 @@ All releases and the changes included in them (pulled from git commits added sin
 - [`ba85c47a`](../../commit/ba85c47a) add persistence in alertmanager https://gitea.obmondo.com/EnableIT/KubeAid/issues/989
 
 ## 20.0.0
+
 ### Major Version Upgrades
+
 - Updated argo-cd from version 8.6.1 to 9.0.3
 
 ### Minor Version Upgrades
+
 - Updated opentelemetry-collector from version 0.136.1 to 0.137.0
 - Updated opensearch-dashboards from version 3.2.2 to 3.3.0
 - Updated opensearch from version 3.2.1 to 3.3.0
@@ -663,6 +727,7 @@ All releases and the changes included in them (pulled from git commits added sin
 - Updated cluster-autoscaler from version 9.51.0 to 9.52.0
 
 ### Patch Version Upgrades
+
 - Updated velero from version 11.1.0 to 11.1.1
 - Updated tigera-operator from version v3.30.3 to v3.30.4
 - Updated trust-manager from version v0.20.1 to v0.20.2
@@ -673,25 +738,30 @@ All releases and the changes included in them (pulled from git commits added sin
 - Updated cert-manager from version v1.19.0 to v1.19.1
 
 ### Improvements
+
 - [`6a9c904a`](../../commit/6a9c904a) fixing odoo image
 - [`b73121f6`](../../commit/b73121f6) changing ignore to ignore_mountpoint
 - [`2a44addd`](../../commit/2a44addd) Updated the disk alert to ignore mountpoints for which we don't want the alert for
 - [`936a1f6d`](../../commit/936a1f6d) Add tls support fixed error in logical backup
 
 ## 19.1.0
+
 ### Minor Version Upgrades
+
 - Updated velero from version 11.0.0 to 11.1.0
 - Updated rook-ceph from version v1.17.2 to v1.18.4
 - Updated cluster-autoscaler from version 9.50.1 to 9.51.0
 - Updated aws-ebs-csi-driver from version 2.50.1 to 2.51.0
 
 ### Patch Version Upgrades
+
 - Updated trust-manager from version v0.20.0 to v0.20.1
 - Updated opencost from version 2.3.1 to 2.3.2
 - Updated erpnext from version 7.0.243 to 7.0.244
 - Updated argo-cd from version 8.6.0 to 8.6.1
 
 ### Improvements
+
 - [`aeb7c435`](../../commit/aeb7c435) fix: run r10k as a diff pod, if r10k dies, puppet client would fail to connect to puppetserver, since liveness is broken
 - [`cc9de2dc`](../../commit/cc9de2dc) adding container image with helm installed
 - [`45b06a17`](../../commit/45b06a17) lint fix
@@ -699,10 +769,13 @@ All releases and the changes included in them (pulled from git commits added sin
 - [`f2e15c9d`](../../commit/f2e15c9d) Enable matternelle domain
 
 ## 19.0.0
+
 ### Major Version Upgrades
+
 - Updated velero from version 10.1.3 to 11.0.0
 
 ### Minor Version Upgrades
+
 - Updated strimzi-kafka-operator from version 0.47.0 to 0.48.0
 - Updated trust-manager from version v0.19.0 to v0.20.0
 - Updated sonarqube from version 2025.4.2 to 2025.5.0
@@ -723,6 +796,7 @@ All releases and the changes included in them (pulled from git commits added sin
 - Updated argo-cd from version 8.5.10 to 8.6.0
 
 ### Patch Version Upgrades
+
 - Updated traefik from version 37.1.1 to 37.1.2
 - Updated teleport-kube-agent from version 18.2.2 to 18.2.7
 - Updated teleport-cluster from version 18.2.2 to 18.2.7
@@ -737,10 +811,13 @@ All releases and the changes included in them (pulled from git commits added sin
 - Added puppetserver from version 10.0.0 to 10.0.0
 
 ## 18.0.0
+
 ### Major Version Upgrades
+
 - Updated graylog from version 2.4.1 to 3.0.0
 
 ### Minor Version Upgrades
+
 - Updated opentelemetry-collector from version 0.133.0 to 0.134.0
 - Updated metal3 from version 0.11.6 to 0.12.7
 - Updated harbor from version 1.17.2 to 1.18.0
@@ -750,6 +827,7 @@ All releases and the changes included in them (pulled from git commits added sin
 - Updated argo-cd from version 8.3.7 to 8.5.3
 
 ### Patch Version Upgrades
+
 - Updated velero from version 10.1.2 to 10.1.3
 - Updated teleport-kube-agent from version 18.2.1 to 18.2.2
 - Updated teleport-cluster from version 18.2.1 to 18.2.2
@@ -763,6 +841,7 @@ All releases and the changes included in them (pulled from git commits added sin
 - Updated aws-efs-csi-driver from version 3.2.2 to 3.2.3
 
 ### Improvements
+
 - [`b613073a`](../../commit/b613073a) update readme
 - [`bc4dcbaf`](../../commit/bc4dcbaf) feat: added kube-prom v0.16.0 with a release fix
 - [`8a45ab17`](../../commit/8a45ab17) Updated the opendesk so its handled the same way as Kube promethues
@@ -773,7 +852,9 @@ All releases and the changes included in them (pulled from git commits added sin
 - [`263a8584`](../../commit/263a8584) feat: rabbitmq mixin is coming from a diff upstream repo for v0.13.0, so lets handle that accordingly
 
 ## 17.2.0
+
 ### Minor Version Upgrades
+
 - Updated traefik from version 37.0.0 to 37.1.1
 - Updated teleport-kube-agent from version 18.1.6 to 18.2.1
 - Updated teleport-cluster from version 18.1.6 to 18.2.1
@@ -783,6 +864,7 @@ All releases and the changes included in them (pulled from git commits added sin
 - Updated fluent-bit from version 0.52.0 to 0.53.0
 
 ### Patch Version Upgrades
+
 - Updated velero from version 10.1.0 to 10.1.2
 - Updated rook-ceph-cluster from version v1.18.0 to v1.18.2
 - Added rook-ceph from version v1.17.2 to v1.17.2
@@ -797,6 +879,7 @@ All releases and the changes included in them (pulled from git commits added sin
 - Added external-dns from version 1.8.0 to 1.8.0
 
 ### Improvements
+
 - [`704be0b5`](../../commit/704be0b5) updating docs acc. to kubeaid cli and removing old procedures
 - [`123cd7c9`](../../commit/123cd7c9) Add docs on monitoringPasscode in Sonarqube
 - [`0d630359`](../../commit/0d630359) set pgsql to 14 to maintain compatibility
@@ -835,7 +918,9 @@ All releases and the changes included in them (pulled from git commits added sin
 - [`078245e1`](../../commit/078245e1) fix(velero): override daily schedule TTL to prevent snapshot accumulation
 
 ## 17.1.0
+
 ### Minor Version Upgrades
+
 - Updated redmine from version 33.0.6 to 34.0.0
 - Updated rook-ceph-cluster from version v1.17.7 to v1.18.0
 - Updated opentelemetry-collector from version 0.130.2 to 0.131.0
@@ -851,6 +936,7 @@ All releases and the changes included in them (pulled from git commits added sin
 - Updated argo-cd from version 8.2.5 to 8.3.0
 
 ### Patch Version Upgrades
+
 - Updated tigera-operator from version v3.30.2 to v3.30.3
 - Updated teleport-kube-agent from version 18.1.4 to 18.1.6
 - Updated teleport-cluster from version 18.1.4 to 18.1.6
@@ -872,6 +958,7 @@ All releases and the changes included in them (pulled from git commits added sin
 - Updated aws-efs-csi-driver from version 3.2.1 to 3.2.2
 
 ### Improvements
+
 - [`3cfe6bc5`](../../commit/3cfe6bc5) Adding sftpgo helm chart default values in KubeAid.
 - [`3c3ca94e`](../../commit/3c3ca94e) feat: add support for configuring Prometheus replicas fix: set replicas to 1 to conditionally disable PodDisruptionBudget creation
 - [`524e9c99`](../../commit/524e9c99) doc: updated readme with correct steps and added an example values file as well
@@ -903,7 +990,9 @@ All releases and the changes included in them (pulled from git commits added sin
 - [`1526cb17`](../../commit/1526cb17) Allow adding labels to keycloak zalando postgres db
 
 ## 17.0.0
+
 ### Major Version Upgrades
+
 - Updated whoami from version 5.3.0 to 6.0.0
 - Updated traefik from version 36.3.0 to 37.0.0
 - Updated prometheus-adapter from version 4.14.1 to 5.1.0
@@ -912,6 +1001,7 @@ All releases and the changes included in them (pulled from git commits added sin
 - Updated crossplane from version 1.20.0 to 2.0.2
 
 ### Minor Version Upgrades
+
 - Updated velero from version 10.0.9 to 10.1.0
 - Updated teleport-kube-agent from version 18.0.0 to 18.1.4
 - Updated teleport-cluster from version 18.0.0 to 18.1.4
@@ -936,6 +1026,7 @@ All releases and the changes included in them (pulled from git commits added sin
 - Updated argo-cd from version 8.1.3 to 8.2.5
 
 ### Patch Version Upgrades
+
 - Updated prometheus-smartctl-exporter from version 0.15.3 to 0.15.4
 - Updated rook-ceph-cluster from version v1.17.6 to v1.17.7
 - Added rook-ceph from version v1.17.2 to v1.17.2
@@ -957,6 +1048,7 @@ All releases and the changes included in them (pulled from git commits added sin
 - Updated aws-efs-csi-driver from version 3.2.0 to 3.2.1
 
 ### Patch Version Upgrades
+
 - Updated prometheus-smartctl-exporter from version 0.15.3 to 0.15.4
 - Updated rook-ceph-cluster from version v1.17.6 to v1.17.7
 - Added rook-ceph from version v1.17.2 to v1.17.2
@@ -979,6 +1071,7 @@ All releases and the changes included in them (pulled from git commits added sin
 - Added step-issuer from version 1.9.9 to 1.9.9
 
 ### Improvements
+
 - [`48b2d915`](../../commit/48b2d915) feat: added step-ca/step-issuer helm chart
 - [`0ef5efd7`](../../commit/0ef5efd7) feat: improved doc, readme for harbor and removed ceph tool cpu limit
 - [`f03eb805`](../../commit/f03eb805) feat: cert-manager clusterissue with self-signed support
@@ -1026,10 +1119,13 @@ All releases and the changes included in them (pulled from git commits added sin
 - [`d2625f09`](../../commit/d2625f09) fix: change the harbor logical backup retention time type to string
 
 ## 16.1.0
+
 ### Minor Version Upgrades
+
 - Updated cluster-autoscaler from version 9.47.0 to 9.48.0
 
 ### Patch Version Upgrades
+
 - Updated velero from version 10.0.8 to 10.0.9
 - Updated rook-ceph-cluster from version v1.17.5 to v1.17.6
 - Added rook-ceph from version v1.17.2 to v1.17.2
@@ -1045,21 +1141,27 @@ All releases and the changes included in them (pulled from git commits added sin
 - Updated argo-cd from version 8.1.2 to 8.1.3
 
 ### Improvements
+
 - [`f5ba05b2`](../../commit/f5ba05b2) chore: bump the hetzner failover script tag version to v1.1.0
 - [`8114c1d7`](../../commit/8114c1d7) fix: changed the image.tag and fixed env
 
 ## 16.0.1
+
 ### Improvements
+
 - [`b0aed250`](../../commit/b0aed250) chore(kube-prometheus) : we don't need the ceph mixin by default
 - [`05157ec5`](../../commit/05157ec5) fix(capi-cluster/hetzner) : explicitly specifying the routing device to Cilium, only in case of HCloud control-plane
 - [`74c8eb01`](../../commit/74c8eb01) chore(capi-cluster/hetzner) : not having cloud-provider labels in control-plane nodes (for now)
 
 ## 16.0.0
+
 ### Major Version Upgrades
+
 - Updated teleport-kube-agent from version 17.5.2 to 18.0.0
 - Updated teleport-cluster from version 17.5.2 to 18.0.0
 
 ### Minor Version Upgrades
+
 - Updated traefik from version 36.2.0 to 36.3.0
 - Updated fluent-bit from version 0.49.1 to 0.50.0
 - Updated external-dns from version 8.8.6 to 8.9.1
@@ -1069,6 +1171,7 @@ All releases and the changes included in them (pulled from git commits added sin
 - Updated aws-efs-csi-driver from version 3.1.9 to 3.2.0
 
 ### Patch Version Upgrades
+
 - Added rook-ceph from version v1.17.2 to v1.17.2
 - Updated reloader from version 2.1.4 to 2.1.5
 - Updated rabbitmq-cluster-operator from version 4.4.23 to 4.4.24
@@ -1084,20 +1187,26 @@ All releases and the changes included in them (pulled from git commits added sin
 - Updated argo-cd from version 8.1.1 to 8.1.2
 
 ## 15.1.0
+
 ### Improvements
+
 - [`df63ed62`](../../commit/df63ed62) feat(kyverno) : adding the Kyverno Helm chart
 
 ## 15.0.0
+
 ### Major Version Upgrades
+
 - Updated redmine from version 32.2.6 to 33.0.0
 
 ### Minor Version Upgrades
+
 - Updated opensearch-operator from version 2.7.0 to 2.8.0
 - Updated opensearch-dashboards from version 3.0.0 to 3.1.0
 - Updated opensearch from version 3.0.0 to 3.1.0
 - Updated netbird from version 1.6.1 to 1.8.0
 
 ### Patch Version Upgrades
+
 - Updated velero from version 10.0.7 to 10.0.8
 - Updated strimzi-kafka-operator from version 0.46.0 to 0.46.1
 - Added rook-ceph from version v1.17.2 to v1.17.2
@@ -1107,6 +1216,7 @@ All releases and the changes included in them (pulled from git commits added sin
 - Added coturn from version 9.1.0 to 9.1.0
 
 ### Improvements
+
 - [`e7cff8b3`](../../commit/e7cff8b3) feat(capi-cluster/hetzner) : ClusterAPI managed cloud-provider label for each node
 - [`c5b55eb3`](../../commit/c5b55eb3) fix(capi-cluster/hetzner) : using specific routing device names for Cilium
 - [`ad4ad3dd`](../../commit/ad4ad3dd) fix(capi-cluster/hetzner) : considering Hetzner Bare Metal node-groups if mode is set to bare-metal or hybrid
@@ -1124,7 +1234,9 @@ All releases and the changes included in them (pulled from git commits added sin
 - [`c5243bc9`](../../commit/c5243bc9) fix(capi-cluster/hetzner) : increasing time-out to 30m for each Hetzner bare-metal machine
 
 ## 14.2.0
+
 ### Minor Version Upgrades
+
 - Updated traefik from version 36.1.0 to 36.2.0
 - Updated snapshot-controller from version 4.0.2 to 4.1.0
 - Updated opentelemetry-collector from version 0.126.0 to 0.127.1
@@ -1133,6 +1245,7 @@ All releases and the changes included in them (pulled from git commits added sin
 - Updated aws-ebs-csi-driver from version 2.44.0 to 2.45.1
 
 ### Patch Version Upgrades
+
 - Updated velero from version 10.0.5 to 10.0.7
 - Updated tigera-operator from version v3.30.1 to v3.30.2
 - Updated sonarqube from version 2025.3.0 to 2025.3.1
@@ -1155,6 +1268,7 @@ All releases and the changes included in them (pulled from git commits added sin
 - Updated argo-cd from version 8.1.0 to 8.1.1
 
 ### Improvements
+
 - [`a5838310`](../../commit/a5838310) fix(cert-manager) : indentation issue in ClusterIssuer template
 - [`38d05a64`](../../commit/38d05a64) chore(capi-cluster/hetzner) : not installing Hetzner Failover Script using CAPI's postKubeadm hook
 - [`cc7115a8`](../../commit/cc7115a8) chore: remove redundant logical backup provider env var
@@ -1164,12 +1278,15 @@ All releases and the changes included in them (pulled from git commits added sin
 - [`b8fa20ce`](../../commit/b8fa20ce) fixes(capi-cluster/hetzner)
 
 ## 14.1.0
+
 ### Minor Version Upgrades
+
 - Updated traefik from version 36.0.0 to 36.1.0
 - Updated gitea from version 12.0.0 to 12.1.0
 - Updated argo-cd from version 8.0.17 to 8.1.0
 
 ### Patch Version Upgrades
+
 - Updated velero from version 10.0.4 to 10.0.5
 - Added rook-ceph from version v1.17.2 to v1.17.2
 - Updated rabbitmq-cluster-operator from version 4.4.21 to 4.4.22
@@ -1184,15 +1301,19 @@ All releases and the changes included in them (pulled from git commits added sin
 - Updated workload-identity-webhook from version 1.5.0 to 1.5.1
 
 ### Improvements
+
 - [`2a48ca74`](../../commit/2a48ca74) fix: added chart.yaml for netbird, after migrating to official helm chart
 - [`af00f780`](../../commit/af00f780) chore: migrated netbird to official helm chart
 - [`f385dadf`](../../commit/f385dadf) fix: kube-prom, the rabbitmq-mixin lib from the correct upstream
 
 ## 14.0.0
+
 ### Major Version Upgrades
+
 - Updated traefik from version 35.4.0 to 36.0.0
 
 ### Minor Version Upgrades
+
 - Updated teleport-kube-agent from version 17.4.10 to 17.5.2
 - Updated teleport-cluster from version 17.4.10 to 17.5.2
 - Updated localpv-provisioner from version 4.3.0-prerelease to 4.4.0-develop
@@ -1200,6 +1321,7 @@ All releases and the changes included in them (pulled from git commits added sin
 - Updated cert-manager from version v1.17.2 to v1.18.0
 
 ### Patch Version Upgrades
+
 - Updated velero from version 10.0.1 to 10.0.4
 - Updated rook-ceph-cluster from version v1.17.3 to v1.17.4
 - Added rook-ceph from version v1.17.2 to v1.17.2
@@ -1219,6 +1341,7 @@ All releases and the changes included in them (pulled from git commits added sin
 - Added localpv-provisioner from version 4.3.0-prerelease to 4.3.0-prerelease
 
 ### Improvements
+
 - [`834453b0`](../../commit/834453b0) adding v0.15.0 of kube-prometheus-stack
 - [`8430762b`](../../commit/8430762b) fix: renamed the chart to follow the standard partice and added some sane default in values file
 - [`678e31b1`](../../commit/678e31b1) feat: added localpv support from openebs helm chart
@@ -1239,7 +1362,9 @@ All releases and the changes included in them (pulled from git commits added sin
 - [`83ccda69`](../../commit/83ccda69) adding support for Hetzner bare-metal
 
 ## 13.1.0
+
 ### Minor Version Upgrades
+
 - Updated zfs-localpv from version 2.7.1 to 2.8.0
 - Updated sonarqube from version 2025.2.0 to 2025.3.0
 - Updated opentelemetry-collector from version 0.125.0 to 0.126.0
@@ -1247,6 +1372,7 @@ All releases and the changes included in them (pulled from git commits added sin
 - Updated cluster-api-operator from version 0.19.0 to 0.20.0
 
 ### Patch Version Upgrades
+
 - Updated tigera-operator from version v3.30.0 to v3.30.1
 - Updated rook-ceph-cluster from version v1.17.2 to v1.17.3
 - Added rook-ceph from version v1.17.2 to v1.17.2
@@ -1262,17 +1388,21 @@ All releases and the changes included in them (pulled from git commits added sin
 - Updated argo-cd from version 8.0.10 to 8.0.14
 
 ### Improvements
+
 - [`ed01bde7`](../../commit/ed01bde7) feat: added netbird operator helm chart
 - [`1705a6dc`](../../commit/1705a6dc) fix: change blackbox probe static config type from string to array
 - [`0db217e8`](../../commit/0db217e8) feat: added opendesk support, with helmfile and apps of apps pattern
 - [`f5c60858`](../../commit/f5c60858) adding opensearch-operator helm chart
 
 ## 13.0.0
+
 ### Major Version Upgrades
+
 - Updated velero from version 9.1.2 to 10.0.1
 - Updated gitea from version 11.0.1 to 12.0.0
 
 ### Minor Version Upgrades
+
 - Updated traefik from version 35.2.0 to 35.4.0
 - Updated opentelemetry-collector from version 0.122.5 to 0.125.0
 - Updated hcloud-csi from version 2.13.0 to 2.14.0
@@ -1284,6 +1414,7 @@ All releases and the changes included in them (pulled from git commits added sin
 - Updated aws-ebs-csi-driver from version 2.43.0 to 2.44.0
 
 ### Patch Version Upgrades
+
 - Updated teleport-kube-agent from version 17.4.9 to 17.4.10
 - Updated teleport-cluster from version 17.4.9 to 17.4.10
 - Added rook-ceph from version v1.17.2 to v1.17.2
@@ -1304,6 +1435,7 @@ All releases and the changes included in them (pulled from git commits added sin
 - Updated argo-cd from version 8.0.1 to 8.0.10
 
 ### Improvements
+
 - [`7b1d36f4`](../../commit/7b1d36f4) fix(graylog) : disabling opensearch and mongodb | increasing memory request and limit
 - [`f54794e6`](../../commit/f54794e6) Update yamllint to skip helm templates
 - [`a6d7e26c`](../../commit/a6d7e26c) Add backup and Restore Document
@@ -1338,12 +1470,15 @@ All releases and the changes included in them (pulled from git commits added sin
 - [`3065973a`](../../commit/3065973a) feat: add recommendation to back up prometheus data
 
 ## 12.0.0
+
 ### Major Version Upgrades
+
 - Updated opensearch-dashboards from version 2.28.0 to 3.0.0
 - Updated opensearch from version 2.32.0 to 3.0.0
 - Updated argo-cd from version 7.8.27 to 8.0.1
 
 ### Minor Version Upgrades
+
 - Updated velero from version 9.0.0 to 9.1.2
 - Updated traefik from version 35.0.1 to 35.2.0
 - Updated tigera-operator from version v3.29.3 to v3.30.0
@@ -1358,6 +1493,7 @@ All releases and the changes included in them (pulled from git commits added sin
 - Updated aws-ebs-csi-driver from version 2.42.0 to 2.43.0
 
 ### Patch Version Upgrades
+
 - Updated teleport-kube-agent from version 17.4.5 to 17.4.9
 - Updated teleport-cluster from version 17.4.5 to 17.4.9
 - Updated rook-ceph from version v1.17.0 to v1.17.2
@@ -1378,6 +1514,7 @@ All releases and the changes included in them (pulled from git commits added sin
 - Updated aws-efs-csi-driver from version 3.1.8 to 3.1.9
 
 ### Improvements
+
 - [`df5caa0a`](../../commit/df5caa0a) chore: remove old monitoring stack rules
 - [`10df1661`](../../commit/10df1661) chore: remove old opsmondo rules
 - [`99727ddc`](../../commit/99727ddc) chore: lint the yaml formatting
@@ -1409,11 +1546,14 @@ All releases and the changes included in them (pulled from git commits added sin
 - [`fd542e54`](../../commit/fd542e54) adding metal3 readme, hostupdatepolicy crd, and baremetal-operaor rbac rules
 
 ## 11.0.0
+
 ### Major Version Upgrades
+
 - Updated velero from version 8.7.1 to 9.0.0
 - Updated traefik from version 34.5.0 to 35.0.1
 
 ### Minor Version Upgrades
+
 - Updated rook-ceph from version v1.16.6 to v1.17.0
 - Updated reloader from version 2.0.0 to 2.1.1
 - Updated prometheus-adapter from version 4.13.0 to 4.14.1
@@ -1427,6 +1567,7 @@ All releases and the changes included in them (pulled from git commits added sin
 - Updated aws-ebs-csi-driver from version 2.41.0 to 2.42.0
 
 ### Patch Version Upgrades
+
 - Updated teleport-kube-agent from version 17.4.2 to 17.4.5
 - Updated teleport-cluster from version 17.4.2 to 17.4.5
 - Added rook-ceph-cluster from version v1.16.0 to v1.16.0
@@ -1446,17 +1587,21 @@ All releases and the changes included in them (pulled from git commits added sin
 - Updated argo-cd from version 7.8.23 to 7.8.27
 
 ### Improvements
+
 - [`a02aeefb`](../../commit/a02aeefb) ignore monitoring buildx container
 - [`c1a0eee8`](../../commit/c1a0eee8) ignore docker container down alerts for gitea actions task
 - [`9211891c`](../../commit/9211891c) feat(capi-cluster/azure) : support provisioning self-managed Azure based Kubernetes cluster using ClusterAPI
 - [`cca9be4e`](../../commit/cca9be4e) Add docs for fluent bit DNS issue
 
 ## 10.4.0
+
 ### Minor Version Upgrades
+
 - Updated redmine from version 32.1.6 to 32.2.0
 - Updated metal3 from version 0.10.1 to 0.11.0
 
 ### Patch Version Upgrades
+
 - Updated velero from version 8.7.0 to 8.7.1
 - Updated teleport-kube-agent from version 17.4.1 to 17.4.2
 - Updated teleport-cluster from version 17.4.1 to 17.4.2
@@ -1475,13 +1620,16 @@ All releases and the changes included in them (pulled from git commits added sin
 - Updated argo-cd from version 7.8.15 to 7.8.23
 
 ### Improvements
+
 - [`7127e98e`](../../commit/7127e98e) Add steps to setup keycloak with azure ad
 - [`50bef534`](../../commit/50bef534) KubeAid release '10.3.0'
 - [`28e32acf`](../../commit/28e32acf) Add commit since 10.2.0 tag to CHANGELOG.md
 - [`fc1695d7`](../../commit/fc1695d7) feat: added kubeaid-agent user for argocd, so kubeaid-agent can talk to argocd
 
 ## 10.3.0
+
 ### Minor Version Upgrades
+
 - Updated velero from version 8.5.0 to 8.7.0
 - Updated traefik from version 34.4.1 to 34.5.0
 - Updated teleport-kube-agent from version 17.3.3 to 17.4.1
@@ -1496,6 +1644,7 @@ All releases and the changes included in them (pulled from git commits added sin
 - Updated cluster-api-operator from version 0.17.1 to 0.18.0
 
 ### Patch Version Upgrades
+
 - Updated tigera-operator from version v3.29.2 to v3.29.3
 - Updated snapshot-controller from version 4.0.1 to 4.0.2
 - Added rook-ceph-cluster from version v1.16.0 to v1.16.0
@@ -1511,17 +1660,21 @@ All releases and the changes included in them (pulled from git commits added sin
 - Updated argo-cd from version 7.8.11 to 7.8.15
 
 ### Improvements
+
 - [`165f0ea0`](../../commit/165f0ea0) revert argocd image updater file deletion
 - [`9fee0318`](../../commit/9fee0318) fix: changed it to ttyS1 for ironic agent
 - [`0a2fa253`](../../commit/0a2fa253) adding metal3 helm chart
 
 ## 10.2.0
+
 ### Minor Version Upgrades
+
 - Updated whoami from version 5.2.1 to 5.3.0
 - Updated opentelemetry-operator from version 0.82.0 to 0.83.0
 - Updated aws-ebs-csi-driver from version 2.40.3 to 2.41.0
 
 ### Patch Version Upgrades
+
 - Updated sonarqube from version 2025.1.0 to 2025.1.1
 - Added rook-ceph-cluster from version v1.16.0 to v1.16.0
 - Added opentelemetry-collector from version 0.117.0 to 0.117.0
@@ -1534,11 +1687,14 @@ All releases and the changes included in them (pulled from git commits added sin
 - Updated argo-cd from version 7.8.10 to 7.8.11
 
 ### Improvements
+
 - [`0e60e5da`](../../commit/0e60e5da) Revert "add for clause for the domain status alert"
 - [`a39e6426`](../../commit/a39e6426) add for clause for the domain status alert
 
 ## 10.1.0
+
 ### Minor Version Upgrades
+
 - Updated velero from version 8.4.0 to 8.5.0
 - Updated reloader from version 1.3.0 to 2.0.0
 - Updated prometheus-adapter from version 4.11.0 to 4.13.0
@@ -1546,6 +1702,7 @@ All releases and the changes included in them (pulled from git commits added sin
 - Updated kubernetes-dashboard from version 7.10.5 to 7.11.1
 
 ### Patch Version Upgrades
+
 - Updated traefik from version 34.4.0 to 34.4.1
 - Updated teleport-kube-agent from version 17.3.0 to 17.3.3
 - Updated teleport-cluster from version 17.3.0 to 17.3.3
@@ -1566,20 +1723,26 @@ All releases and the changes included in them (pulled from git commits added sin
 - Updated argo-cd from version 7.8.7 to 7.8.10
 
 ### Improvements
+
 - [`29ddc747`](../../commit/29ddc747) fix(capi-cluster/aws) : user must specify subnet IDs when using an existing VPC
 - [`5d41a062`](../../commit/5d41a062) fix: typo bug in jsonnet, which was causing kube build to fail when generating the config file
 
 ## 10.0.1
+
 ### Improvements
+
 - [`b17fc1c7`](../../commit/b17fc1c7) fix(kube-prometheus) : setting ruleNamespaceSelector to {} instead of null
 - [`8b6e0d95`](../../commit/8b6e0d95) fix(kube-prometheus) : check whether vars.prometheus.storage.classname exists or not
 - [`fc86d47e`](../../commit/fc86d47e) traefik fix
 
 ## 10.0.0
+
 ### Major Version Upgrades
+
 - Updated gitea from version 10.6.0 to 11.0.0
 
 ### Minor Version Upgrades
+
 - Updated teleport-kube-agent from version 17.2.8 to 17.3.0
 - Updated teleport-cluster from version 17.2.8 to 17.3.0
 - Updated opentelemetry-operator from version 0.80.1 to 0.81.0
@@ -1588,6 +1751,7 @@ All releases and the changes included in them (pulled from git commits added sin
 - Updated cluster-api-operator from version 0.16.0 to 0.17.0
 
 ### Patch Version Upgrades
+
 - Added rook-ceph-cluster from version v1.16.0 to v1.16.0
 - Updated redmine from version 32.1.4 to 32.1.5
 - Added opentelemetry-collector from version 0.117.0 to 0.117.0
@@ -1601,11 +1765,14 @@ All releases and the changes included in them (pulled from git commits added sin
 - Updated argo-cd from version 7.8.5 to 7.8.7
 
 ### Improvements
+
 - [`d97438bd`](../../commit/d97438bd) fix(blogs/capi/aws) : fixed a command
 - [`cba37bb2`](../../commit/cba37bb2) chore(docs) : updating part 1 of the KubeAid demonstration blog series for AWS
 
 ## 9.4.0
+
 ### Minor Version Upgrades
+
 - Updated velero from version 8.3.0 to 8.4.0
 - Updated traefik from version 34.3.0 to 34.4.0
 - Updated reloader from version 1.2.1 to 1.3.0
@@ -1616,6 +1783,7 @@ All releases and the changes included in them (pulled from git commits added sin
 - Updated aws-ebs-csi-driver from version 2.39.3 to 2.40.0
 
 ### Patch Version Upgrades
+
 - Updated yetibot from version 1.0.107 to 1.0.108
 - Updated teleport-kube-agent from version 17.2.7 to 17.2.8
 - Updated teleport-cluster from version 17.2.7 to 17.2.8
@@ -1632,6 +1800,7 @@ All releases and the changes included in them (pulled from git commits added sin
 - Updated argo-cd from version 7.8.2 to 7.8.5
 
 ### Improvements
+
 - [`9d02ac9c`](../../commit/9d02ac9c) feat(capi-cluster/aws) : added support to specify additional users, each with corresponding SSH public key | fixed scale from 0 support and node cordoning issue
 - [`87c451b1`](../../commit/87c451b1) fix(sealed-secrets) : using correct container image and service-account name
 - [`69127059`](../../commit/69127059) updates from my KubeAid fork
@@ -1639,13 +1808,16 @@ All releases and the changes included in them (pulled from git commits added sin
 - [`f108bb10`](../../commit/f108bb10) (fix/capi-cluster) : default values file structure | using super-admin.conf as the kubeconfig file
 
 ## 9.3.0
+
 ### Minor Version Upgrades
+
 - Updated opentelemetry-operator from version 0.79.0 to 0.80.1
 - Updated opensearch-dashboards from version 2.26.0 to 2.27.0
 - Updated opensearch from version 2.30.1 to 2.31.0
 - Updated crossplane from version 1.18.2 to 1.19.0
 
 ### Patch Version Upgrades
+
 - Updated zfs-localpv from version 2.7.0 to 2.7.1
 - Updated teleport-kube-agent from version 17.2.6 to 17.2.7
 - Updated teleport-cluster from version 17.2.6 to 17.2.7
@@ -1661,7 +1833,9 @@ All releases and the changes included in them (pulled from git commits added sin
 - Updated aws-efs-csi-driver from version 3.1.5 to 3.1.6
 
 ## 9.2.0
+
 ### Minor Version Upgrades
+
 - Updated zfs-localpv from version 2.6.2 to 2.7.0
 - Updated traefik from version 34.2.0 to 34.3.0
 - Updated opentelemetry-collector from version 0.115.0 to 0.116.0
@@ -1670,6 +1844,7 @@ All releases and the changes included in them (pulled from git commits added sin
 - Updated argo-cd from version 7.7.22 to 7.8.2
 
 ### Patch Version Upgrades
+
 - Updated tigera-operator from version v3.29.1 to v3.29.2
 - Updated teleport-kube-agent from version 17.2.3 to 17.2.6
 - Updated teleport-cluster from version 17.2.3 to 17.2.6
@@ -1685,18 +1860,22 @@ All releases and the changes included in them (pulled from git commits added sin
 - Updated erpnext from version 7.0.161 to 7.0.164
 
 ### Improvements
+
 - [`86cc10d7`](../../commit/86cc10d7) [Fix] Install promtool v2.55.0
 - [`d4371a7d`](../../commit/d4371a7d) add nvme percentage used rule in smartmon
 - [`d6aa5338`](../../commit/d6aa5338) fix kubeaid build script: remove unknown monitoring mixin
 
 ## 9.1.0
+
 ### Minor Version Upgrades
+
 - Updated traefik from version 34.1.0 to 34.2.0
 - Updated mariadb-operator from version 0.36.0 to 0.37.1
 - Updated keycloakx from version 6.0.0 to 7.0.0
 - Updated cluster-api-operator from version 0.15.1 to 0.16.0
 
 ### Patch Version Upgrades
+
 - Updated teleport-kube-agent from version 17.2.2 to 17.2.3
 - Updated teleport-cluster from version 17.2.2 to 17.2.3
 - Added rook-ceph-cluster from version v1.16.0 to v1.16.0
@@ -1709,6 +1888,7 @@ All releases and the changes included in them (pulled from git commits added sin
 - Updated argo-cd from version 7.7.17 to 7.7.22
 
 ### Improvements
+
 - [`3f135670`](../../commit/3f135670) fix: changed the resources to have a decent load working with it
 - [`fc45ac62`](../../commit/fc45ac62) Add opentelemetry collector chart
 - [`91d9d45f`](../../commit/91d9d45f) feat(capi-cluster/aws) : accepting existing VPC ID from the user
@@ -1717,10 +1897,13 @@ All releases and the changes included in them (pulled from git commits added sin
 - [`1593d7cc`](../../commit/1593d7cc) Move opentelemetry operator outside of openobserve
 
 ## 9.0.0
+
 ### Major Version Upgrades
+
 - Updated sonarqube from version 10.8.1 to 2025.1.0
 
 ### Minor Version Upgrades
+
 - Updated velero from version 8.2.0 to 8.3.0
 - Updated traefik from version 33.2.1 to 34.1.0
 - Updated teleport-kube-agent from version 17.1.5 to 17.2.2
@@ -1732,6 +1915,7 @@ All releases and the changes included in them (pulled from git commits added sin
 - Updated argocd-image-updater from version 0.11.4 to 0.12.0
 
 ### Patch Version Upgrades
+
 - Updated whoami from version 5.2.0 to 5.2.1
 - Updated snapshot-controller from version 4.0.0 to 4.0.1
 - Updated sealed-secrets from version 2.17.0 to 2.17.1
@@ -1754,6 +1938,7 @@ All releases and the changes included in them (pulled from git commits added sin
 - Updated argo-cd from version 7.7.15 to 7.7.17
 
 ### Improvements
+
 - [`85a48265`](../../commit/85a48265) Migrating cnpg in mattermost and updating the logical backup templates.
 - [`3a498a67`](../../commit/3a498a67) fix: yamllint fix
 - [`54d4431e`](../../commit/54d4431e) feat: split the cronjob, so all the container does not get spawned on a single node
@@ -1770,7 +1955,9 @@ All releases and the changes included in them (pulled from git commits added sin
 - [`df9eeb99`](../../commit/df9eeb99) (feat/capi-cluster) : add ClusterRole and ClusterRoleBinding, to support ClusterAPI scale from zero feature
 
 ## 8.1.0
+
 ### Minor Version Upgrades
+
 - Updated velero from version 8.1.0 to 8.2.0
 - Updated prometheus-smartctl-exporter from version 0.11.0 to 0.13.0
 - Updated postgres-operator from version 1.13.0 to 1.14.0
@@ -1784,6 +1971,7 @@ All releases and the changes included in them (pulled from git commits added sin
 - Updated cloudnative-pg from version 0.22.1 to 0.23.0
 
 ### Patch Version Upgrades
+
 - Updated teleport-kube-agent from version 17.1.1 to 17.1.5
 - Updated teleport-cluster from version 17.1.1 to 17.1.5
 - Added rook-ceph-cluster from version v1.16.0 to v1.16.0
@@ -1801,6 +1989,7 @@ All releases and the changes included in them (pulled from git commits added sin
 - Updated argo-cd from version 7.7.11 to 7.7.15
 
 ### Improvements
+
 - [`4241f405`](../../commit/4241f405) (chore/capi-cluster) : minor UX improve by modifying a Helm parameter path
 - [`f665ed21`](../../commit/f665ed21) (fix/capi-cluster) : using extraArgs instead of extraEnvs to enable ETCD metrics
 - [`3a7a104a`](../../commit/3a7a104a) fix: moving the opsmondo alert into respective git repo
@@ -1827,11 +2016,14 @@ All releases and the changes included in them (pulled from git commits added sin
 - [`86572b42`](../../commit/86572b42) add cnpg backup and ngnix server to serve static files
 
 ## 8.0.0
+
 ### Major Version Upgrades
+
 - Updated keycloakx from version 3.0.0 to 4.0.0
 - Updated ccm-hetzner from version 1.1.15 to 2.0.1
 
 ### Minor Version Upgrades
+
 - Updated teleport-kube-agent from version 17.0.5 to 17.1.1
 - Updated teleport-cluster from version 17.0.5 to 17.1.1
 - Updated strimzi-kafka-operator from version 0.44.0 to 0.45.0
@@ -1843,6 +2035,7 @@ All releases and the changes included in them (pulled from git commits added sin
 - Updated cluster-api-operator from version 0.14.0 to 0.15.0
 
 ### Patch Version Upgrades
+
 - Updated sonarqube from version 10.8.0 to 10.8.1
 - Updated rabbitmq-cluster-operator from version 4.4.0 to 4.4.1
 - Added openobserve from version 0.14.7 to 0.14.7
@@ -1855,6 +2048,7 @@ All releases and the changes included in them (pulled from git commits added sin
 - Updated argo-cd from version 7.7.10 to 7.7.11
 
 ### Improvements
+
 - [`109b8841`](../../commit/109b8841) Fixing hetzner-robot Helm chart
 - [`26b6539e`](../../commit/26b6539e) Adding the hetzner-robot KubeAid App
 - [`8fb9ab22`](../../commit/8fb9ab22) Updated the docker rules and fixed the test case for docker container status
@@ -1864,10 +2058,12 @@ All releases and the changes included in them (pulled from git commits added sin
 ## 7.0.0
 
 ### Major Version Upgrades
+
 - Updated snapshot-controller from version 3.0.6 to 4.0.0
 - Updated keycloakx from version 2.6.0 to 3.0.0
 
 ### Minor Version Upgrades
+
 - Updated traefik from version 33.1.0 to 33.2.1
 - Updated redmine from version 32.0.1 to 32.1.1
 - Updated rabbitmq-cluster-operator from version 4.3.29 to 4.4.0
@@ -1878,6 +2074,7 @@ All releases and the changes included in them (pulled from git commits added sin
 - Updated strimzi-kafka-operator from version 0.38.0 to 0.44.0
 
 ### Patch Version Upgrades
+
 - Updated teleport-kube-agent from version 17.0.4 to 17.0.5
 - Updated teleport-cluster from version 17.0.4 to 17.0.5
 - Updated openobserve-collector from version 0.3.15 to 0.3.18
@@ -1894,6 +2091,7 @@ All releases and the changes included in them (pulled from git commits added sin
 - Updated openobserve-collector from version 0.3.14 to 0.3.15
 
 ### Improvements
+
 - [`832a1406`](../../commit/832a1406) add kafka operator chart and templates
 - [`a84f8da7`](../../commit/a84f8da7) Add proxy mode to keycloak chart due to upgrade to v25
 - [`14d71e97`](../../commit/14d71e97) 730 Add openserve-collector & opentelemetry-operator

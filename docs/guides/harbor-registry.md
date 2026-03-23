@@ -1,30 +1,33 @@
 # Host your own central registry with KubeAid
 
+Harbor is an open-source container registry that serves as a robust alternative to paid offerings like DockerHub
+Business, AWS Elastic Container Registry (ECR), and others.
+It provides a secure, scalable, and feature-rich solution for hosting container images on-premises, giving you full
+control over your data without storage or access limits.
 
-Harbor is an open-source container registry that serves as a robust alternative to paid offerings like DockerHub Business, AWS Elastic Container Registry (ECR), and others. 
-It provides a secure, scalable, and feature-rich solution for hosting container images on-premises, giving you full control over your data without storage or access limits.
-
-At Obmondo, we rely on Harbor as the central registry for all our build artifacts, container images, and CI/CD operations. 
+At Obmondo, we rely on Harbor as the central registry for all our build artifacts, container images, and CI/CD
+operations.
 Hosting our own registry enhances security, improves performance, and reduces reliance on third-party services.
 
 If you're new to KubeAid, check out our [README](../../README.md).
 
-
 ## Deploying Harbor with KubeAid
 
-- `argocd-apps/templates/harbor.yaml`: This is a template for ArgoCD application. Click [here](../../argocd-helm-charts/harbor/example/argocd-apps/templates/harbor.yaml)
-- `argocd-apps/values-harbor.yaml`: This file lets you customize Harbor template file using values. Click [here](../../argocd-helm-charts/harbor/example/argocd-apps/values-harbor.yaml)
+- `argocd-apps/templates/harbor.yaml`: This is a template for ArgoCD application. Click
+  [harbor.yaml template](../../argocd-helm-charts/harbor/example/argocd-apps/templates/harbor.yaml)
+- `argocd-apps/values-harbor.yaml`: This file lets you customize Harbor template file using values. Click
+  [values-harbor.yaml values](../../argocd-helm-charts/harbor/example/argocd-apps/values-harbor.yaml)
 
 Deployment Steps:
+
 1. Modify the Harbor template to fit your environment (e.g., sources, destinations, etc.).
 2. Update the values file with your specific configurations.
 3. Push the changes to your kubeaid-config repository.
 4. Sync the changes in ArgoCD root application, you can choose to just sync your harbor application as well
 5. Now you will have harbor set up successfully. you can refer to our configuration guide for various actions
-   With these steps, Harbor will be up and running, 
+   With these steps, Harbor will be up and running,
 
-You can set up keycloak for authentication using our Keycloak [guide](#) 
-
+You can set up Keycloak for authentication using our Keycloak guide.
 
 ## Using CLI Tools with Harbor
 
@@ -90,7 +93,6 @@ docker images
 docker rmi <your-harbor-domain>/demo/my-app:latest
 ```
 
-
 ---
 
 ## CI/CD with Harbor and KubeAid
@@ -122,4 +124,3 @@ jobs:
     container:
       image: harbor.organization.com/organization/project-name:version
 ```
-

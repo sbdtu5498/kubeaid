@@ -1,7 +1,8 @@
 
 # Hetzner Bare Metal & HCloud Server Purchasing Guide
 
-This document provides guidance for purchasing Hetzner servers for Kubernetes deployments, including recommended hardware, cluster layouts, and best practices.
+This document provides guidance for purchasing Hetzner servers for Kubernetes deployments, including recommended hardware,
+cluster layouts, and best practices.
 
 ---
 
@@ -32,7 +33,8 @@ For **bare metal clusters**, we recommend:
 * Purchase servers via **Hetzner auctions** to reduce costs.
 * Ensure control plane nodes are located **in the same country but across different datacenters** to maintain redundancy.
 * Include separate backup servers for critical data.
-* we recommend control planes to be vms(hcloud node) to save resources and cost
+* We recommend control planes to be VMs (HCloud node) to save resources and cost.
+
 ### Hardware Recommendations
 
 #### Backup Server
@@ -46,7 +48,10 @@ For **bare metal clusters**, we recommend:
 * Storage: 40 GB SSD
 * RAM: 4 GB
 * Notes: Control plane nodes will not run many workloads.
-* If you need to schedule workloads on control plane nodes, you can use the worker node configuration below; however, this is **not recommended for security reasons**.the pods running on the control plane node should not run public ingress services.
+* If you need to schedule workloads on control plane nodes, you can use the worker node configuration below;
+  however, this is **not recommended for security reasons**. The pods running on the control plane node should not run public
+  ingress services.
+
 #### Single-Host Cluster / Worker Node
 
 * Storage: 2 × 1 TB SSD M.2 NVMe
@@ -55,7 +60,8 @@ For **bare metal clusters**, we recommend:
 ### Optional Networking Enhancement
 
 * Add a **10 Gb NIC** to bare metal nodes to boost internal connectivity (cost: ~5€ per NIC per node).
-* Only required for internal node traffic; a 10 Gb uplink is **not necessary**. A 10 Gb uplink can cost 43+€ and is only required if high-speed internet connectivity is needed.
+* Only required for internal node traffic; a 10 Gb uplink is **not necessary**. A 10 Gb uplink can cost 43+€
+  and is only required if high-speed internet connectivity is needed.
 
 ---
 
@@ -90,7 +96,7 @@ For **bare metal clusters**, we recommend:
 | Layout            | Nodes                                               | Storage       | RAM           | Notes                               |
 | ----------------- | --------------------------------------------------- | ------------- | ------------- | ----------------------------------- |
 | Single Bare Metal | 1 node                                              | 2 × 1 TB NVMe | 4 × 16 GB     | Small/test cluster                  |
-| HA Bare Metal     | 3 control + 3 worker                                | 2    × 10 TB HDD | 4 × 16 GB      | Production with redundancy          |
+| HA Bare Metal     | 3 control + 3 worker                                | 2 × 10 TB HDD | 4 × 16 GB     | Production with redundancy          |
 | All HCloud        | 3 control (CAX11) + 3 worker (CAX41)                | CAX41 default | CAX41 default | Cloud cluster with scaling          |
 | Hybrid            | 1 or 3 control (CAX11) + 1 or 3 worker (bare metal) | 2 × 1 TB NVMe | 4 × 16 GB     | Internal high-performance workloads |
 
@@ -106,5 +112,3 @@ For **bare metal clusters**, we recommend:
   * Worker nodes: large storage + ECC RAM
 * For hybrid setups, HCloud provides flexibility and easy scaling, while bare metal delivers high performance.
 * Consider optional **10 Gb NICs** to improve intra-cluster communication on bare metal nodes.
-
-

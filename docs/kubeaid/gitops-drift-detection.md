@@ -1,6 +1,7 @@
 # GitOps Drift Detection with ArgoCD
 
-KubeAid uses ArgoCD to implement GitOps principles, ensuring that your cluster state always matches what's defined in Git. This document explains how drift detection works and how to configure alerting.
+KubeAid uses ArgoCD to implement GitOps principles, ensuring that your cluster state always matches
+what's defined in Git. This document explains how drift detection works and how to configure alerting.
 
 ## How Drift Detection Works
 
@@ -33,7 +34,7 @@ flowchart LR
 ### Sync Status States
 
 | Status | Meaning |
-|--------|---------|
+| -------- | --------- |
 | **Synced** | Cluster matches Git - desired state achieved |
 | **OutOfSync** | Cluster differs from Git - manual changes detected or pending updates |
 | **Unknown** | ArgoCD cannot determine the state |
@@ -41,7 +42,7 @@ flowchart LR
 ### Health Status States
 
 | Status | Meaning |
-|--------|---------|
+| -------- | --------- |
 | **Healthy** | All resources are running correctly |
 | **Progressing** | Resources are being deployed/updated |
 | **Degraded** | Some resources have issues |
@@ -94,6 +95,7 @@ spec:
 ### Viewing Unmanaged Resources
 
 In the ArgoCD UI:
+
 1. Navigate to your Application
 2. Click on "App Details"
 3. Look for resources marked with a warning icon
@@ -250,6 +252,7 @@ Or use the ArgoCD UI to see a visual diff.
 ### 4. Set Up Notifications
 
 Configure alerts for:
+
 - OutOfSync states lasting more than 15 minutes
 - Health degradation
 - Sync failures
@@ -259,6 +262,7 @@ Configure alerts for:
 ### Application Stuck OutOfSync
 
 1. Check the diff:
+
    ```bash
    argocd app diff <app-name>
    ```

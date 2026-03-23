@@ -5,20 +5,21 @@ k8s resources are usually independent of any specific node and kubectl makes thi
 NOTE - you would still need to verify the resources which utilises PVCs and ensure that PVCs
 are detachable and re-attachable so that pods do not suffer while getting migrated from one node to another.
 
-### Steps:
+## Steps
 
 1. You need to cordon the node. ```cordoning``` marks a node as unscheduled so that no new pods are placed there
+
 ```shell
 kubectl cordon <node-name>
 ```
 
 you can confirm the node's status as "SchedulingDisabled" by running:
+
 ```shell
 kubectl get nodes
 ```
 
-
-2. You need to drain the node.
+1. You need to drain the node.
 first confirm by doing the dry run
 
 ```shell
@@ -27,19 +28,22 @@ kubectl drain <node-name> --ignore-daemonsets --delete-emptydir-data --dry-run=s
 
 After you verify the listed resources, you can proceed with actually draining the node.
 
-3. Reboot the node. 
+1. Reboot the node.
 
 There are multiple methods to reboot the node, depends upon platform. you can also exec into the node and run
+
 ```shell
 reboot
 ```
 
-4. wait for a few minutes and verify if node have become healthy again 
+1. wait for a few minutes and verify if node have become healthy again
+
 ```shell
 kubectl get nodes
 ```
 
-5. You can now uncordon the node.
+1. You can now uncordon the node.
+
 ```shell
 kubectl uncordon <node-name>
 ```

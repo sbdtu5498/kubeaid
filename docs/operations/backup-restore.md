@@ -1,6 +1,7 @@
 # Backup and Restore Strategy Overview
 
-This document provides a technical overview of the backup mechanisms implemented across Kubernetes clusters managed by our DevOps team.
+This document provides a technical overview of the backup mechanisms implemented across Kubernetes clusters managed
+by our DevOps team.
 
 ---
 
@@ -10,12 +11,14 @@ We use Velero to orchestrate backups of Persistent Volume Claims (PVCs) in Kuber
 
 - [Triggering manual backups using existing schedule](../../argocd-helm-charts/velero/README.md#triggering-manual-backups)
 - [Restoring from backups](../../argocd-helm-charts/velero/README.md#restoring-using-existing-backups)
+
 ---
 
 ## 2. Sealed Secrets Key Backups
 
 - To preserve the ability to decrypt sealed secrets, we automate the backup of the controller’s private key.
 - [Backup and Restore documentation](../../argocd-helm-charts/sealed-secrets/README.md#how-to-backup-and-restore-sealed-secrets)
+
 ---
 
 ## 3. Logical Database Backups
@@ -33,8 +36,8 @@ We use logical dumps for databases such as PostgreSQL and MongoDB to ensure port
 
 ## Summary
 
-| Component           | Tool/Method            | Target Storage   |
-|---------------------|------------------------|------------------|
-| PVCs                | Velero + CSI Snapshots | Azure Blob / S3 Compatible Storage | 
+| Component           | Tool/Method            | Target Storage                     |
+|---------------------|------------------------|------------------------------------|
+| PVCs                | Velero + CSI Snapshots | Azure Blob / S3 Compatible Storage |
 | Sealed Secret Keys  | CronJob + GZIP         | Azure Blob / S3 Compatible Storage |
 | PostgreSQL / MongoDB| Logical dump scripts   | Azure Blob / S3 Compatible Storage |
