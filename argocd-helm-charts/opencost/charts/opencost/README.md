@@ -2,7 +2,7 @@
 
 OpenCost and OpenCost UI
 
-![Version: 2.5.10](https://img.shields.io/badge/Version-2.5.10-informational?style=flat-square)
+![Version: 2.5.12](https://img.shields.io/badge/Version-2.5.12-informational?style=flat-square)
 ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square)
 ![AppVersion: 1.119.2](https://img.shields.io/badge/AppVersion-1.119.2-informational?style=flat-square)
 [![Artifact Hub](https://img.shields.io/endpoint?url=https://artifacthub.io/badge/repository/opencost)](https://artifacthub.io/packages/search?repo=opencost)
@@ -58,6 +58,10 @@ $ helm install opencost opencost/opencost
 | opencost.customPricing.createConfigmap | bool | `true` | Configures the pricing model provided in the values file. |
 | opencost.customPricing.enabled | bool | `false` | Enables custom pricing configuration |
 | opencost.customPricing.provider | string | `"custom"` | Sets the provider type for the custom pricing file. |
+| opencost.exporter.adminToken.enabled | bool | `false` | When true, the chart creates the admin-token Secret (if value is set) or mounts existingSecret as ADMIN_TOKEN. When false, ADMIN_TOKEN is not set and no secret is deployed. |
+| opencost.exporter.adminToken.existingSecret | string | `""` | Use an existing Secret for the admin token (recommended). Secret must contain the key below. |
+| opencost.exporter.adminToken.secretKey | string | `"ADMIN_TOKEN"` | Key in the Secret that holds the admin token (used for both value-created and existing secrets). |
+| opencost.exporter.adminToken.value | string | `""` | If set, the chart creates a Secret with this value and sets ADMIN_TOKEN from it (not recommended for production; use existingSecret instead). |
 | opencost.exporter.apiHttpRoute | object | `{"annotations":{},"enabled":false,"hostnames":[],"labels":{},"parentRefs":[{"name":"","namespace":"","sectionName":""}],"rules":[{"backendRefs":[{"name":"","port":9003}],"matches":[{"path":{"type":"PathPrefix","value":"/"}}]}]}` | HTTPRoute for OpenCost API (Gateway API) |
 | opencost.exporter.apiHttpRoute.annotations | object | `{}` | Annotations for HTTPRoute resource |
 | opencost.exporter.apiHttpRoute.enabled | bool | `false` | Enable HTTPRoute resource |
