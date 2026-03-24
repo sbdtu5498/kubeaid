@@ -1,18 +1,16 @@
-{{- range $instanceName, $config := .Values.postgres }}
-{{- if $config.netpol }}
+{{- if and ((.Values.global).netpol).enabled ((.Values.global).postgresql).netpol }}
 ---
 apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy
 metadata:
-  name: {{ $instanceName }}-postgresql-networkpolicy
-  namespace: {{ $.Release.Namespace }}
+  name: {{ .Values.global.postgresql.instanceName | default "postgresql" }}-networkpolicy
+  namespace: {{ .Release.Namespace }}
   labels:
-    {{- include "kubeaid-addons.postgres-netpol.labels" $ | nindent 4 }}
     app.kubernetes.io/component: cilium-networkpolicy
 spec:
   endpointSelector:
     matchLabels:
-      cnpg.io/cluster: {{ $instanceName }}
+      cnpg.io/cluster: {{ .Values.global.postgresql.instanceName | default "postgresql" }}
 
 # =========
 # EGRESS
@@ -29,10 +27,10 @@ spec:
             - port: "6443"
               protocol: TCP
 
-    # Communication between PostgreSQL pods (cluster replication)
+    # Communication between postgres pods
     - toEndpoints:
         - matchLabels:
-            cnpg.io/cluster: {{ $instanceName }}
+            cnpg.io/cluster: {{ .Values.global.postgresql.instanceName | default "postgresql" }}
       toPorts:
         - ports:
             - port: "5432"
@@ -45,9 +43,9 @@ spec:
 # ========
 
   ingress:
-    {{- if $config.clients }}
-    # Allow ingress from client applications
-    {{- range $config.clients }}
+    {{- if .Values.global.postgresql.clients }}
+    # allow ingress from client applications
+    {{- range .Values.global.postgresql.clients }}
     - fromEndpoints:
         - matchLabels:
             {{- range $key, $value := .labels }}
@@ -60,11 +58,11 @@ spec:
     {{- end }}
     {{- end }}
 
-    {{- if $config.cnpg }}
-    # Allow ingress from CNPG operator
+    {{- if .Values.global.postgresql.cnpg }}
+    # allow ingress from CNPG operator
     - fromEndpoints:
         - matchLabels:
-            {{- range $key, $value := $config.cnpg.labels }}
+            {{- range $key, $value := .Values.global.postgresql.cnpg.labels }}
             {{ $key }}: {{ $value }}
             {{- end }}
       toPorts:
@@ -73,10 +71,10 @@ spec:
               protocol: TCP
     {{- end }}
 
-    # Communication between PostgreSQL pods (cluster replication)
+    # communication between postgres pods
     - fromEndpoints:
         - matchLabels:
-            cnpg.io/cluster: {{ $instanceName }}
+            cnpg.io/cluster: {{ .Values.global.postgresql.instanceName | default "postgresql" }}
       toPorts:
         - ports:
             - port: "5432"
@@ -84,5 +82,4 @@ spec:
             - port: "8000"
               protocol: TCP
 
-{{- end }}
 {{- end }}

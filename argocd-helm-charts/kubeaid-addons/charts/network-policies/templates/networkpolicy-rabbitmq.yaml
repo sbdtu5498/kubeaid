@@ -1,0 +1,54 @@
+{{- if and ((.Values.global).netpol).enabled ((.Values.global).rabbitmq).netpol }}
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: {{ .Values.global.netpol.releaseName }}-rabbitmq-networkpolicy
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/component: cilium-networkpolicy
+spec:
+  endpointSelector:
+    matchLabels:
+      app.kubernetes.io/part-of: rabbitmq
+
+# =========
+# EGRESS
+# =========
+
+  egress:
+    # Kubernetes API server (peer discovery)
+    - toEndpoints:
+        - matchLabels:
+            k8s:component: kube-apiserver
+            k8s:io.kubernetes.pod.namespace: kube-system
+      toPorts:
+        - ports:
+            - port: "6443"
+              protocol: TCP
+
+# ======
+#INGRESS
+# ======
+
+  ingress:
+    # Allow from oncall-engine and oncall-celery
+    - fromEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+            app.kubernetes.io/instance: {{ .Values.global.netpol.releaseName }}
+            app.kubernetes.io/component: engine
+      toPorts:
+        - ports:
+            - port: "5672"
+              protocol: TCP
+    - fromEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+            app.kubernetes.io/instance: {{ .Values.global.netpol.releaseName }}
+            app.kubernetes.io/component: celery
+      toPorts:
+        - ports:
+            - port: "5672"
+              protocol: TCP
+{{- end }}

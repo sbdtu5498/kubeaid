@@ -2,5 +2,8 @@ dependencies:
 - name: whoami
   repository: https://cowboysysop.github.io/charts/
   version: 6.0.0
-digest: sha256:63ad09d518250f4102f029a418c9ab38eabc90245e380c01e028407283c01570
-generated: "2025-08-13T13:36:06.651805497+05:30"
+- name: kubeaid-addons
+  repository: file://../kubeaid-addons
+  version: 0.1.0
+digest: sha256:156c2c8f082c62fbde311524c665b8f3da4731e02c0794a968ab50e4cab8041b
+generated: "2026-03-24T07:17:03.807721426+05:30"

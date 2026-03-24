@@ -1,0 +1,99 @@
+{{- if and ((.Values.global).netpol).enabled ((.Values.global).grafana).netpol }}
+---
+# EGRESS
+# Allow oncall-grafana egress to oncall-engine and external auth services
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: {{ .Values.global.netpol.releaseName }}-grafana-networkpolicy
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/component: cilium-networkpolicy
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:app.kubernetes.io/name: grafana
+      app.kubernetes.io/instance: {{ .Values.global.netpol.releaseName }}
+
+# =========
+# EGRESS
+# =========
+
+  egress:
+    # Allow to oncall-engine API
+    - toEndpoints:
+        - matchLabels:
+            app.kubernetes.io/instance: {{ .Values.global.netpol.releaseName }}
+            app.kubernetes.io/component: engine
+      toPorts:
+        - ports:
+            - port: "8080"
+              protocol: TCP
+
+    # DNS proxy intercepts these queries to build IP-to-domain cache
+    - toEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: kube-system
+            k8s:k8s-app: kube-dns
+      toPorts:
+        - ports:
+            - port: "53"
+              protocol: ANY
+          rules:
+            dns:
+              - matchPattern: "*"
+
+    - toFQDNs:
+      {{- if ((.Values.global.telegram).url) }}
+        - matchName: "{{ .Values.global.telegram.url }}"
+      {{- end }}
+      {{- if ((.Values.global.keycloak).url) }}
+        - matchName: "{{ .Values.global.keycloak.url }}"
+      {{- end }}
+      {{- if ((.Values.global.grafana).url) }}
+        - matchName: "{{ .Values.global.grafana.url }}"
+      {{- end }}
+      {{- if ((.Values.global.googleStorage).url) }}
+        - matchName: "{{ .Values.global.googleStorage.url }}"
+      {{- end }}
+      toPorts:
+        - ports:
+            - port: "443"
+              protocol: TCP
+
+# ========
+# INGRESS
+# ========
+
+  ingress:
+    # Allow from Traefik ingress controller
+    - fromEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: {{ .Values.global.netpol.traefik.namespace }}
+            {{- range $key, $value := .Values.global.netpol.traefik.labels }}
+            {{ $key }}: {{ $value }}
+            {{- end }}
+      toPorts:
+        - ports:
+            - port: "3000"
+              protocol: TCP
+
+    # Allow from oncall-engine and celery
+    - fromEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+            app.kubernetes.io/instance: {{ .Values.global.netpol.releaseName }}
+            app.kubernetes.io/component: engine
+      toPorts:
+        - ports:
+            - port: "3000"
+              protocol: TCP
+    - fromEndpoints:
+        - matchLabels:
+            app.kubernetes.io/component: celery
+            app.kubernetes.io/instance: {{ .Values.global.netpol.releaseName }}
+      toPorts:
+        - ports:
+            - port: "3000"
+              protocol: TCP
+{{- end }}

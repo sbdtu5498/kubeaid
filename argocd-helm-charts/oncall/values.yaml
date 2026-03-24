@@ -67,34 +67,81 @@ oncall:
   ingress:
     enabled: true
   uwsgi: null
-  backup:
-    cloud: "aws"
-    destinationPath: s3://oncall-backups
-    endpointURL: https://s3.abc.com
-  recover: false
 
-rabbitmq:
-  replicas: 1
-  additionalConfig:
-    vm_memory_high_watermark_paging_ratio: 0.99
-  resources:
-    limits:
-      cpu: 100m
-      memory: 2Gi
-    requests:
-      cpu: 100m
-      memory: 2Gi
-  image:
-    repository: bitnamilegacy/rabbitmq
-    tag: 3.12.0-debian-11-r0
+global:
+  netpol:
+    enabled: false
+  
+  celery:
+    netpol: false
 
-postgresql:
-  instance: 2
-  size: 2Gi
-  logicalBackup: true
-  resources:
-    limits:
-      memory: 800Mi
-    requests:
-      memory: 500Mi
-      cpu: 100m
+  engine:
+    netpol: false
+
+  redis:
+    netpol: false
+    enabled: true
+
+  grafana:
+    netpol: false
+
+  postgresql:
+    enabled: true
+    recover: false
+    instance: 2
+    instanceName: oncall-pgsql
+    database: oncall
+    owner: oncall
+    netpol: false
+    clients:
+      - labels:
+          app.kubernetes.io/instance: oncall
+          app.kubernetes.io/component: engine
+      - labels:
+          app.kubernetes.io/instance: oncall
+          app.kubernetes.io/component: celery
+    cnpg:
+      labels:
+        app.kubernetes.io/name: cloudnative-pg
+        io.kubernetes.pod.namespace: cloudnative-pg
+    size: 2Gi
+    logicalBackup: true
+    resources:
+      limits:
+        memory: 800Mi
+      requests:
+        memory: 500Mi
+        cpu: 100m
+    backup:
+      enabled: true
+      cloud: aws
+      destinationPath: s3://oncall-backups
+      endpointURL: https://s3.abc.com
+      secretName: oncall-psql-backup-creds
+      azureCredentials:
+        connectionString:
+          key: AZURE_CONNECTION_STRING
+        storageAccount:
+          key: AZURE_STORAGE_ACCOUNT
+        storageKey:
+          key: AZURE_STORAGE_KEY
+        storageSasToken:
+          key: AZURE_STORAGE_SAS_TOKEN
+
+  rabbitmq:
+    enabled: true
+    instanceName: oncall-rabbitmq
+    netpol: false
+    replicas: 1
+    additionalConfig:
+      vm_memory_high_watermark_paging_ratio: 0.99
+    resources:
+      limits:
+        cpu: 100m
+        memory: 2Gi
+      requests:
+        cpu: 100m
+        memory: 2Gi
+    image:
+      repository: bitnamilegacy/rabbitmq
+      tag: 3.12.0-debian-11-r0

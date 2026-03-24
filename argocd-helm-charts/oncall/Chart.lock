@@ -2,5 +2,8 @@ dependencies:
 - name: oncall
   repository: https://grafana.github.io/helm-charts
   version: 1.16.5
-digest: sha256:407895267f19a06b3cb9f16944bab9cd949c8367f6df2146a78c6b4cb2e22271
-generated: "2025-08-27T15:50:58.913841428+05:30"
+- name: kubeaid-addons
+  repository: file://../kubeaid-addons
+  version: 0.1.0
+digest: sha256:865ceb3b1e095c0e4ed246207ed252bfab7f17a47f49014038f1909975da8add
+generated: "2026-03-23T23:12:20.401811353+05:30"

@@ -1,0 +1,47 @@
+{{- if ((.Values.defaultDeny).enabled) }}
+{{- range $ns, $config := .Values.defaultDeny.namespaces }}
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: default-deny
+  namespace: {{ $ns }}
+  labels:
+    app.kubernetes.io/component: cilium-networkpolicy
+spec:
+  endpointSelector:
+  {{- if $config.excludedPods }}
+    matchExpressions:
+    {{- range $config.excludedPods }}
+    {{- range $key, $value := . }}
+    - key: {{ $key }}
+      operator: NotIn
+      values:
+      - {{ $value }}
+    {{- end }}
+    {{- end }}
+  {{- else }}
+    {}
+  {{- end }}
+
+  enableDefaultDeny:
+    egress: true
+    ingress: true
+
+  # Allow only DNS egress to kube-dns
+  egress:
+  - toEndpoints:
+    - matchLabels:
+        io.kubernetes.pod.namespace: kube-system
+        k8s-app: kube-dns
+      toPorts:
+      - ports:
+        - port: "53"
+          protocol: UDP
+        - port: "53"
+          protocol: TCP
+        rules:
+          dns:
+            - matchPattern: "*"
+{{- end }}
+{{- end }}

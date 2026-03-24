@@ -60,9 +60,3 @@ Create the name of the service account to use
 {{- default "default" .Values.serviceAccount.name }}
 {{- end }}
 {{- end }}
-
-{{- define "kubeaid-addons.postgres-netpol.labels" -}}
-helm.sh/chart: {{ .Chart.Name }}-{{ .Chart.Version }}
-app.kubernetes.io/managed-by: {{ .Release.Service }}
-app.kubernetes.io/instance: {{ .Release.Name }}
-{{- end }}

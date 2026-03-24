@@ -1,0 +1,53 @@
+{{- if and ((.Values.global).netpol).enabled ((.Values.global).redis).netpol }}
+# Network Policy for Redis (Master and Replicas)
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: {{ .Values.global.netpol.releaseName }}-redis-networkpolicy
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/component: cilium-networkpolicy
+spec:
+  endpointSelector:
+    matchLabels:
+      app.kubernetes.io/instance: {{ .Values.global.netpol.releaseName }}
+
+# =========
+# EGRESS
+# =========
+
+  egress:
+    - toEndpoints:
+        - matchLabels:
+            app.kubernetes.io/instance: {{ .Values.global.netpol.releaseName }}
+            app.kubernetes.io/component: replica
+        - matchLabels:
+            app.kubernetes.io/instance: {{ .Values.global.netpol.releaseName }}
+            app.kubernetes.io/component: master
+
+# ========
+# INGRESS
+# ========
+
+  ingress:
+    # Allow from oncall-engine and oncall-celery
+    - fromEndpoints:
+        - matchLabels:
+            app.kubernetes.io/instance: {{ .Values.global.netpol.releaseName }}
+            app.kubernetes.io/component: engine
+        - matchLabels:
+            app.kubernetes.io/instance: {{ .Values.global.netpol.releaseName }}
+            app.kubernetes.io/component: celery
+      toPorts:
+        - ports:
+            - port: "6379"
+              protocol: TCP
+
+    - fromEndpoints:
+        - matchLabels:
+            app.kubernetes.io/instance: {{ .Values.global.netpol.releaseName }}
+            app.kubernetes.io/component: replica
+        - matchLabels:
+            app.kubernetes.io/instance: {{ .Values.global.netpol.releaseName }}
+            app.kubernetes.io/component: master
+{{- end }}

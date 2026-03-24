@@ -1,0 +1,36 @@
+{{- if ((.Values.global).rabbitmq).enabled }}
+---
+apiVersion: rabbitmq.com/v1beta1
+kind: RabbitmqCluster
+metadata:
+  name: {{ .Values.global.rabbitmq.instanceName }}
+  labels:
+    velero.io/exclude-from-backup: "true"
+spec:
+  replicas: {{ .Values.global.rabbitmq.replicas }}
+  rabbitmq:
+    additionalConfig: |
+      {{- range $key, $value := .Values.global.rabbitmq.additionalConfig }}
+      {{ $key }}: {{ $value }}
+      {{- end }}
+  affinity:
+    podAntiAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        - labelSelector:
+            matchExpressions:
+              - key: app.kubernetes.io/name
+                operator: In
+                values:
+                  - {{ .Values.global.rabbitmq.instanceName }}
+          topologyKey: kubernetes.io/hostname
+  resources:
+    requests:
+      cpu: {{ .Values.global.rabbitmq.resources.requests.cpu }}
+      memory: {{ .Values.global.rabbitmq.resources.requests.memory }}
+    limits:
+      cpu: {{ .Values.global.rabbitmq.resources.limits.cpu }}
+      memory: {{ .Values.global.rabbitmq.resources.limits.memory }}
+  {{- if .Values.global.rabbitmq.image }}
+  image: {{ .Values.global.rabbitmq.image.repository }}:{{ .Values.global.rabbitmq.image.tag }}
+  {{- end }}
+{{- end }}

@@ -1,0 +1,133 @@
+{{- if and ((.Values.global).netpol).enabled ((.Values.global).engine).netpol }}
+---
+# Allow oncall-engine egress to internal cluster services
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: {{ .Values.global.netpol.releaseName }}-engine-networkpolicy
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/component: cilium-networkpolicy
+spec:
+  endpointSelector:
+    matchLabels:
+      app.kubernetes.io/instance: {{ .Values.global.netpol.releaseName }}
+      app.kubernetes.io/component: engine
+
+# =========
+# EGRESS
+# =========
+
+  egress:
+    - toEndpoints:
+        - matchLabels:
+            k8s:app.kubernetes.io/name: grafana
+            app.kubernetes.io/instance: {{ .Values.global.netpol.releaseName }}
+      toPorts:
+        - ports:
+            - port: "3000"
+              protocol: TCP
+
+    - toEndpoints:
+        - matchLabels:
+            k8s:cnpg.io/cluster: oncall-pgsql
+      toPorts:
+        - ports:
+            - port: "5432"
+              protocol: TCP
+
+    # Allow to RabbitMQ service
+    - toEndpoints:
+        - matchLabels:
+            app.kubernetes.io/name: oncall-rabbitmq
+      toPorts:
+        - ports:
+            - port: "5672"
+              protocol: TCP
+
+  {{- if ((.Values.global).redis).enabled }}
+    - toEndpoints:
+        - matchLabels:
+            app.kubernetes.io/name: redis
+            app.kubernetes.io/instance: {{ .Values.global.netpol.releaseName }}
+      toPorts:
+        - ports:
+            - port: "6379"
+              protocol: TCP
+  {{- else }}
+    # Allow to external Redis service
+    - toEndpoints:
+        - matchLabels:
+            app.kubernetes.io/name: redis
+      toPorts:
+        - ports:
+            - port: "6379"
+              protocol: TCP
+  {{- end }}
+
+    - toEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+            k8s:app.kubernetes.io/name: grafana
+            app.kubernetes.io/instance: {{ .Values.global.netpol.releaseName }}
+      toPorts:
+        - ports:
+            - port: "3000"
+              protocol: TCP
+
+  # Allow oncall-engine egress to external services
+  # DNS proxy intercepts these queries to build IP-to-domain cache
+    - toEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: kube-system
+            k8s:k8s-app: kube-dns
+      toPorts:
+        - ports:
+            - port: "53"
+              protocol: ANY
+          rules:
+            dns:
+              - matchPattern: "*"
+
+    - toFQDNs:
+      {{- if ((.Values.global.telegram).url) }}
+        - matchName: "{{ .Values.global.telegram.url }}"
+      {{- end }}
+      {{- if ((.Values.global.keycloak).url) }}
+        - matchName: "{{ .Values.global.keycloak.url }}"
+      {{- end }}
+      {{- if ((.Values.global.googleStorage).url) }}
+        - matchName: "{{ .Values.global.googleStorage.url }}"
+      {{- end }}
+      toPorts:
+        - ports:
+            - port: "443"
+              protocol: TCP
+
+# ========
+# INGRESS
+# ========
+
+  ingress:
+    # Allow from Traefik ingress controller
+    - fromEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: {{ .Values.global.netpol.traefik.namespace }}
+            {{- range $key, $value := .Values.global.netpol.traefik.labels }}
+            {{ $key }}: {{ $value }}
+            {{- end }}
+      toPorts:
+        - ports:
+            - port: "8080"
+              protocol: TCP
+    # Allow from oncall-grafana
+    - fromEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
+            k8s:app.kubernetes.io/name: grafana
+            app.kubernetes.io/instance: {{ .Values.global.netpol.releaseName }}
+      toPorts:
+        - ports:
+            - port: "8080"
+              protocol: TCP
+{{- end }}
