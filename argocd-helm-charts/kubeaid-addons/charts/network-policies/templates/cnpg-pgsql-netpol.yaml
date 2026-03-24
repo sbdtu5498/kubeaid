@@ -27,7 +27,7 @@ spec:
             - port: "6443"
               protocol: TCP
 
-    # Communication between PostgreSQL pods (cluster replication)
+    # Communication between postgres pods
     - toEndpoints:
         - matchLabels:
             cnpg.io/cluster: {{ .Values.global.postgresql.instanceName | default "postgresql" }}
@@ -44,7 +44,7 @@ spec:
 
   ingress:
     {{- if .Values.global.postgresql.clients }}
-    # Allow ingress from client applications
+    # allow ingress from client applications
     {{- range .Values.global.postgresql.clients }}
     - fromEndpoints:
         - matchLabels:
@@ -59,7 +59,7 @@ spec:
     {{- end }}
 
     {{- if .Values.global.postgresql.cnpg }}
-    # Allow ingress from CNPG operator
+    # allow ingress from CNPG operator
     - fromEndpoints:
         - matchLabels:
             {{- range $key, $value := .Values.global.postgresql.cnpg.labels }}
@@ -71,7 +71,7 @@ spec:
               protocol: TCP
     {{- end }}
 
-    # Communication between PostgreSQL pods (cluster replication)
+    # communication between postgres pods
     - fromEndpoints:
         - matchLabels:
             cnpg.io/cluster: {{ .Values.global.postgresql.instanceName | default "postgresql" }}

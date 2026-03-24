@@ -90,6 +90,8 @@ global:
     recover: false
     instance: 2
     instanceName: oncall-pgsql
+    database: oncall
+    owner: oncall
     netpol: false
     clients:
       - labels:
@@ -128,7 +130,8 @@ global:
 
   rabbitmq:
     enabled: true
-    netpol: true
+    instanceName: oncall-rabbitmq
+    netpol: false
     replicas: 1
     additionalConfig:
       vm_memory_high_watermark_paging_ratio: 0.99

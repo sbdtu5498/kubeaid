@@ -4,20 +4,20 @@ apiVersion: postgresql.cnpg.io/v1
 kind: Cluster
 metadata:
   {{- if .Values.global.postgresql.recover }}
-  name: oncall-pgsql-recover
+  name: {{ .Values.global.postgresql.instanceName }}-recover
   {{- else }}
-  name: oncall-pgsql
+  name: {{ .Values.global.postgresql.instanceName }}
   {{- end }}
 spec:
   instances: {{ .Values.global.postgresql.instance | default 1 }}
   {{- if .Values.global.postgresql.recover }}
   bootstrap:
-    recovery: oncall-pgsql
+    recovery: {{ .Values.global.postgresql.instanceName }}
   {{- else }}
   bootstrap:
     initdb:
-      database: oncall
-      owner: oncall
+      database: {{ .Values.global.postgresql.database | default "app" }}
+      owner: {{ .Values.global.postgresql.owner | default "app" }}
   {{- end }}
   resources:
     limits:
@@ -35,7 +35,7 @@ spec:
     {{- end }}
   {{- if .Values.global.postgresql.recover }}
   externalClusters:
-    name: oncall-pgsql
+    name: {{ .Values.global.postgresql.instanceName }}
     barmanObjectStore:
       destinationPath: {{ .Values.global.postgresql.backup.destinationPath }}
       endpointURL: {{ .Values.global.postgresql.backup.endpointURL }}
@@ -66,7 +66,7 @@ spec:
       wal:
         maxParallel: 8
   {{- end }}
-  {{- if .Values.global.postgresql.backup.enabled }}
+  {{- if ((.Values.global.postgresql).backup).enabled }}
   backup:
     barmanObjectStore:
       destinationPath: {{ .Values.global.postgresql.backup.destinationPath }}
@@ -100,4 +100,17 @@ spec:
         encryption: AES256
     retentionPolicy: "30d"
   {{- end }}
+{{- if ((.Values.global.postgresql).backup).enabled }}
+---
+apiVersion: postgresql.cnpg.io/v1
+kind: ScheduledBackup
+metadata:
+  name: {{ .Values.global.postgresql.instanceName }}-backup
+spec:
+  schedule: "0 0 0 * * *"
+  immediate: true
+  backupOwnerReference: self
+  cluster:
+    name: {{ .Values.global.postgresql.instanceName }}
+{{- end }}
 {{- end }}

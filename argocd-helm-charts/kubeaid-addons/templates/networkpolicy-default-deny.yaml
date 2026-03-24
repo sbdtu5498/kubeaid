@@ -1,8 +1,6 @@
 {{- if ((.Values.defaultDeny).enabled) }}
 {{- range $ns, $config := .Values.defaultDeny.namespaces }}
 ---
-# Namespace-wide default deny with DNS egress
-# Applies to all pods in the namespace except excluded pods
 apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy
 metadata:

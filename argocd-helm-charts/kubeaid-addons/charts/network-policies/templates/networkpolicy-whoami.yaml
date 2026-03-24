@@ -18,7 +18,7 @@ spec:
 # ========
 
   ingress:
-    # Allow traffic only from Traefik ingress controller to the whoami HTTP port
+    # allow traffic only from traefik
     - fromEndpoints:
         - matchLabels:
             k8s:io.kubernetes.pod.namespace: {{ .Values.global.netpol.traefik.namespace }}

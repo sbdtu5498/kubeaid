@@ -3,7 +3,7 @@
 apiVersion: rabbitmq.com/v1beta1
 kind: RabbitmqCluster
 metadata:
-  name: oncall-rabbitmq
+  name: {{ .Values.global.rabbitmq.instanceName }}
   labels:
     velero.io/exclude-from-backup: "true"
 spec:
@@ -21,7 +21,7 @@ spec:
               - key: app.kubernetes.io/name
                 operator: In
                 values:
-                  - oncall-rabbitmq
+                  - {{ .Values.global.rabbitmq.instanceName }}
           topologyKey: kubernetes.io/hostname
   resources:
     requests:

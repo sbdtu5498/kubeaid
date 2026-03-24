@@ -17,23 +17,14 @@ spec:
 # =========
 
   egress:
-    # Allow RabbitMQ to query Kubernetes API for StatefulSet peer discovery
-    - toEntities:
-        - kube-apiserver
-      toPorts:
-        - ports:
-            - port: "443"
-              protocol: TCP
-
+    # Kubernetes API server (peer discovery)
     - toEndpoints:
         - matchLabels:
-            k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
-            app.kubernetes.io/part-of: rabbitmq
+            k8s:component: kube-apiserver
+            k8s:io.kubernetes.pod.namespace: kube-system
       toPorts:
         - ports:
-            - port: "4369"
-              protocol: TCP
-            - port: "25672"
+            - port: "6443"
               protocol: TCP
 
 # ======
