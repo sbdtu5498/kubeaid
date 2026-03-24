@@ -10,8 +10,7 @@ metadata:
 spec:
   endpointSelector:
     matchLabels:
-      app.kubernetes.io/name: rabbitmq
-      app.kubernetes.io/instance: {{ .Values.global.netpol.releaseName }}
+      app.kubernetes.io/part-of: rabbitmq
 
 # =========
 # EGRESS
@@ -29,8 +28,7 @@ spec:
     - toEndpoints:
         - matchLabels:
             k8s:io.kubernetes.pod.namespace: {{ .Release.Namespace }}
-            app.kubernetes.io/name: rabbitmq
-            app.kubernetes.io/instance: {{ .Values.global.netpol.releaseName }}
+            app.kubernetes.io/part-of: rabbitmq
       toPorts:
         - ports:
             - port: "4369"

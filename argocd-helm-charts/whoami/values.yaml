@@ -4,3 +4,9 @@ whoami:
 
   ingress:
     enabled: true
+
+global:
+  netpol:
+    enabled: false
+  whoami:
+    netpol: false
