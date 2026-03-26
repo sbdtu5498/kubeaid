@@ -160,7 +160,8 @@ spec:
     */}}
     - |
         wget https://github.com/Archisman-Mridha/KubeAid/releases/download/kubeaid-storagectl/kubeaid-storagectl
-        kubeaid-storagectl plan execute --os-size {{ $.Values.bareMetal.installImage.vg0.size }} --zfs-pool-size {{ $nodeGroup.zfs.size }}
+        chmod +x ./kubeaid-storagectl
+        ./kubeaid-storagectl plan execute --os-size {{ $.Values.bareMetal.installImage.vg0.size }} --zfs-pool-size {{ $nodeGroup.zfs.size }}
 
     - grep VERSION= /etc/os-release; uname -a
     - export CONTAINERD=1.7.25

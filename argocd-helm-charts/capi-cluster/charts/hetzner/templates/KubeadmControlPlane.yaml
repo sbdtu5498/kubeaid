@@ -290,7 +290,8 @@ spec:
       {{- if eq .Values.mode "bare-metal" }}
       - |
         wget https://github.com/Archisman-Mridha/KubeAid/releases/download/kubeaid-storagectl/kubeaid-storagectl
-        kubeaid-storagectl plan execute --os-size {{ $.Values.bareMetal.installImage.vg0.size }} --zfs-pool-size {{ $.Values.controlPlane.bareMetal.zfs.size }}
+        chmod +x ./kubeaid-storagectl
+        ./kubeaid-storagectl plan execute --os-size {{ $.Values.bareMetal.installImage.vg0.size }} --zfs-pool-size {{ $.Values.controlPlane.bareMetal.zfs.size }}
       {{- end }}
 
       - export CONTAINERD=2.1.3
