@@ -175,7 +175,7 @@
     //   selector: 'schedule=~"^ops.+"',
     // },
   },
-  'blackbox-exporter': false,
+  'blackbox-exporter': true,
   connect_keda: false,
   grafana_plugins+: [],
   grafana_dashboards+: {},
