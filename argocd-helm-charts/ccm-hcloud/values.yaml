@@ -5,3 +5,21 @@ hcloud-cloud-controller-manager:
         secretKeyRef:
           name: cloud-credentials
           key: hcloud
+
+    ROBOT_USER:
+      valueFrom:
+        secretKeyRef:
+          name: cloud-credentials
+    ROBOT_PASSWORD:
+      valueFrom:
+        secretKeyRef:
+          name: cloud-credentials
+
+  networking:
+    network:
+      valueFrom:
+        secretKeyRef:
+          name: cloud-credentials
+
+  nodeSelector:
+    node-role.kubernetes.io/control-plane: ""

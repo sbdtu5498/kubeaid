@@ -4,9 +4,10 @@ metadata:
   name: {{ .Values.global.clusterName }}
   labels:
     cluster.x-k8s.io/name: {{ .Values.global.clusterName }}
+
 spec:
   controlPlaneEndpoint:
-    host: {{ (.Values.controlPlane.bareMetal).endpoint.host | default "" }}
+    host: {{ (.Values.controlPlane.endpoint).host | default "" }}
     port: 6443
 
   controlPlaneRegions: {{ toYaml .Values.controlPlane.regions | nindent 4 }}
@@ -21,8 +22,10 @@ spec:
   {{- end }}
 
   hcloudNetwork:
-    enabled: {{ .Values.hcloud.disablePublicIPs }}
+    enabled: true
     networkZone: {{ .Values.hcloud.zone }}
+    cidrBlock: {{ .Values.hcloud.cidrBlock }}
+    subnetCidrBlock: {{ .Values.hcloud.subnetCidrBlock }}
 
 {{- end }}
 
@@ -63,15 +66,16 @@ spec:
     # NOTE : Each SSH Key is cluster wide.
     {{- if or (eq .Values.mode "hcloud") (eq .Values.mode "hybrid") }}
     hcloud:
-      - name: {{ .Values.hcloud.sshKeyPairName }}
+      - name: {{ .Values.sshKeyPair.name }}
     {{- end }}
+
     {{- if or (eq .Values.mode "bare-metal") (eq .Values.mode "hybrid") }}
     # Defines the reference to the secret where the SSH key for the rescue system is stored.
-    # Make sure, that any other HCloud SSH Key with this name doesn't exist.
+    # Make sure, that any other Hetzner Bare Metal SSH keypair with this name doesn't exist.
     robotRescueSecretRef:
       key:
         name: sshkey-name
         privateKey: ssh-privatekey
         publicKey: ssh-publickey
-      name: {{ .Values.bareMetal.sshKeyPair.secretName }}
+      name: {{ .Values.sshKeyPair.secretName }}
     {{- end }}

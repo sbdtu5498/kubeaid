@@ -18,7 +18,6 @@ spec:
           etcd-keyfile: /etc/kubernetes/pki/etcd/server.key
           kubelet-client-certificate: /etc/kubernetes/pki/apiserver-kubelet-client.crt
           kubelet-client-key: /etc/kubernetes/pki/apiserver-kubelet-client.key
-          kubelet-preferred-address-types: ExternalIP,Hostname,InternalDNS,ExternalDNS
           profiling: "false"
           proxy-client-cert-file: /etc/kubernetes/pki/front-proxy-client.crt
           proxy-client-key-file: /etc/kubernetes/pki/front-proxy-client.key
@@ -68,6 +67,19 @@ spec:
           profiling: "false"
           secure-port: "10259"
     files:
+
+    - content: |
+        for i in {1..30}; do
+          ip route add default via 10.0.0.1 && break
+          sleep 10
+        done
+
+        echo "nameserver 1.1.1.1" | tee -a /etc/resolv.conf
+        resolvectl dns enp7s0 1.1.1.1
+      owner: "root:root"
+      path: /connect-nat-gateway.sh
+      permissions: "0744"
+
     {{- if eq .Values.mode "bare-metal" }}
     - content: |
         [Unit]
@@ -248,6 +260,8 @@ spec:
     preKubeadmCommands:
       - set -x
 
+      - chmod +x /connect-nat-gateway.sh && /connect-nat-gateway.sh
+
       {{/* Give highest priority to the Network Card / Connection entry in the boot order.
            Otherwise, we cannot boot the servers into rescue mode, and need to reach out to the
            Hetzner support team. */}}
@@ -274,13 +288,9 @@ spec:
               allocating it to Rook Ceph.
       */}}
       {{- if eq .Values.mode "bare-metal" }}
-      {{- if .Values.controlPlane.bareMetal.diskLayoutSetupCommands }}
       - |
-        {{ .Values.controlPlane.bareMetal.diskLayoutSetupCommands | nindent 8 }}
-      {{- else if .Values.bareMetal.diskLayoutSetupCommands }}
-      - |
-        {{ .Values.bareMetal.diskLayoutSetupCommands | nindent 8 }}
-      {{- end }}
+        wget https://github.com/Archisman-Mridha/KubeAid/releases/download/kubeaid-storagectl/kubeaid-storagectl
+        kubeaid-storagectl plan execute --os-size {{ $.Values.bareMetal.installImage.vg0.size }} --zfs-pool-size {{ $.Values.controlPlane.bareMetal.zfs.size }}
       {{- end }}
 
       - export CONTAINERD=2.1.3
@@ -290,6 +300,7 @@ spec:
       - ARCH="$(dpkg --print-architecture)"
       - localectl set-locale LANG=en_US.UTF-8
       - localectl set-locale LANGUAGE=en_US.UTF-8
+      - apt-get update -y
       - apt-get -y install at jq unzip wget logrotate apt-transport-https
 
       {{- if eq .Values.mode "bare-metal" }}
@@ -394,6 +405,7 @@ spec:
       # Install HCloud Cloud Controller Manager.
       - |
         helm template ccm-hcloud kubeaid/argocd-helm-charts/ccm-hcloud \
+          --set hcloud-cloud-controller-manager.networking.enabled=true \
           --values kubeaid/argocd-helm-charts/ccm-hcloud/values.yaml \
           --namespace kube-system | kubectl apply -f -
       {{- end }}
@@ -402,6 +414,9 @@ spec:
       # Install Hetzner Bare Metal Cloud Controller Manager.
       - |
         helm template ccm-hetzner kubeaid/argocd-helm-charts/ccm-hetzner \
+          {{- if (eq .Values.mode "hybrid") }}
+          --set ccm-hetzner.privateNetwork.enabled=true \
+          {{- end }}
           --values kubeaid/argocd-helm-charts/ccm-hetzner/values.yaml \
           --namespace kube-system | kubectl apply -f -
       {{- end }}

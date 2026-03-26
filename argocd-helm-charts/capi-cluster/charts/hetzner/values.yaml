@@ -1,10 +1,13 @@
 cloudCredentialsSecretName: cloud-credentials
 
+sshKeyPair:
+  name: cluster-bootstrapper
+  secretName: hetzner-ssh-keypair
+
 hcloud:
   zone: eu-central
-  disablePublicIPs: false
+  enableVSwitchIntegration: false
   imageName: ubuntu-24.04
-  sshHKeyPairName: kubeaid
 
 bareMetal:
   wipeDisks: false
@@ -13,9 +16,6 @@ bareMetal:
     vg0:
       size: 25G
       rootVolumeSize: 10G
-  sshKeyPair:
-    name: kubeaid
-    secretName: hetzner-ssh-keypair
 
 controlPlane:
   regions:

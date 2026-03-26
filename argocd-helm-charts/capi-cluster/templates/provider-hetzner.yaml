@@ -28,4 +28,61 @@ spec:
     # metrics:
     #   bindAddress: ":8181"
     # syncPeriod: 10m0s
+  manifestPatches:
+    - |
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: caph-controller-manager
+        namespace: capi-cluster
+      spec:
+        template:
+          spec:
+            containers:
+            - args:
+                - --leader-elect=true
+                - --namespace=capi-cluster
+              command:
+                - /manager
+              image: docker.io/archismanmridha/caph-staging:multiple-subnets
+              imagePullPolicy: IfNotPresent
+              livenessProbe:
+                failureThreshold: 3
+                httpGet:
+                  path: /healthz
+                  port: healthz
+                  scheme: HTTP
+                periodSeconds: 10
+                successThreshold: 1
+                timeoutSeconds: 1
+              name: manager
+              ports:
+                - containerPort: 9443
+                  name: webhook-server
+                  protocol: TCP
+                - containerPort: 9440
+                  name: healthz
+                  protocol: TCP
+              readinessProbe:
+                failureThreshold: 3
+                httpGet:
+                  path: /readyz
+                  port: healthz
+                  scheme: HTTP
+                periodSeconds: 10
+                successThreshold: 1
+                timeoutSeconds: 1
+              resources:
+                limits:
+                  cpu: 150m
+                  memory: 250Mi
+                requests:
+                  cpu: 100m
+                  memory: 100Mi
+              terminationMessagePath: /dev/termination-log
+              terminationMessagePolicy: FallbackToLogsOnError
+              volumeMounts:
+              - mountPath: /tmp/k8s-webhook-server/serving-certs
+                name: cert
+                readOnly: true
 {{- end }}
