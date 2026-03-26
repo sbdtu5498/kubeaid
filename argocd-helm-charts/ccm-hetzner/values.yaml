@@ -1,3 +1,9 @@
 ccm-hetzner:
   secret:
     name: cloud-credentials
+
+  privateNetwork:
+    enabled: false
+
+  nodeSelector:
+    node-role.kubernetes.io/control-plane: ""

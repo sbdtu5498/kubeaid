@@ -1,0 +1,67 @@
+{{- if or (eq .Values.mode "bare-metal") (eq .Values.mode "hybrid") }}
+{{- range $nodeGroupIndex, $nodeGroup := $.Values.nodeGroups.bareMetal }}
+{{- range $hostIndex, $host := $nodeGroup.bareMetalHosts }}
+---
+apiVersion: infrastructure.cluster.x-k8s.io/v1beta1
+kind: HetznerBareMetalMachine
+metadata:
+  name: {{ printf "%s-%s-%s" $.Values.global.clusterName $nodeGroup.name $host.serverID }}
+spec:
+  hostSelector:
+    matchLabels:
+      role: {{ printf "%s-%s" $.Values.global.clusterName $nodeGroup.name }}
+  installImage:
+    image:
+      path: {{ $.Values.bareMetal.installImage.imagePath }}
+    partitions:
+      - fileSystem: esp
+        mount: /boot/efi
+        size: 512M
+      - fileSystem: ext4
+        mount: /boot
+        size: 1024M
+      # Logical Volume Group.
+      - fileSystem: vg0
+        mount: lvm
+        size: {{ $.Values.bareMetal.installImage.vg0.size }}
+    logicalVolumeDefinitions:
+      # The Operating System (OS).
+      - vg: vg0
+        name: root
+        mount: /
+        filesystem: ext4
+        size: {{ $.Values.bareMetal.installImage.vg0.rootVolumeSize }}
+    postInstallScript: |
+      #!/bin/bash
+
+      {{/* Give highest priority to the Network Card / Connection entry in the boot order.
+            Otherwise, we cannot boot the servers into rescue mode, and need to reach out to the
+            Hetzner support team. */}}
+      NETBOOT=$(efibootmgr -v \
+        | grep -E "Network (Card|Connection)" \
+        | sed 's/Boot\([0-9A-F]*\).*/\1/' \
+        | head -n1)
+      CURRENT_ORDER=$(efibootmgr | grep "BootOrder:" | cut -d' ' -f2)
+      NEW_ORDER=$(echo "$CURRENT_ORDER" | sed "s/$NETBOOT,\?//g" | sed "s/^/$NETBOOT,/" | sed 's/,$//')
+      efibootmgr -o $NEW_ORDER
+
+      mkdir -p /etc/cloud/cloud.cfg.d && touch /etc/cloud/cloud.cfg.d/99-custom-networking.cfg
+      echo "network: { config: disabled }" > /etc/cloud/cloud.cfg.d/99-custom-networking.cfg
+
+      apt-get update && apt-get install -y cloud-init apparmor apparmor-utils
+
+      cloud-init clean --logs
+    swraid: 1
+    swraidLevel: {{ ($nodeGroup.raid).level | default 1 }}
+  sshSpec:
+    portAfterCloudInit: 22
+    portAfterInstallImage: 22
+    secretRef:
+      key:
+        name: sshkey-name
+        privateKey: ssh-privatekey
+        publicKey: ssh-publickey
+      name: {{ $.Values.sshKeyPair.secretName }}
+{{- end }}
+{{- end }}
+{{- end }}
