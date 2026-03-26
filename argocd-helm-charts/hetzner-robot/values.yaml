@@ -7,3 +7,4 @@ image:
 failoverIP: ""
 
 cloudCredentialsSecretName: cloud-credentials
+cronTimeInterval: "5m"
