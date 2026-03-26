@@ -5,6 +5,5 @@ image:
 
 # Failover IP that pod will manage
 failoverIP: ""
-
 cloudCredentialsSecretName: cloud-credentials
 cronTimeInterval: "5m"

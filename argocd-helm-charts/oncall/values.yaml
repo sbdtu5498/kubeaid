@@ -71,7 +71,7 @@ oncall:
 global:
   netpol:
     enabled: false
-  
+
   celery:
     netpol: false
 
