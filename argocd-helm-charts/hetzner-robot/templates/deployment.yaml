@@ -25,6 +25,8 @@ spec:
         env:
         - name: FAILOVER_IP
           value: {{ .Values.failoverIP }}
+        - name: CRON_TIME_INTERVAL
+          value: {{ .Values.cronTimeInterval }}
         - name: SERVER_IP
           valueFrom:
             fieldRef:
