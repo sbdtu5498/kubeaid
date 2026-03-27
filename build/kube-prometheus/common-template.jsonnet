@@ -9,6 +9,7 @@ local remove_nulls = (
 local ext_vars = std.extVar('vars');
 
 local default_vars = {
+  kube_prometheus_version: 'v0.16.0',
   prometheus_scrape_namespaces+: [],
 
   // Custom kubeaid or non kubeaid apps that need AutoSync
