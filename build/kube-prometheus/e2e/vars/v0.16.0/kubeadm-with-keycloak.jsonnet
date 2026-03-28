@@ -1,0 +1,31 @@
+{
+  platform: 'kubeadm',
+  certname: 'prod.acmecorp',
+  connect_obmondo: true,
+  'blackbox-exporter': false,
+  kube_prometheus_version: 'v0.16.0',
+  extra_configs: true,
+  connect_keda: false,
+  grafana_keycloak_enable: true,
+  grafana_root_url: 'https://grafana.example.com',
+  grafana_keycloak_url: 'https://keycloak.example.com',
+  grafana_keycloak_realm: 'MyRealm',
+  grafana_ingress_host: 'grafana.example.com',
+  enable_custom_metrics_apiservice: true,
+  addMixins: {
+    velero: true,
+    monitoring: true,
+    smartmon: true,
+    zfs: true,
+    mdraid: true,
+    ceph: true,
+  },
+  prometheus+: {
+    storage: {
+      size: '10Gi',
+      classname: 'standard',
+    },
+  },
+  prometheus_scrape_namespaces: ['cloudnative-pg', 'app-ns', 'mattermost', 'monitoring', 'velero'],
+  prometheus_scrape_default_namespaces: ['argocd', 'sealed-secrets', 'cert-manager'],
+}
