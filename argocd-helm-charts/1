@@ -1,8 +1,0 @@
-apiVersion: v1
-name: calcom
-version: 0.1.0
-dependencies:
-  - name: calcom
-    version: 0.8.6
-    repository: https://pyrrha.github.io/calcom-helm
-
