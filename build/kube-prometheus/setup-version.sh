@@ -7,14 +7,10 @@
 
 set -euo pipefail
 
+BASEDIR="$(cd "$(dirname "$0")" && pwd)"
+
 if [[ $# -ne 1 ]]; then
   echo "Usage: $0 <version-tag>"
-  exit 1
-fi
-
-BUILDPATH=build/kube-prometheus
-if [ ! -e "$BUILDPATH" ]; then
-  echo "Cannot find $BUILDPATH — this script must be run from the root of the KubeAid repo."
   exit 1
 fi
 
@@ -24,7 +20,7 @@ if ! command -v jb &>/dev/null; then
 fi
 
 VERSION=$1
-INSTALLPATH="${BUILDPATH}/libraries/${VERSION}"
+INSTALLPATH="${BASEDIR}/libraries/${VERSION}"
 
 if [[ -e "$INSTALLPATH" ]]; then
   echo "Version $VERSION already exists at $INSTALLPATH. Remove it first to reinstall."
