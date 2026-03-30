@@ -51,7 +51,7 @@ Fixtures are organised by kube-prometheus version:
 
 ```
 e2e/vars/
-  v0.13.0/  kops-minimal, kops-with-opensearch
+  v0.13.0/  kubeadm-minimal
   v0.16.0/  aks-minimal, kubeadm-minimal, kubeadm-with-keycloak, kops-minimal, kops-with-opensearch
   v0.17.0/  aks-minimal, kubeadm-minimal, kubeadm-with-keycloak, kops-minimal, kops-with-opensearch
 ```

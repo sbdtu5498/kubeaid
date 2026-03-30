@@ -1,18 +1,17 @@
 {
-  platform: 'kops',
-  certname: 'dev.acmecorp',
+  platform: 'kubeadm',
+  certname: 'prod.acmecorp',
   connect_obmondo: true,
   'blackbox-exporter': false,
   kube_prometheus_version: 'v0.13.0',
   addMixins: {
-    ceph: false,
     velero: true,
+    mdraid: true,
   },
   prometheus+: {
     storage: {
       size: '10Gi',
-      classname: 'gp2',
+      classname: 'standard',
     },
   },
-  prometheus_scrape_namespaces: ['velero'],
 }
