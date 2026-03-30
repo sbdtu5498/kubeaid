@@ -1,5 +1,6 @@
 local addMixin = import 'lib/addmixin.libsonnet';
 local utils = import 'lib/utils.libsonnet';
+local validate = import 'lib/validate.libsonnet';
 
 local remove_nulls = (
   function(arr)
@@ -8,187 +9,13 @@ local remove_nulls = (
 
 local ext_vars = std.extVar('vars');
 
-local default_vars = {
-  kube_prometheus_version: 'v0.16.0',
-  prometheus_scrape_namespaces+: [],
-
-  // Custom kubeaid or non kubeaid apps that need AutoSync
-  kubeaid_users_apps+: [],
-  kubeaid_apps+: [
-    'argo-cd',
-    'argocd-image-updater',
-    'aws-ebs-csi-driver',
-    'aws-efs-csi-driver',
-    'capi-cluster',
-    'ccm-hetzner',
-    'cerebro',
-    'cert-manager',
-    'cilium',
-    'circleci-runner',
-    'cloudnative-pg',
-    'cluster-api',
-    'cluster-autoscaler',
-    'crossplane',
-    'dokuwiki',
-    'errbot',
-    'external-dns',
-    'filebeat',
-    'fluent-bit',
-    'gatekeeper',
-    'gitea-runner',
-    'gitlab-runner',
-    'grafana-operator',
-    'graylog',
-    'haproxy',
-    'harbor',
-    'kubeaid-custom-azure',
-    'k8s-event-logger',
-    'keda',
-    'keycloakx',
-    'kube2iam',
-    'kubernetes-dashboard',
-    'mail',
-    'mariadb-operator',
-    'matomo',
-    'mattermost-team-edition',
-    'metallb',
-    'metrics-server',
-    'mongodb-operator',
-    'obmondo-k8s-agent',
-    'oncall',
-    'opencost',
-    'opensearch',
-    'opensearch-dashboards',
-    'postgres-operator',
-    'prometheus-adapter',
-    'prometheus-linuxaid',
-    'puppetserver',
-    'rabbitmq-operator',
-    'redis-operator',
-    'relate',
-    'reloader',
-    'rook-ceph',
-    'sealed-secrets',
-    'snapshot-controller',
-    'sonarqube',
-    'strimzi-kafka-operator',
-    'teleport-cluster',
-    'teleport-kube-agent',
-    'tigera-operator',
-    'traefik',
-    'traefik-forward-auth',
-    'traefik-forward-auth-rbac',
-    'velero',
-    'whoami',
-    'zfs-localpv',
-    'smartmon',
-    'mdraid',
-  ],
-  prometheus_operator_resources: {
-    limits: { memory: '80Mi' },
-    requests: { cpu: '20m', memory: '80Mi' },
-  },
-  prometheus_operator_kubeRbacProxy_resources: {
-    limits: { memory: '40Mi' },
-    requests: { cpu: '1m', memory: '40Mi' },
-  },
-  prometheus_operator_configReloaderResources: {
-    limits: { cpu: '0', memory: '' },
-    resources: { cpu: '', memory: '' },
-  },
-  alertmanager_resources: {
-    limits: { memory: '50Mi' },
-    requests: { cpu: '1m', memory: '50Mi' },
-  },
-  prometheus_resources: {
-    limits: { memory: '3Gi' },
-    requests: { cpu: '200m', memory: '2500Mi' },
-  },
-  prometheus_adapter_resources: {
-    limits: { memory: '2Gi' },
-    requests: { cpu: '200m', memory: '1500Mi' },
-  },
-  prometheus_adapter_additional_rules: [],
-  grafana_resources: {
-    limits: { memory: '200Mi' },
-    requests: { cpu: '6m', memory: '100Mi' },
-  },
-  node_exporter_resources: {
-    limits: { memory: '180Mi' },
-    requests: { cpu: '3m', memory: '180Mi' },
-  },
-  node_exporter_kubeRbacProxyMain_resources: {
-    limits: { memory: '40Mi' },
-    requests: { cpu: '1m', memory: '40Mi' },
-  },
-  kube_state_metrics_kubeRbacProxyMain_resources: {
-    limits: { memory: '40Mi' },
-    requests: { cpu: '1m', memory: '40Mi' },
-  },
-  kube_state_metrics_kubeRbacProxySelf_resources: {
-    limits: { memory: '40Mi' },
-    requests: { cpu: '1m', memory: '40Mi' },
-  },
-
-  grafana_keycloak_enable: false,
-  grafana_keycloak_url: '',
-  grafana_keycloak_realm: '',
-  grafana_keycloak_client_id: 'grafana',
-  grafana_keycloak_secretref: {
-    name: 'kube-prometheus-stack-grafana',
-    key: 'grafana-keycloak-secret',
-  },
-  prometheus: {
-    storage: {
-      size: '30Gi',
-    },
-    retention: '30d',
-  },
-  grafana_ingress_annotations: {
-    'cert-manager.io/cluster-issuer': 'letsencrypt',
-  },
-  prometheus_ingress_annotations: {
-    'cert-manager.io/cluster-issuer': 'letsencrypt',
-  },
-  alertmanager_ingress_annotations: {
-    'cert-manager.io/cluster-issuer': 'letsencrypt',
-  },
-  addMixins: {
-    ceph: false,
-    'argo-cd': true,
-    'node-pressure': true,
-    sealedsecrets: true,
-    etcd: true,
-    velero: false,
-    zfs: false,
-    opensearch: false,
-    'cert-manager': true,
-    'hpa-maxed-out': true,
-    'kubernetes-version-info': true,
-    // Enable this when we move metrics generation into obmondo-k8s-agent
-    // gitea/EnableIT/internal/issues/21
-    'node-count-monthly-status': false,
-    'argo-cd-sync-state': true,
-    rabbitmq: false,
-    'monitor-prometheus-stack': false,
-    smartmon: false,
-    mdraid: true,
-    opencost: false,
-    'kubelet-cert-expiry': false,
-  },
-  mixin_configs: {
-    // Example:
-    //
-    // velero+: {
-    //   selector: 'schedule=~"^ops.+"',
-    // },
-  },
-  connect_keda: false,
-  grafana_plugins+: [],
-  grafana_dashboards+: {},
-};
+local default_vars = import 'lib/default_vars.libsonnet';
 
 local vars = default_vars + ext_vars;
+
+local _validationErrors = validate(vars);
+assert std.length(_validationErrors) == 0 :
+  '\n\nVars validation failed:\n' + std.join('\n', ['  - ' + e for e in _validationErrors]) + '\n';
 
 local mixins = remove_nulls([
   addMixin(
@@ -397,13 +224,16 @@ local kp =
           externalLabels: {
             product: 'kubeaid',
           } + if std.objectHas(vars, 'connect_obmondo') && vars.connect_obmondo then (
-            local parts = std.split(vars.certname, '.');
+            local certname = std.get(vars, 'certname', '');
+            local parts = std.split(certname, '.');
             local is_valid_certname = std.length(parts) == 2 &&
                                       std.length(parts[1]) >= 7 &&
                                       std.length(parts[1]) <= 10;
-            assert is_valid_certname : 'certname must match pattern: <cluster-name>.<customerid>';
+            assert is_valid_certname :
+              'certname is required when connect_obmondo is true and must match "<cluster>.<customerid>" ' +
+              'where customerid is 7-10 chars (got: "%s")' % certname;
             {
-              certname: vars.certname,
+              certname: certname,
             }
           ) else {},
           replicas: if std.objectHas(vars.prometheus, 'replicas') then vars.prometheus.replicas else 1,
@@ -687,21 +517,23 @@ local kp =
         analytics+: {
           check_for_updates: false,
         },
-        env: ( if vars.grafana_keycloak_enable then [
-            {
-              name: 'GF_SECURITY_DISABLE_INITIAL_ADMIN_CREATION',
-              value: 'true',
-            },
-            {
-              name: 'GF_AUTH_GENERIC_OAUTH_CLIENT_SECRET',
-              valueFrom+: {
-                secretKeyRef+: {
-                  name: vars.grafana_keycloak_secretref.name,
-                  key: vars.grafana_keycloak_secretref.key,
+        env: (
+          ( if vars.grafana_keycloak_enable then [
+              {
+                name: 'GF_SECURITY_DISABLE_INITIAL_ADMIN_CREATION',
+                value: 'true',
+              },
+              {
+                name: 'GF_AUTH_GENERIC_OAUTH_CLIENT_SECRET',
+                valueFrom+: {
+                  secretKeyRef+: {
+                    name: vars.grafana_keycloak_secretref.name,
+                    key: vars.grafana_keycloak_secretref.key,
+                  },
                 },
               },
-            },
-          ] + if std.objectHas(vars, 'grafana_external_env_vars') then vars.grafana_external_env_vars else []
+            ] else []
+          ) + if std.objectHas(vars, 'grafana_external_env_vars') then vars.grafana_external_env_vars else []
         ),
         config+: {
           sections: {
@@ -939,21 +771,19 @@ local kp =
         function(group)
           if group.name == 'kubernetes-apps' then
             group {
-              rules: std.filter(
-                (
-                  function(rule)
-                    !std.objectHas(rule, 'alert') || rule.alert != 'KubeHpaMaxedOut'
-                ),
-                group.rules
-              )
-              +
-              std.filter(
-                (
-                  function(mixin)
-                    mixin._config.name == 'hpa-maxed-out'
-                ),
-                mixins
-              )[0].prometheusRules.spec.groups[0].rules,
+              rules: (
+                local hpaReplacement = std.filter(
+                  function(mixin) mixin._config.name == 'hpa-maxed-out',
+                  mixins
+                );
+                if std.length(hpaReplacement) > 0 then
+                  std.filter(
+                    function(rule) !std.objectHas(rule, 'alert') || rule.alert != 'KubeHpaMaxedOut',
+                    group.rules
+                  ) + hpaReplacement[0].prometheusRules.spec.groups[0].rules
+                else
+                  group.rules
+              ),
             }
           else if group.name == 'kubernetes-system-apiserver' then
             group {

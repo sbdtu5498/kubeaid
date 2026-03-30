@@ -36,3 +36,17 @@ jobs:
                 exit 1
               fi
             done
+
+      - name: jsonnet unit tests
+        working-directory: build/kube-prometheus
+        run: |
+          bash tests/lint_vars_access.sh
+          for version in libraries/*/; do
+            echo "Testing against ${version}vendor"
+            jsonnet -J "${version}vendor" tests/addmixin_test.jsonnet
+            jsonnet -J "${version}vendor" tests/validate_vars_test.jsonnet
+          done
+
+      - name: kube-prometheus e2e compilation tests
+        working-directory: build/kube-prometheus
+        run: bash e2e/run.sh

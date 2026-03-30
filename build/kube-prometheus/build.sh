@@ -12,12 +12,10 @@
 
 set -euo pipefail
 
-declare -i apply=0 \
-  debug=0 \
-  build_all=0
+declare -i debug=0 \
+  commit=0
 
-declare dry_run='' \
-  cluster_dir=''
+declare cluster_dir=''
 
 function realpath() {
   [[ $1 = /* ]] && echo "$1" || echo "$PWD/${1#./}"
@@ -37,36 +35,25 @@ trap _exit EXIT
 
 function usage() {
   cat <<EOF
-${0} [-a|--apply] [-c|--create-namespaces] [-d|--debug] <CLUSTER>
+${0} [-d|--debug] <CLUSTER>
 
 Compile kube-prometheus manifests from jsonnet template.
 
 Arguments:
-  -a|--apply
-    Apply the resulting manifests.
-  -c|--create-namespaces
-    Automatically create any namespaces that don't exist when applying.
   -d|--debug
     Leave temporary output folder when exiting.
-  --dry-run=<client|server>
-    Dry run.
+  --commit
+    Commit the generated manifests in the kubeaid-config repo.
 EOF
 }
 
 while (($# > 0)); do
   case "${1}" in
-  -a | --apply)
-    apply=1
-    ;;
   -d | --debug)
     debug=1
     ;;
-  --dry-run=*)
-    [[ "${1}" =~ --dry-run=(.+) ]]
-    dry_run="${BASH_REMATCH[1]}"
-    ;;
-  --build-all)
-    build_all=1
+  --commit)
+    commit=1
     ;;
   -h | --help)
     usage
@@ -115,7 +102,7 @@ if ((_version < 18000)); then
 fi
 
 # Make sure to use project tooling
-outdir="${cluster_dir}/kube-prometheus"
+outdir="${cluster_dir%/}/kube-prometheus"
 
 # NOTE: If 'kube_prometheus_version' isn't specified in the customer values file ($cluster_jsonnet),
 # then we're setting 'main' as the default tag for it.
@@ -164,22 +151,21 @@ function build_for_tag() {
   echo
 }
 
-if [ "$build_all" -eq 1 ]; then
-  for file_path in "${basedir}"/libraries/*; do
-    file_name=$(basename "$file_path")
-
-    # Clean up and build again
-    rm -rf "${basedir}/libraries/${file_name}"
-
-    build_for_tag "$file_name"
-  done
-else
-  if ! [ -e "${jsonnet_lib_path}" ]; then
-    build_for_tag "$kube_prometheus_release"
-  fi
+if ! [ -e "${jsonnet_lib_path}" ]; then
+  build_for_tag "$kube_prometheus_release"
 fi
 
-echo "INFO: compiling jsonnet files into '${outdir}' from sources at ${jsonnet_lib_path}"
+CLUSTER_VARS_FILE="${cluster_jsonnet}" bash "${basedir}/tests/lint_vars_access.sh"
+
+cluster_name=$(basename "${cluster_dir%/}")
+
+if ((commit)); then
+  _original_branch=$(git -C "${cluster_dir}" rev-parse --abbrev-ref HEAD)
+  _new_branch="kube-prometheus-${cluster_name}-${kube_prometheus_release}-$(date +%Y%m%d%H%M%S)"
+  git -C "${cluster_dir}" checkout -q -b "${_new_branch}"
+fi
+
+build_start=$(date +%s)
 
 # Use a temporary directory
 tmpdir=$(mktemp -d)
@@ -200,10 +186,49 @@ jsonnet -J \
 rm -rf "${outdir}"
 mv "${tmpdir}" "${outdir}"
 
-if ((apply)); then
-  kubectl_args=()
-  if [[ "$dry_run" ]]; then
-    kubectl_args+=("--dry-run=${dry_run}")
+build_end=$(date +%s)
+echo "Successfully built for ${cluster_name} (kube-prometheus ${kube_prometheus_release}) in $((build_end - build_start))s → ${outdir}"
+
+if ((commit)); then
+  if git -C "${cluster_dir}" diff --quiet -- kube-prometheus/ && git -C "${cluster_dir}" diff --cached --quiet -- kube-prometheus/; then
+    echo "Nothing to commit in ${cluster_dir}/kube-prometheus"
+    git -C "${cluster_dir}" checkout -q "${_original_branch}"
+    git -C "${cluster_dir}" branch -q -d "${_new_branch}"
+  else
+    git -C "${cluster_dir}" add kube-prometheus/
+    echo ""
+    git -C "${cluster_dir}" diff --cached --stat
+    echo ""
+
+    if command -v gpg >/dev/null 2>&1 && gpg --card-status >/dev/null 2>&1; then
+      echo "  >>> Touch your YubiKey to sign the commit <<<"
+      echo ""
+    fi
+
+    if ! git -C "${cluster_dir}" commit -m "kube-prometheus: rebuild manifests for ${cluster_name} (${kube_prometheus_release})" 2>/dev/null; then
+      echo "ERROR: GPG signing failed — YubiKey not touched in time or cancelled"
+      echo ""
+      echo "  Branch: ${_new_branch}"
+      echo "  Retry:  git -C '${cluster_dir}' checkout '${_new_branch}' && git commit"
+      git -C "${cluster_dir}" checkout -q "${_original_branch}"
+      exit 1
+    fi
+
+    git -C "${cluster_dir}" checkout -q "${_original_branch}"
+
+    echo ""
+    read -rp "Push branch '${_new_branch}' or rebase into '${_original_branch}'? [push/rebase] " _action
+    case "${_action}" in
+    push)
+      git -C "${cluster_dir}" push origin "${_new_branch}"
+      ;;
+    rebase)
+      git -C "${cluster_dir}" rebase "${_new_branch}"
+      git -C "${cluster_dir}" branch -d "${_new_branch}"
+      ;;
+    *)
+      echo "Unknown action '${_action}', branch '${_new_branch}' left as-is"
+      ;;
+    esac
   fi
-  kubectl apply "${kubectl_args[@]}" -f "${outdir}"
 fi
