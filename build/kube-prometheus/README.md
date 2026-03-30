@@ -4,6 +4,20 @@ Use `build.sh` to compile kube-prometheus manifests for a Kubernetes cluster fro
 
 > **NOTE:** v0.16.0 is a special release. The upstream kube-prometheus v0.16.0 had an issue which was resolved by pointing to this patch commit: [prometheus-operator/kube-prometheus#2733](https://github.com/prometheus-operator/kube-prometheus/pull/2733)
 
+## Compatibility
+
+The following Kubernetes versions are supported and work as we test against these versions in their respective branches. Other versions might work too!
+
+> **Note:** In CI we test only the last two releases on a regular basis.
+
+| kube-prometheus | Kubernetes 1.26 | Kubernetes 1.27 | Kubernetes 1.28 | Kubernetes 1.32 | Kubernetes 1.33 | Kubernetes 1.34 | Kubernetes 1.35 |
+|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+| v0.13.0 | ✓ | ✓ | ✓ | ✗ | ✗ | ✗ | ✗ |
+| v0.16.0 | ✗ | ✗ | ✗ | ✓ | ✓ | ✓ | ✗ |
+| **v0.17.0** | ✗ | ✗ | ✗ | ✗ | **✓** | **✓** | **✓** |
+
+You can also run `./build/kube-prometheus/build.sh --versions` to see this table in the terminal.
+
 ## Prerequisites
 
 ### Install Go and jsonnet tooling

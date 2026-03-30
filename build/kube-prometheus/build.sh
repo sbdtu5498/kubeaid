@@ -13,7 +13,8 @@
 set -euo pipefail
 
 declare -i debug=0 \
-  commit=0
+  commit=0 \
+  show_versions=0
 
 declare cluster_dir=''
 
@@ -35,7 +36,7 @@ trap _exit EXIT
 
 function usage() {
   cat <<EOF
-${0} [-d|--debug] <CLUSTER>
+${0} [-d|--debug] [--versions] <CLUSTER>
 
 Compile kube-prometheus manifests from jsonnet template.
 
@@ -44,7 +45,24 @@ Arguments:
     Leave temporary output folder when exiting.
   --commit
     Commit the generated manifests in the kubeaid-config repo.
+  --versions
+    Show the kube-prometheus / Kubernetes compatibility table and exit.
 EOF
+}
+
+function show_compatibility_table() {
+  echo ""
+  echo "Kubernetes Compatibility Matrix"
+  echo ""
+  {
+    echo "kube-prometheus|k8s 1.26|k8s 1.27|k8s 1.28|k8s 1.32|k8s 1.33|k8s 1.34|k8s 1.35"
+    echo "──────────────|───────|───────|───────|───────|───────|───────|───────"
+    echo "v0.13.0|✓|✓|✓|✗|✗|✗|✗"
+    echo "v0.16.0|✗|✗|✗|✓|✓|✓|✗"
+    echo "v0.17.0|✗|✗|✗|✗|✓|✓|✓"
+  } | column -t -s '|'
+  echo ""
+  echo "Note: In CI we test only the last two releases on a regular basis."
 }
 
 while (($# > 0)); do
@@ -54,6 +72,9 @@ while (($# > 0)); do
     ;;
   --commit)
     commit=1
+    ;;
+  --versions)
+    show_versions=1
     ;;
   -h | --help)
     usage
@@ -69,6 +90,11 @@ while (($# > 0)); do
   esac
   shift
 done
+
+if ((show_versions)); then
+  show_compatibility_table
+  exit 0
+fi
 
 if ! [[ "${cluster_dir}" ]]; then
   echo "Missing argument cluster_dir"
@@ -115,6 +141,9 @@ if [[ -z "${kube_prometheus_release}" ]]; then
 fi
 
 jsonnet_lib_path="${basedir}/libraries/${kube_prometheus_release}/vendor"
+
+# Show compatible Kubernetes versions for the selected release
+echo "  (run with --versions to see the full compatibility table)"
 
 function jb_install() {
   package_name=$1

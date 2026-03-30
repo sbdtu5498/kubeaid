@@ -3,7 +3,7 @@
 
   // Custom kubeaid or non kubeaid apps that need AutoSync
   kubeaid_users_apps+: [],
-  kube_prometheus_version+: "v0.16.0",
+  kube_prometheus_version+: "v0.17.0",
   kubeaid_apps+: [
     'argo-cd',
     'argocd-image-updater',
