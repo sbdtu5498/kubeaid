@@ -17,17 +17,18 @@ If `kube_prometheus_version` is not set in the vars file, it defaults to `v0.17.
 To update a specific mixin to its latest upstream version (defaults to the latest release):
 
 ```sh
-# Update ceph mixin in the default version (v0.17.0)
+# Update a single mixin in the default version (v0.17.0)
 ./build/kube-prometheus/update-mixin.sh ceph-mixin
 
-# Update ceph mixin in a specific version
+# Update a single mixin in a specific version
 ./build/kube-prometheus/update-mixin.sh ceph-mixin v0.13.0
 
-# List available mixins and their pinned commits
+# Update all direct dependencies
+./build/kube-prometheus/update-mixin.sh --all
+
+# List available mixin names
 ./build/kube-prometheus/update-mixin.sh --list
 ```
-
-Mixin names and pinned commits are read from `jsonnetfile.json` and `jsonnetfile.lock.json`.
 
 ## Adding a new version
 

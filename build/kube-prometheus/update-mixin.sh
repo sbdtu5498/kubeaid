@@ -1,12 +1,13 @@
 #!/bin/bash
 #
-# Update a single mixin dependency for a given kube-prometheus version.
+# Update mixin dependencies for a given kube-prometheus version.
 # Defaults to the version set in lib/default_vars.libsonnet.
 #
 # Must be run from the root of the KubeAid repo.
 #
 # Usage:
 #   ./build/kube-prometheus/update-mixin.sh <mixin-name> [version-tag]
+#   ./build/kube-prometheus/update-mixin.sh --all [version-tag]
 #   ./build/kube-prometheus/update-mixin.sh --list [version-tag]
 
 set -euo pipefail
@@ -16,12 +17,14 @@ BASEDIR="$(cd "$(dirname "$0")" && pwd)"
 function usage() {
   cat <<EOF
 Usage: $0 <mixin-name> [version-tag]
+       $0 --all [version-tag]
        $0 --list [version-tag]
 
-Update a single mixin dependency to its latest upstream version.
+Update mixin dependencies to their latest upstream version.
 
 Arguments:
   <mixin-name>    Name of the mixin to update (see --list)
+  --all           Update all direct dependencies
   [version-tag]   Target version directory (default: from default_vars)
   --list          List available mixin names
 EOF
@@ -68,6 +71,36 @@ if [[ "$1" == "--list" ]]; then
   exit 0
 fi
 
+if ! command -v jb &>/dev/null; then
+  echo "'jb' command not found. Please install jsonnet-bundler."
+  exit 1
+fi
+
+cd "$INSTALLPATH" || exit 1
+
+function update_one() {
+  local name="$1"
+  local uri
+  uri=$(readlink "${INSTALLPATH}/vendor/${name}")
+  if [[ -z "$uri" ]]; then
+    echo "Cannot resolve vendor symlink for $name"
+    return 1
+  fi
+  echo "Updating $name..."
+  jb update "$uri"
+}
+
+if [[ "$1" == "--all" ]]; then
+  echo "Updating all direct dependencies in $VERSION..."
+  echo ""
+  while IFS= read -r name; do
+    update_one "$name"
+  done <<< "$NAMES"
+  echo ""
+  echo "Done."
+  exit 0
+fi
+
 MIXIN_NAME="$1"
 
 # Check the name is a direct dependency
@@ -79,22 +112,7 @@ if ! echo "$NAMES" | grep -qx "$MIXIN_NAME"; then
   exit 1
 fi
 
-# The vendor symlink target is the URI that jb needs
-MIXIN_URI=$(readlink "${INSTALLPATH}/vendor/${MIXIN_NAME}")
-if [[ -z "$MIXIN_URI" ]]; then
-  echo "Cannot resolve vendor symlink for $MIXIN_NAME"
-  exit 1
-fi
-
-if ! command -v jb &>/dev/null; then
-  echo "'jb' command not found. Please install jsonnet-bundler."
-  exit 1
-fi
-
-cd "$INSTALLPATH" || exit 1
-
-echo "Updating $MIXIN_NAME in $VERSION..."
-jb update "$MIXIN_URI"
+update_one "$MIXIN_NAME"
 
 echo ""
 echo "Done."
