@@ -448,7 +448,7 @@ local kp =
         },
       },
     } else {}
-  ) +
+  ) + (import 'lib/kubelet-probes-relabeling.libsonnet') +
   {
     values+:: {
       common+: {
