@@ -22,7 +22,7 @@ function(vars)
 
       if std.objectHas(vars, 'platform') then
         check(
-          std.member(['kops', 'kubeadm', 'gke', 'eks'], vars.platform),
+          std.member(['kops', 'kubeadm', 'gke', 'eks', 'aks'], vars.platform),
           'platform must be one of: kops, kubeadm, gke, eks (got: "%s")' % vars.platform,
         ),
 
