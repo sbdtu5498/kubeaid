@@ -28,8 +28,8 @@ function(name, obj, config)
           namespace: m._config.namespace,
         },
         spec: {
-          local r = if std.objectHasAll(mixin, 'prometheusRules') then mixin.prometheusRules.groups else [],
-          local a = if std.objectHasAll(mixin, 'prometheusAlerts') then mixin.prometheusAlerts.groups else [],
+          local r = if std.objectHasAll(mixin, 'prometheusRules') && std.objectHas(mixin.prometheusRules, 'groups') then mixin.prometheusRules.groups else [],
+          local a = if std.objectHasAll(mixin, 'prometheusAlerts') && std.objectHas(mixin.prometheusAlerts, 'groups') then mixin.prometheusAlerts.groups else [],
           groups: a + r,
         },
       },

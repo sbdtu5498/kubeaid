@@ -132,48 +132,56 @@ cat $CHANGELOG_FILE | tail -n +5 > $CHANGELOG_FILE.tmp
 
   if [ ${#NEW_CHARTS[@]} -gt 0 ]; then
     echo "### New Charts Added"
+    echo ""
     printf '%s\n' "${NEW_CHARTS[@]}"
     echo ""
   fi
 
   if [ ${#MAJOR_CHART_UPDATES[@]} -gt 0 ]; then
     echo "### Major Version Upgrades"
+    echo ""
     printf '%s\n' "${MAJOR_CHART_UPDATES[@]}"
     echo ""
   fi
 
   if [ ${#MINOR_CHART_UPDATES[@]} -gt 0 ]; then
     echo "### Minor Version Upgrades"
+    echo ""
     printf '%s\n' "${MINOR_CHART_UPDATES[@]}"
     echo ""
   fi
 
   if [ ${#PATCH_CHART_UPDATES[@]} -gt 0 ]; then
     echo "### Patch Version Upgrades"
+    echo ""
     printf '%s\n' "${PATCH_CHART_UPDATES[@]}"
     echo ""
   fi
 
   if [ ${#FEATURES[@]} -gt 0 ]; then
     echo "### Features"
+    echo ""
     printf '%s\n' "${FEATURES[@]}"
     echo ""
   fi
 
   if [ ${#BUG_FIXES[@]} -gt 0 ]; then
     echo "### Bug Fixes"
+    echo ""
     printf '%s\n' "${BUG_FIXES[@]}"
     echo ""
   fi
 
   if [ ${#CONFIG_CHANGES[@]} -gt 0 ]; then
     echo "### Configuration Changes"
+    echo ""
     printf '%s\n' "${CONFIG_CHANGES[@]}"
     echo ""
   fi
 
   if [ ${#OTHER_CHANGES[@]} -gt 0 ]; then
     echo "### Other Changes"
+    echo ""
     printf '%s\n' "${OTHER_CHANGES[@]}"
     echo ""
   fi
