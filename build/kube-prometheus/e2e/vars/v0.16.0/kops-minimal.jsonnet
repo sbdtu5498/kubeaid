@@ -1,6 +1,6 @@
 {
   platform: 'kops',
-  certname: 'dev.acmecp',
+  certname: 'dev.acmecorp',
   connect_obmondo: true,
   'blackbox-exporter': false,
   kube_prometheus_version: 'v0.16.0',

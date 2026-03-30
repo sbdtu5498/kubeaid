@@ -517,21 +517,23 @@ local kp =
         analytics+: {
           check_for_updates: false,
         },
-        env: ( if vars.grafana_keycloak_enable then [
-            {
-              name: 'GF_SECURITY_DISABLE_INITIAL_ADMIN_CREATION',
-              value: 'true',
-            },
-            {
-              name: 'GF_AUTH_GENERIC_OAUTH_CLIENT_SECRET',
-              valueFrom+: {
-                secretKeyRef+: {
-                  name: vars.grafana_keycloak_secretref.name,
-                  key: vars.grafana_keycloak_secretref.key,
+        env: (
+          ( if vars.grafana_keycloak_enable then [
+              {
+                name: 'GF_SECURITY_DISABLE_INITIAL_ADMIN_CREATION',
+                value: 'true',
+              },
+              {
+                name: 'GF_AUTH_GENERIC_OAUTH_CLIENT_SECRET',
+                valueFrom+: {
+                  secretKeyRef+: {
+                    name: vars.grafana_keycloak_secretref.name,
+                    key: vars.grafana_keycloak_secretref.key,
+                  },
                 },
               },
-            },
-          ] + if std.objectHas(vars, 'grafana_external_env_vars') then vars.grafana_external_env_vars else []
+            ] else []
+          ) + if std.objectHas(vars, 'grafana_external_env_vars') then vars.grafana_external_env_vars else []
         ),
         config+: {
           sections: {
