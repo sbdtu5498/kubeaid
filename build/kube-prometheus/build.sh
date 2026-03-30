@@ -142,46 +142,12 @@ fi
 
 jsonnet_lib_path="${basedir}/libraries/${kube_prometheus_release}/vendor"
 
-# Show compatible Kubernetes versions for the selected release
 echo "  (run with --versions to see the full compatibility table)"
 
-function jb_install() {
-  package_name=$1
-  package_url=$2
-
-  if ! [[ -d "${jsonnet_lib_path}/${package_name}" ]]; then
-    jb install "$package_url"
-  fi
-}
-
-function build_for_tag() {
-  local kube_prometheus_release_tag="$1"
-  echo "Processing For Tag: $kube_prometheus_release_tag"
-
-  jb init
-  jb_install kube-prometheus "github.com/prometheus-operator/kube-prometheus/jsonnet/kube-prometheus@${kube_prometheus_release_tag}"
-  jb_install prometheus-mixin "github.com/bitnami-labs/sealed-secrets/contrib/prometheus-mixin@main"
-  jb_install ceph-mixins "github.com/ceph/ceph/monitoring/ceph-mixin@main"
-  jb_install cert-manager-mixin "gitlab.com/uneeq-oss/cert-manager-mixin@master"
-  jb_install opensearch-mixin "github.com/grafana/jsonnet-libs/opensearch-mixin@master"
-  jb_install opencost-mixin "github.com/adinhodovic/opencost-mixin@main"
-  if [ "$kube_prometheus_release" == "v0.13.0" ]; then
-    jb_install rabbitmq-mixin "github.com/adinhodovic/rabbitmq-mixin@master"
-  else
-    jb_install rabbitmq-mixin "github.com/grafana/jsonnet-libs/rabbitmq-mixin@master"
-  fi
-  jb_install mixin-utils "github.com/grafana/jsonnet-libs/mixin-utils@master"
-
-  mkdir -p "${basedir}/libraries/${kube_prometheus_release_tag}"
-  mv vendor "${basedir}/libraries/${kube_prometheus_release_tag}/"
-  mv jsonnetfile.json jsonnetfile.lock.json "${basedir}/libraries/${kube_prometheus_release_tag}/"
-
-  echo "Processed folder: $kube_prometheus_release_tag"
-  echo
-}
-
 if ! [ -e "${jsonnet_lib_path}" ]; then
-  build_for_tag "$kube_prometheus_release"
+  echo "Libraries not found for ${kube_prometheus_release} at ${jsonnet_lib_path}"
+  echo "Run:  ./build/kube-prometheus/setup-version.sh ${kube_prometheus_release}"
+  exit 2
 fi
 
 CLUSTER_VARS_FILE="${cluster_jsonnet}" bash "${basedir}/tests/lint_vars_access.sh"
