@@ -3,7 +3,7 @@
   certname: 'dev.acmecorp',
   connect_obmondo: true,
   'blackbox-exporter': false,
-  kube_prometheus_version: 'v0.14.0',
+  kube_prometheus_version: 'v0.17.0',
   addMixins: {
     ceph: false,
     velero: true,
