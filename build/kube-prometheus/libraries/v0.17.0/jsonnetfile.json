@@ -1,0 +1,78 @@
+{
+   "dependencies": [
+      {
+         "source": {
+            "git": {
+               "remote": "https://github.com/adinhodovic/opencost-mixin.git",
+               "subdir": ""
+            }
+         },
+         "version": "5d551938d58ec7e630706a4b1260f69100220be3"
+      },
+      {
+         "source": {
+            "git": {
+               "remote": "https://github.com/bitnami-labs/sealed-secrets.git",
+               "subdir": "contrib/prometheus-mixin"
+            }
+         },
+         "version": "57530e51a066bbc15dad88f021fc1bea6d7e9b85"
+      },
+      {
+         "source": {
+            "git": {
+               "remote": "https://github.com/ceph/ceph.git",
+               "subdir": "monitoring/ceph-mixin"
+            }
+         },
+         "version": "ee74d4780d505e13a596d09c5a7be8244d8bb97d"
+      },
+      {
+         "source": {
+            "git": {
+               "remote": "https://github.com/grafana/jsonnet-libs.git",
+               "subdir": "mixin-utils"
+            }
+         },
+         "version": "d73cd2b145cde93ffbe06a3586c1b7aeca1c86ca"
+      },
+      {
+         "source": {
+            "git": {
+               "remote": "https://github.com/grafana/jsonnet-libs.git",
+               "subdir": "opensearch-mixin"
+            }
+         },
+         "version": "d73cd2b145cde93ffbe06a3586c1b7aeca1c86ca"
+      },
+      {
+         "source": {
+            "git": {
+               "remote": "https://github.com/grafana/jsonnet-libs.git",
+               "subdir": "rabbitmq-mixin"
+            }
+         },
+         "version": "d73cd2b145cde93ffbe06a3586c1b7aeca1c86ca"
+      },
+      {
+         "source": {
+            "git": {
+               "remote": "https://github.com/prometheus-operator/kube-prometheus.git",
+               "subdir": "jsonnet/kube-prometheus"
+            }
+         },
+         "version": "d6d094d115093d81d3355bc970a93e4357d6ef05"
+      },
+      {
+         "source": {
+            "git": {
+               "remote": "https://gitlab.com/uneeq-oss/cert-manager-mixin.git",
+               "subdir": ""
+            }
+         },
+         "version": "eae22f642aaa5d422e4766f6811df2158fc05539"
+      }
+   ],
+   "legacyImports": true,
+   "version": 1
+}
