@@ -3,6 +3,8 @@ schedule:
   daily: true
   weekly: false
   sixhourly: false
+  dailyTTL: 720h
+  weeklyTTL: 2160h
 velero:
   revisionHistoryLimit: "0"
   configuration:
