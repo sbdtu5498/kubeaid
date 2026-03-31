@@ -151,6 +151,7 @@ local kp =
   // (import 'kube-prometheus/addons/node-ports.libsonnet') +
   // (import 'kube-prometheus/addons/static-etcd.libsonnet') +
   // (import 'kube-prometheus/addons/external-metrics.libsonnet') +
+  (import 'lib/drop-kubelet-metrics-endpoints.libsonnet') +
   // NOTE: we need this condition because custom-metrics.libsonnet is broken prior to v0.13.0
   (
     if std.objectHas(vars, 'enable_custom_metrics_apiservice') && vars.enable_custom_metrics_apiservice then (
@@ -448,7 +449,7 @@ local kp =
         },
       },
     } else {}
-  ) + (import 'lib/kubelet-probes-relabeling.libsonnet') +
+  ) +
   {
     values+:: {
       common+: {
