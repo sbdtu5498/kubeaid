@@ -23,7 +23,7 @@ spec:
       # Logical Volume Group.
       - fileSystem: vg0
         mount: lvm
-        size: {{ $.Values.bareMetal.installImage.vg0.size }}
+        size: {{ $.Values.bareMetal.installImage.vg0.size }}G
     logicalVolumeDefinitions:
       # The Operating System (OS).
       - vg: vg0
