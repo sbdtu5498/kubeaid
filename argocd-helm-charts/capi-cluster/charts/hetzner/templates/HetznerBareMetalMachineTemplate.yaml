@@ -34,7 +34,7 @@ spec:
             name: root
             mount: /
             filesystem: ext4
-            size: {{ .Values.bareMetal.installImage.vg0.rootVolumeSize }}
+            size: {{ .Values.bareMetal.installImage.vg0.rootVolumeSize }}G
         postInstallScript: |
           #!/bin/bash
 
