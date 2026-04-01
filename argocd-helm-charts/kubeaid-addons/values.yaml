@@ -1,0 +1,160 @@
+---
+# kubeaid-addons values.yaml
+# All values default to disabled/empty. Override in your kubeaid-config-<id> private repo.
+# See README.md for full usage documentation.
+
+# default-deny
+# Namespace-wide Cilium default-deny policy. Rendered ONLY by the standalone
+# kubeaid-addons ArgoCD app — never when this chart is used as a subchart.
+defaultDeny:
+  # -- Enable default-deny rendering. Must be explicitly set to true.
+  enabled: false
+
+  # -- Map of namespaces to configure. Each entry renders one CiliumNetworkPolicy
+  # named `default-deny` in that namespace.
+  # A namespace with no excluded pods gets `endpointSelector: {}` (full deny for all pods).
+  # Use `excludedPods` to carve out pods that need unrestricted network access.
+  namespaces: {}
+
+# global
+# Shared values consumed by all templates and the network-policies subchart.
+global:
+
+  # netpol
+  netpol:
+    # -- Master switch. Set to true to enable any CiliumNetworkPolicy rendering.
+    enabled: false
+
+    # -- Helm release name used to build policy names and label selectors.
+    # Should match the Helm release name used by the application chart.
+    releaseName: ""
+
+    # -- Traefik ingress controller selector. Used by components that expose an HTTP/HTTPS endpoint.
+    traefik:
+      # -- Namespace where Traefik pods run.
+      namespace: traefik
+      # -- Labels that uniquely identify Traefik pods.
+      labels: {}
+
+  # fqdns
+  # External FQDNs used in egress rules. Set in your private values file.
+  telegram:
+    # -- FQDN for Telegram API egress
+    url: ""
+
+  keycloak:
+    # -- FQDN for Keycloak egress
+    url: ""
+
+  grafana:
+    # -- FQDN for grafana.com plugin download egress
+    url: ""
+    # -- Enable CiliumNetworkPolicy for Grafana
+    netpol: false
+
+  googleStorage:
+    # -- FQDN for Google Cloud Storage egress
+    url: ""
+
+  # postgresql
+  # Provisions a CloudNativePG Cluster resource.
+  # Requires the cloudnative-pg operator to be installed in the cluster.
+  postgresql:
+    # -- Provision a CNPG Cluster resource.
+    enabled: false
+
+    # -- Enable the PostgreSQL CiliumNetworkPolicy (requires global.netpol.enabled)
+    netpol: false
+
+    # -- Name of the CNPG Cluster resource
+    instanceName: ""
+
+    # -- Number of PostgreSQL instances in the cluster
+    instance: 1
+
+    # -- Primary database name created during initdb
+    database: app
+
+    # -- Database owner created during initdb
+    owner: app
+
+    # -- PVC size for each PostgreSQL instance
+    size: 2Gi
+
+    # -- StorageClass for PVCs. Omit to use the cluster default.
+    # storageClass: ""
+
+    # -- Resource requests and limits
+    resources:
+      requests:
+        memory: 500Mi
+        cpu: 100m
+      limits:
+        memory: 800Mi
+        cpu: "2"
+
+    # -- Set to true to bootstrap a cluster from an existing backup.
+    # When enabled the cluster name gets a "-recover" suffix.
+    recover: false
+
+    # -- Backup configuration via Barman object store.
+    backup:
+      # -- Enable scheduled backups (daily at midnight, 30d retention).
+      enabled: false
+      # cloud: aws          # "aws" or "azure"
+      # destinationPath: "" # e.g. s3://my-bucket/postgres
+      # endpointURL: ""     # object store endpoint
+      # secretName: ""      # Kubernetes Secret holding cloud credentials
+
+    # -- Client applications allowed to connect on port 5432.
+    # Each entry is a map of pod label selectors for the client pod.
+    clients: []
+
+    # -- CNPG operator pod selector for webhook traffic (port 8000).
+    cnpg: {}
+
+  # rabbitmq
+  # Provisions a RabbitmqCluster resource.
+  # Requires the rabbitmq-cluster-operator to be installed in the cluster.
+  rabbitmq:
+    # -- Provision a RabbitmqCluster resource.
+    enabled: false
+
+    # -- Enable the RabbitMQ CiliumNetworkPolicy (requires global.netpol.enabled)
+    netpol: false
+
+    # -- Name of the RabbitmqCluster resource
+    instanceName: ""
+
+    # -- Number of RabbitMQ replicas (use odd numbers for quorum: 1, 3, 5)
+    replicas: 1
+
+    # -- Additional rabbitmq.conf key-value pairs
+    additionalConfig: {}
+
+    # -- Resource requests and limits
+    resources:
+      requests:
+        cpu: 100m
+        memory: 256Mi
+      limits:
+        cpu: "1"
+        memory: 512Mi
+
+  # component netpols
+  # Per-component CiliumNetworkPolicy flags. All require global.netpol.enabled: true.
+  engine:
+    # -- Enable CiliumNetworkPolicy for the oncall-engine component
+    netpol: false
+
+  celery:
+    # -- Enable CiliumNetworkPolicy for the oncall-celery component
+    netpol: false
+
+  redis:
+    # -- Enable CiliumNetworkPolicy for Redis
+    netpol: false
+
+  whoami:
+    # -- Enable CiliumNetworkPolicy for whoami (allows ingress from Traefik on port 80)
+    netpol: false

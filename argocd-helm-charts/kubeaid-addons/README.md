@@ -1,91 +1,181 @@
-# KubeAid-addons
+# kubeaid-addons
 
-A Helm chart for provisioning namespace-scoped infrastructure — network policies, database instances, and other common
-components. A single deployment per namespace, fully controlled by values.yaml.
+A Helm chart for managing firewall rules and common operator configurations per namespace - network policies,
+database instances, message brokers, and any other shared infrastructure primitive. The idea is
+simple: anything that is "common infrastructure" (CNPG, RabbitMQ, MariaDB, MongoDB, etc.) lives
+here rather than being scattered across individual application charts.
 
-## Overview
+## What does this chart do?
 
-`kubeaid-addons` is deployed **once per namespace** and is driven entirely by the `values.yaml` of the
-application helm chart. What you put in your values file determines what gets rendered — network
-policies, database instances, and other common infrastructure components.
+| Feature | Kind | Guard |
+|---|---|---|
+| Namespace-wide default-deny network policy | `CiliumNetworkPolicy` | `defaultDeny.enabled` |
+| Per-component Cilium network policies | `CiliumNetworkPolicy` | `global.netpol.enabled` + component flag |
+| CNPG PostgreSQL cluster + scheduled backup | `Cluster`, `ScheduledBackup` | `global.postgresql.enabled` |
+| RabbitMQ cluster (via Cluster Operator) | `RabbitmqCluster` | `global.rabbitmq.enabled` |
 
-KubeAid-addons is a  companion Helm chart that provides shared infrastructure components to support your application
-charts — such as network policies, database instances, and other common primitives. Instead of managing multiple
-dependency charts, everything lives here. You control what's enabled configuration blocks in your values.
+Everything is **nil-safe** - if a key is missing from values, the template renders nothing rather
+than panicking. New operator types (MariaDB, MongoDB, etc.) can be added by dropping a new
+template in `templates/`.
 
-## Usage
+> **Private values live in `kubeaid-config` repo.**
+> The chart ships with empty/disabled defaults. All environment-specific configuration lives in
+> your `kubeaid-config` private repository.
 
-Create one ArgoCD Application per namespace:
+## Setup
+
+### 1. Standalone ArgoCD app (default-deny)
+
+Create one `kubeaid-addons` ArgoCD Application per cluster. This app is responsible for rendering
+the **namespace wide default deny policies** across all managed namespaces and for providing shared
+FQDN values consumed by other charts.
 
 ```yaml
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: kubeaid-addons-mattermost
+  name: kubeaid-addons
+  namespace: argocd
 spec:
-  source:
-    repoURL: https://github.com/your-org/kubeaid-helm-charts
-    path: kubeaid-addons
-    helm:
-      valueFiles:
-        - values/mattermost.yaml
   destination:
-    namespace: mattermost
+    server: https://kubernetes.default.svc
+    namespace: kubeaid-addons
+  project: kubeaid
+  sources:
+    - repoURL: <your-repo-url>
+      path: argocd-helm-charts/kubeaid-addons
+      targetRevision: main
+      helm:
+        valueFiles:
+          - <path-to-values-kubeaid-addons.yaml>
+    - repoURL: <your-repo-url>
+      targetRevision: main
+      ref: values
+  syncPolicy:
+    syncOptions:
+      - ApplyOutOfSyncOnly=true
+      - CreateNamespace=true
 ```
 
-## Values
-
-### Network Policies
-
-Enable/disable netpols in your kubeaid-config repo:
+The corresponding private values file contains **only the default-deny configuration**:
 
 ```yaml
-<application-name>:
-    ciliumNetworkPolicy:
-        enabled: true
+# default-deny - one entry per namespace you want protected
+defaultDeny:
+  enabled: true
+  namespaces:
+    my-app-namespace: {}         # full deny, no exclusions
+    another-namespace:
+      excludedPods:
+        - <label-key>: <label-value>   # pods matching this are excluded from the deny
 ```
 
-### Excluding applications from default deny
+### 2. As a subchart dependency (component netpols + infra)
 
-If certain pods in the namespace should be excluded from the default deny policy (e.g. agents, exporters, or other
-system-level workloads that need unrestricted access), add them under `defaultDeny.excludedPods` using their label
-selectors in your kubeaid-config repo.
+For each application chart that needs network policies or operator resources, add `kubeaid-addons`
+as a Helm dependency. This gives the application chart access to all network policy templates and
+infrastructure primitives without duplicating logic.
 
+**`Chart.yaml`**:
 ```yaml
-ciliumNetworkPolicy:
-  defaultDeny:
-    excludedPods:
-      - app: teleport-kube-agent
-      - app.kubernetes.io/instance: obmondo-k8s-agent
-      - app: gitea-stats-exporter
-      - app.kubernetes.io/instance: gitea-stats-exporter
+dependencies:
+  - name: my-app
+    version: x.y.z
+    repository: https://charts.example.com
+
+  - name: kubeaid-addons
+    version: 0.1.0
+    repository: file://../kubeaid-addons
 ```
 
-### CNPG PostgreSQL Network Policy
+**Create a symlink** from the chart's `charts/` directory to the `kubeaid-addons` source:
+```bash
+ln -s ../../kubeaid-addons argocd-helm-charts/my-app/charts/kubeaid-addons
+git add argocd-helm-charts/my-app/charts/kubeaid-addons
+```
 
-Each CNPG PostgreSQL instance can have its own Cilium network policy to control ingress and egress traffic. Enable it
-under your postgres values in your kubeaid-config repo:
+ArgoCD resolves the symlink directly, so any changes to `kubeaid-addons` templates are picked up without re-packaging.
+
+**`values.yaml`** (chart-level defaults):
+```yaml
+global:
+  netpol:
+    enabled: false
+  my-component:
+    netpol: false
+```
+
+**Private values**:
+```yaml
+global:
+  netpol:
+    enabled: true
+    releaseName: my-app
+    traefik:
+      namespace: traefik
+      labels:
+        app.kubernetes.io/name: traefik
+        app.kubernetes.io/instance: traefik
+
+  postgresql:
+    enabled: true
+    instanceName: my-app-pgsql
+    size: 10Gi
+    netpol: true
+    clients:
+      - labels:
+          app.kubernetes.io/instance: my-app
+          app.kubernetes.io/component: backend
+```
+
+## Enabling network policies
+
+### Master switch
 
 ```yaml
-postgres:
-  mattermost-postgres:
+global:
+  netpol:
+    enabled: true
+    releaseName: <helm-release-name>
+    traefik:
+      namespace: traefik
+      labels:
+        app.kubernetes.io/name: traefik
+        app.kubernetes.io/instance: traefik
+```
+
+### Per-component flags
+
+```yaml
+global:
+  rabbitmq:
+    netpol: true
+  redis:
+    netpol: true
+  grafana:
+    netpol: true
+  engine:
+    netpol: true
+  celery:
+    netpol: true
+  whoami:
+    netpol: true
+  postgresql:
     netpol: true
 ```
 
-By default the policy allows:
+## Adding a new operator resource type
 
-- **Egress** to `kube-apiserver` on ports `443`/`6443`
-- **Egress** between PostgreSQL pods for cluster replication
-- **Ingress** between PostgreSQL pods for cluster replication
+1. Add a template in `templates/<resource>.yaml` guarded by `{{- if ((.Values.global).<type>).enabled }}`
+2. Document the values keys in `values.yaml` with `# --` comments
+3. Because dependent charts use a symlink, no re-packaging is needed - changes are picked up immediately
 
-#### Allowing client applications
+## Adding a new network policy template
 
-To allow specific application pods to connect to PostgreSQL, add them under `clients`:
-
-```yaml
-postgres:
-  <application-name>:
-    clients:
-      - labels:
-          <label-key>: <label-value>
-```
+1. Create `charts/network-policies/templates/networkpolicy-<component>.yaml`
+2. Use the nil-safe guard:
+   ```yaml
+   {{- if and ((.Values.global).netpol).enabled ((.Values.global).<component>).netpol }}
+   ```
+3. Add `global.<component>.netpol: false` to the parent chart's `values.yaml`
+4. Because dependent charts use a symlink, no re-packaging is needed - changes are picked up immediately
