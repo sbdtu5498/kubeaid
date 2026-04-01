@@ -201,6 +201,6 @@ gfetch:
       url: "https://github.com/Obmondo/LinuxAid.git"
       openvox_max_workers: 15
       tags:
-        - /^v[0-9]\.[0-9]\.[0-9]+$/
+        - /^v[1-9]\.[5-9]\.[0-9]+$/
   ssh:
     existingSecret: g10k-git-secret
