@@ -10,8 +10,9 @@ local remove_nulls = (
 local ext_vars = std.extVar('vars');
 
 local default_vars = import 'lib/default_vars.libsonnet';
+local default_kubeaid_apps_vars = std.parseYaml(importstr 'lib/default_kubeaid_apps_vars.yaml');
 
-local vars = default_vars + ext_vars;
+local vars = default_vars + ext_vars + default_kubeaid_apps_vars;
 
 local _validationErrors = validate(vars);
 assert std.length(_validationErrors) == 0 :
