@@ -86,3 +86,16 @@ groups:
         description: |
           Based on last 6h sampling, the mount {{ $labels.mountpoint }} on server {{ $labels.certname }} is expected to fill up within 2 days.
           Currently {{ printf "%.2f" $value }}% is available.
+    - alert: monitor::system::disk::nfs_device_error  
+      expr: |  
+        node_filesystem_device_error{fstype=~"nfs|nfs4"} == 1  
+        and 
+        on(certname) 
+        obmondo_monitoring{alert_id="monitor::system::disk::nfs_device_error"} > 0  
+      for: 5m  
+      labels:  
+        severity: critical  
+        alert_id: monitor::system::disk::nfs_device_error  
+      annotations:  
+        summary: "NFS mount {{ $labels.mountpoint }} is not reachable on **{{ $labels.certname }}**"  
+        description: "NFS mount `{{ $labels.mountpoint }}` (device: {{ $labels.device }}) is not reachable on **{{ $labels.certname }}**. This indicates a network or server issue with the NFS export."
