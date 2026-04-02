@@ -1,27 +1,27 @@
----  
-evaluation_interval: 1m  
-  
-rule_files:  
-  - ../rules/disk.yaml  
-  
-tests:  
-  - interval: 1m  
-    input_series:  
-      - series: obmondo_monitoring{certname="test.example", alert_id="monitor::system::disk::nfs_device_error"}  
-        values: 1x30  
-      - series: node_filesystem_device_error{device="10.45.13.166:/home", fstype="nfs", mountpoint="/home", certname="test.example"}  
-        values: 1x30  
-    alert_rule_test:  
-      - alertname: monitor::system::disk::nfs_device_error  
-        eval_time: 5m  
-        exp_alerts:  
-          - exp_labels:  
-              severity: critical  
-              certname: test.example  
-              device: 10.45.13.166:/home  
-              fstype: nfs  
-              mountpoint: /home  
-              alert_id: monitor::system::disk::nfs_device_error  
-            exp_annotations:  
-              summary: "NFS mount /home is not reachable on **test.example**"  
+---
+evaluation_interval: 1m
+
+rule_files:
+  - ../rules/disk.yaml
+
+tests:
+  - interval: 1m
+    input_series:
+      - series: obmondo_monitoring{certname="test.example", alert_id="monitor::system::disk::nfs_device_error"}
+        values: 1x30
+      - series: node_filesystem_device_error{device="10.45.13.166:/home", fstype="nfs", mountpoint="/home", certname="test.example"}
+        values: 1x30
+    alert_rule_test:
+      - alertname: monitor::system::disk::nfs_device_error
+        eval_time: 5m
+        exp_alerts:
+          - exp_labels:
+              severity: critical
+              certname: test.example
+              device: 10.45.13.166:/home
+              fstype: nfs
+              mountpoint: /home
+              alert_id: monitor::system::disk::nfs_device_error
+            exp_annotations:
+              summary: "NFS mount /home is not reachable on **test.example**"
               description: "NFS mount `/home` (device: 10.45.13.166:/home) is not reachable on **test.example**. This indicates a network or server issue with the NFS export."
