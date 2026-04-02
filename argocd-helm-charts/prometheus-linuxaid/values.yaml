@@ -63,6 +63,7 @@ prometheusRule:
   prometheus: true
   psi: true
   puppet: true
+  security: true
   service_gitlab: true
   service_sssd: true
   service_omsagent: true

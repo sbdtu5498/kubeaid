@@ -1,0 +1,9 @@
+{{- if .Values.prometheusRule.security }}
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: security-rules
+  namespace: {{ template "prometheus-linuxaid.namespace" . }}
+spec:
+  {{- $.Files.Get "rules/security.yaml" | nindent 4 }}
+{{- end }}

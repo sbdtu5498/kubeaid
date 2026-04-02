@@ -1,0 +1,42 @@
+groups:
+  - name: monitor::security::scan
+    rules:
+    - alert: monitor::security::scan::failing
+      # Fires a single alert when any node's security exporter scan has been
+      # failing. The annotation lists all affected certnames.
+      expr: count(security_exporter_scan_up == 0) > 0
+      for: 1h
+      labels:
+        alert_id: 'monitor::security::scan::failing'
+        severity: warning
+      annotations:
+        summary: 'Security scan failing on {{ $value }} node(s)'
+        description: |-2
+          {{ $value }} node(s) have not been able to submit vulnerability scan
+          results to the Vuls server. This could be due to the Vuls server being
+          down, network issues, or the security exporter service failing.
+
+          Get the list of affected nodes:
+          ```
+          security_exporter_scan_up == 0
+          ```
+
+    - alert: monitor::security::scan::stale
+      # Fires when no successful scan has happened in the last 25 hours
+      # (scan_interval is 12h, so 25h means at least 2 missed scans).
+      expr: count(time() - security_exporter_last_scan_timestamp > 90000) > 0
+      for: 1h
+      labels:
+        alert_id: 'monitor::security::scan::stale'
+        severity: warning
+      annotations:
+        summary: 'Security scan results stale on {{ $value }} node(s)'
+        description: |-2
+          {{ $value }} node(s) have not completed a successful vulnerability
+          scan in more than 25 hours. The scan interval is 12h, so this means
+          at least 2 consecutive scans have failed or not run.
+
+          Get the list of affected nodes:
+          ```
+          time() - security_exporter_last_scan_timestamp > 90000
+          ```
