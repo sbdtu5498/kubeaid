@@ -6,3 +6,14 @@ haproxy:
     http: null
     https: null
     stat: null
+
+  # Restrict haproxy to control-plane nodes only.
+  # haproxy proxies kube-controller-manager, kube-scheduler and etcd metrics
+  # via 127.0.0.1 — processes that only run on control-plane nodes.
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+          - matchExpressions:
+              - key: node-role.kubernetes.io/control-plane
+                operator: Exists
