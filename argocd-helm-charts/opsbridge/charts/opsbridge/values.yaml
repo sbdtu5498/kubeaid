@@ -1,0 +1,48 @@
+replicaCount: 1
+
+image:
+  repository: harbor.obmondo.com/obmondo/opsbridge:v1.0.0
+  pullPolicy: IfNotPresent
+
+# Target namespace for the deployment
+namespace: monitoring
+
+config:
+  # Gitea Configuration
+  giteaUrl: "https://gitea.yourdomain.com"
+  giteaOwner: "operations"
+  giteaRepo: "infrastructure"
+
+  # Mattermost Configuration
+  mattermostUrl: "https://chat.obmondo.com"
+
+  # Dynamic Routing
+  qaChannelName: "alerts-qa"
+  qaChannelTags: "@onkar @gaurav"
+  defaultAlertTags: "@operation"
+
+# Sensitive tokens
+secrets:
+  # If you want to use a pre-existing Kubernetes Secret, provide its name here.
+  # The existing secret MUST contain the keys: GITEA_TOKEN and MATTERMOST_BOT_TOKEN
+  existingSecret: "opsbridge-secrets"
+
+  # If existingSecret is left blank, these values will be used to create a new secret.
+  giteaToken: ""
+  mattermostBotToken: ""
+  giteaBasicUser: ""
+  giteaBasicPass: ""
+
+resources:
+  requests:
+    cpu: 10m
+    memory: 32Mi
+  limits:
+    cpu: 50m
+    memory: 64Mi
+
+securityContext:
+  runAsNonRoot: true
+  runAsUser: 10001
+  runAsGroup: 10001
+  fsGroup: 10001

@@ -1,0 +1,10 @@
+apiVersion: v2
+name: opsbridge
+description: A Helm chart for the Mattermost-Gitea bridge
+type: application
+version: 0.1.1
+appVersion: "1.0.1"
+dependencies:
+  - name: opsbridge
+    version: 0.1.1
+    repository: 'file://charts/opsbridge'
