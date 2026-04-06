@@ -15,7 +15,7 @@ local vars = default_vars + ext_vars;
 
 local _validationErrors = validate(vars);
 assert std.length(_validationErrors) == 0 :
-  '\n\nVars validation failed:\n' + std.join('\n', ['  - ' + e for e in _validationErrors]) + '\n';
+       '\n\nVars validation failed:\n' + std.join('\n', ['  - ' + e for e in _validationErrors]) + '\n';
 
 local mixins = remove_nulls([
   addMixin(
@@ -231,8 +231,8 @@ local kp =
                                       std.length(parts[1]) >= 7 &&
                                       std.length(parts[1]) <= 10;
             assert is_valid_certname :
-              'certname is required when connect_obmondo is true and must match "<cluster>.<customerid>" ' +
-              'where customerid is 7-10 chars (got: "%s")' % certname;
+                   'certname is required when connect_obmondo is true and must match "<cluster>.<customerid>" ' +
+                   'where customerid is 7-10 chars (got: "%s")' % certname;
             {
               certname: certname,
             }
@@ -505,13 +505,13 @@ local kp =
         datasources: (
           [
             {
-            name: 'prometheus',
-            orgId: 1,
-            type: 'prometheus',
-            url: 'http://prometheus-k8s.monitoring.svc:9090',
-            version: 1,
-            access: 'proxy',
-            editable: false,
+              name: 'prometheus',
+              orgId: 1,
+              type: 'prometheus',
+              url: 'http://prometheus-k8s.monitoring.svc:9090',
+              version: 1,
+              access: 'proxy',
+              editable: false,
             },
           ] + if std.objectHas(vars, 'grafana_external_datasources') then vars.grafana_external_datasources else []
         ),
@@ -519,7 +519,8 @@ local kp =
           check_for_updates: false,
         },
         env: (
-          ( if vars.grafana_keycloak_enable then [
+          (
+            if vars.grafana_keycloak_enable then [
               {
                 name: 'GF_SECURITY_DISABLE_INITIAL_ADMIN_CREATION',
                 value: 'true',

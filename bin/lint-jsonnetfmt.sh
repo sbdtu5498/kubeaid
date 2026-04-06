@@ -12,7 +12,7 @@ EXIT_CODE=0
 while read -r f; do
     # Skip empty lines if find returns nothing
     [ -z "$f" ] && continue
-    if ! jsonnetfmt --test "${f}"; then
+    if ! jsonnetfmt --no-sort-imports --test "${f}"; then
       EXIT_CODE=1
       echo "'${f}' not correctly formatted"
     fi
@@ -20,7 +20,7 @@ done <<EOF
 $(find . -not -path "./build/kube-prometheus/libraries/*" -name "*.jsonnet")
 EOF
 
-if ! jsonnetfmt --test ./build/kube-prometheus/common-template.jsonnet; then
+if ! jsonnetfmt --no-sort-imports --test ./build/kube-prometheus/common-template.jsonnet; then
   EXIT_CODE=1
   echo "Error, bad jsonnet ./build/kube-prometheus/common-template.jsonnet"
 fi

@@ -9,10 +9,10 @@ local test = import 'github.com/yugui/jsonnetunit/jsonnetunit/test.libsonnet';
 
 // ── real-world config fixtures (imported from e2e vars) ────────────────────
 
+local cfgAksMinimal = import '../e2e/vars/v0.17.0/aks-minimal.jsonnet';
+local cfgKopsOps = import '../e2e/vars/v0.17.0/kops-with-opensearch.jsonnet';
+local cfgKopsVelero = import '../e2e/vars/v0.17.0/kops-minimal.jsonnet';
 local cfgKubeadmFull = import '../e2e/vars/v0.17.0/kubeadm-with-keycloak.jsonnet';
-local cfgKopsVelero  = import '../e2e/vars/v0.17.0/kops-minimal.jsonnet';
-local cfgKopsOps     = import '../e2e/vars/v0.17.0/kops-with-opensearch.jsonnet';
-local cfgAksMinimal  = import '../e2e/vars/v0.17.0/aks-minimal.jsonnet';
 
 // ── helpers ────────────────────────────────────────────────────────────────
 
