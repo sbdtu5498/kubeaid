@@ -127,63 +127,46 @@ cat $CHANGELOG_FILE | tail -n +5 > $CHANGELOG_FILE.tmp
 
 # Generate release notes file
 {
-  printf '%s\n' "## KubeAid Release Version ${NEW_TAG}"
-  echo ""
+  printf '%s\n' "## KubeAid Release Version ${NEW_TAG}\n"
 
   if [ ${#NEW_CHARTS[@]} -gt 0 ]; then
-    echo "### New Charts Added"
-    echo ""
-    printf '%s\n' "${NEW_CHARTS[@]}"
-    echo ""
+    printf "### New Charts Added\n"
+    printf '%s\n\n' "${NEW_CHARTS[@]}"
   fi
 
   if [ ${#MAJOR_CHART_UPDATES[@]} -gt 0 ]; then
-    echo "### Major Version Upgrades"
-    echo ""
-    printf '%s\n' "${MAJOR_CHART_UPDATES[@]}"
-    echo ""
+    printf "### Major Version Upgrades\n"
+    printf '%s\n\n' "${MAJOR_CHART_UPDATES[@]}"
   fi
 
   if [ ${#MINOR_CHART_UPDATES[@]} -gt 0 ]; then
-    echo "### Minor Version Upgrades"
-    echo ""
-    printf '%s\n' "${MINOR_CHART_UPDATES[@]}"
-    echo ""
+    printf "### Minor Version Upgrades\n"
+    printf '%s\n\n' "${MINOR_CHART_UPDATES[@]}"
   fi
 
   if [ ${#PATCH_CHART_UPDATES[@]} -gt 0 ]; then
-    echo "### Patch Version Upgrades"
-    echo ""
-    printf '%s\n' "${PATCH_CHART_UPDATES[@]}"
-    echo ""
+    printf "### Patch Version Upgrades\n"
+    printf '%s\n\n' "${PATCH_CHART_UPDATES[@]}"
   fi
 
   if [ ${#FEATURES[@]} -gt 0 ]; then
-    echo "### Features"
-    echo ""
-    printf '%s\n' "${FEATURES[@]}"
-    echo ""
+    printf "### Features\n"
+    printf '%s\n\n' "${FEATURES[@]}"
   fi
 
   if [ ${#BUG_FIXES[@]} -gt 0 ]; then
-    echo "### Bug Fixes"
-    echo ""
-    printf '%s\n' "${BUG_FIXES[@]}"
-    echo ""
+    printf "### Bug Fixes\n"
+    printf '%s\n\n' "${BUG_FIXES[@]}"
   fi
 
   if [ ${#CONFIG_CHANGES[@]} -gt 0 ]; then
-    echo "### Configuration Changes"
-    echo ""
-    printf '%s\n' "${CONFIG_CHANGES[@]}"
-    echo ""
+    printf "### Configuration Changes\n"
+    printf '%s\n\n' "${CONFIG_CHANGES[@]}"
   fi
 
   if [ ${#OTHER_CHANGES[@]} -gt 0 ]; then
-    echo "### Other Changes"
-    echo ""
-    printf '%s\n' "${OTHER_CHANGES[@]}"
-    echo ""
+    printf "### Other Changes\n"
+    printf '%s\n\n' "${OTHER_CHANGES[@]}"
   fi
 
    # If no commits categorized, add a note
