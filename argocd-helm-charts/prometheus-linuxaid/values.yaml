@@ -74,6 +74,7 @@ prometheusRule:
   smartmon: true
   gitlab_runner: true
   slurm: true
+  nfs_device_error: true
 
 alertmanager:
   enabled: true
