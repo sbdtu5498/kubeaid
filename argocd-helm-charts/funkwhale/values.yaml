@@ -56,6 +56,8 @@ funkwhale:
 
   # Disable bundled PostgreSQL - we use CloudNative-PG operator
   postgresql:
+    monitoring:
+      enablePodMonitor: true
     enabled: false
     host: funkwhale-pgsql-rw
     auth:

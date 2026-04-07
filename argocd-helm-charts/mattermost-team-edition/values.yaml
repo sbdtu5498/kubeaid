@@ -48,6 +48,8 @@ mattermost-team-edition:
     initialDelaySeconds: 150
 
 postgres:
+  monitoring:
+    enablePodMonitor: true
   size: 8Gi
   recover: false
   pass: mattermost-pgsql-app

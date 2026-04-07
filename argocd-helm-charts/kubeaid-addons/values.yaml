@@ -60,6 +60,8 @@ global:
   # Provisions a CloudNativePG Cluster resource.
   # Requires the cloudnative-pg operator to be installed in the cluster.
   postgresql:
+    monitoring:
+      enablePodMonitor: true
     # -- Provision a CNPG Cluster resource.
     enabled: false
 

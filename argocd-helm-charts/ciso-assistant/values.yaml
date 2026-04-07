@@ -20,6 +20,8 @@ ciso-assistant-next:
     enabled: true
 
 postgres:
+  monitoring:
+    enablePodMonitor: true
   size: 5Gi
   recover: false
   pass: ciso-assistant-pgsql-app
