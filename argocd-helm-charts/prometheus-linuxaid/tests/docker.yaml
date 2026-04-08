@@ -8,15 +8,14 @@ tests:
   - interval: 1m
     input_series:
       - series: obmondo_monitoring{certname="bantha.enableit", alert_id="monitor::system::docker::status"}
-        values: 1x1800
+        values: 1x60
       - series: container_last_seen{certname="bantha.enableit", name="packagesign-script-1"}
-        values: '1734500308+35x1800'
+        values: '0+60x5 300x55'
       - series: container_last_seen{certname="bantha.enableit", name="jenkins"}
-        values: '1734500308+60x1800'
-
+        values: '0+60x60'
     alert_rule_test:
       - alertname: monitor::system::docker::status
-        eval_time: 30m
+        eval_time: 36m
         exp_alerts:
           - exp_labels:
               severity: critical
