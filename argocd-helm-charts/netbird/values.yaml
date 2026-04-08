@@ -1,5 +1,7 @@
 externalDatabases:
   netbird:
+    monitoring:
+      enablePodMonitor: true
     size: 8Gi
     recover: false
     pass: netbird-pgsql-app

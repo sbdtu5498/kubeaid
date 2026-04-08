@@ -218,5 +218,8 @@ rbac:
   pspEnabled: false
 
 postgresql:
+  monitoring:
+    enablePodMonitor: true
+  enabled: true
   logicalBackup: "true"
   size: 4Gi

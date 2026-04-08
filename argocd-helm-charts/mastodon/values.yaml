@@ -89,6 +89,8 @@ mastodon:
 
 # PostgreSQL operator configuration
 postgres:
+  monitoring:
+    enablePodMonitor: true
   enabled: true
   instance: 1
   size: 10Gi

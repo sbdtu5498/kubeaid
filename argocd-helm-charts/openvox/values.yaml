@@ -134,6 +134,8 @@ puppetserver:
         enabled: false
 
 postgresql:
+  monitoring:
+    enablePodMonitor: true
   instance: 1
   size: 2Gi
   recover: false

@@ -97,6 +97,8 @@ harbor:
       addr: harbor-redis:6379
 
 postgres:
+  monitoring:
+    enablePodMonitor: true
   size: 3Gi
   recover: false
   pass: harbor-pgsql-app

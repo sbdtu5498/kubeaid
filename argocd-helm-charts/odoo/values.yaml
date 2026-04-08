@@ -91,6 +91,8 @@ odoo:
 
 # PostgreSQL configuration using CNPG operator
 postgres:
+  monitoring:
+    enablePodMonitor: true
   size: 4Gi
   instance: 1
   recover: false

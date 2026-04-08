@@ -10,3 +10,6 @@ global:
     enabled: false
   whoami:
     netpol: false
+postgresql:
+  monitoring:
+    enablePodMonitor: true

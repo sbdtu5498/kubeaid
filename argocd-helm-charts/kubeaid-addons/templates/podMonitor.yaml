@@ -1,0 +1,22 @@
+{{- if 
+    .Values.global.postgresql.monitoring.enablePodMonitor 
+}}
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: {{ if .Values.global.postgresql.recover }}{{ .Values.global.postgresql.instanceName }}-recover{{ else }}{{ .Values.global.postgresql.instanceName }}{{ end }}
+  namespace: {{ .Release.Namespace }}
+spec:
+  namespaceSelector:
+    matchNames:
+      - {{ .Release.Namespace }}
+  selector:
+    matchLabels:
+      cnpg.io/cluster: {{ if .Values.global.postgresql.recover }}{{ .Values.global.postgresql.instanceName }}-recover{{ else }}{{ .Values.global.postgresql.instanceName }}{{ end }}
+  podMetricsEndpoints:
+    - port: metrics
+      path: /metrics
+      interval: 10s
+      scrapeTimeout: 10s
+{{- end }}
