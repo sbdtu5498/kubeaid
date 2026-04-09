@@ -1,6 +1,6 @@
 dependencies:
 - name: ccm-hetzner
   repository: https://charts.syself.com
-  version: 2.0.5
-digest: sha256:4e2ca726cd20253b8320d41e479607a2994c744ddd41ab88528456915c67437b
-generated: "2026-03-23T12:14:30.034031937+05:30"
+  version: 2.0.6
+digest: sha256:893ea443d4ce42a669074df97dc17397545e69afbaee103841b1c289185c539d
+generated: "2026-04-09T10:56:36.298066204+05:30"

@@ -1,6 +1,6 @@
 dependencies:
 - name: lemmy
   repository: https://ananace.gitlab.io/charts
-  version: 0.6.11
-digest: sha256:7156f6ee9762c21f00574c4b7a19cd955a00afb998c84c9e144a2c822b6724e1
-generated: "2026-03-09T20:01:51.247312394+05:30"
+  version: 0.6.12
+digest: sha256:c3dead8d28235b2e0889b3ecaab3ff60392415dd3b83c45643b210b82ae2399e
+generated: "2026-04-09T10:59:47.670153914+05:30"

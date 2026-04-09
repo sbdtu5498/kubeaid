@@ -503,6 +503,9 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           args:
             - metadataLabeler
+            {{- with .Values.controller.userAgentExtra }}
+            - --user-agent-extra={{ . }}
+            {{- end }}
             - --v={{ .Values.sidecars.metadataLabeler.logLevel }}
             {{- range .Values.sidecars.metadataLabeler.additionalArgs }}
             - {{ . }}

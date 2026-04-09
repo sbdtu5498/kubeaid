@@ -1,10 +1,9 @@
 annotations:
   artifacthub.io/changes: |
-    - Update base image to HAProxy 3.3.1
-    - Fix image references to fully qualified path
-    - Fixes podLabels does not work in the deployment file (#324)
+    - Update base image to HAProxy 3.3.6
+    - Fix newline issue with YAML normalisation (#344)
 apiVersion: v2
-appVersion: 3.3.1
+appVersion: 3.3.6
 description: A Helm chart for HAProxy on Kubernetes
 home: https://github.com/haproxytech/helm-charts/tree/main/haproxy
 icon: https://raw.githubusercontent.com/haproxytech/helm-charts/main/haproxy/chart-icon.png
@@ -18,4 +17,4 @@ name: haproxy
 sources:
 - http://www.haproxy.org/
 type: application
-version: 1.28.0
+version: 1.28.1
