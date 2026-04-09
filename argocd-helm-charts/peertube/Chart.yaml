@@ -3,5 +3,5 @@ name: peertube
 version: 1.0.0
 dependencies:
   - name: peertube
-    version: 1.7.1
+    version: 1.7.2
     repository: https://ananace.gitlab.io/charts

@@ -42,9 +42,9 @@ garage:
     create: true
     # -- Name of the secret. If you want to use a pre-existing kubernetes secret use the name of an already existing secret and set secret.create to false
     name: ""
-    # -- If not given, a random secret will be generated and stored in a Secret object
+    # -- Must be provided together with garage.secret.adminToken. If both are omitted, random values are generated.
     rpcSecret: ""
-    # -- If not given, a random secret will be generated and stored in a Secret object
+    # -- Must be provided together with garage.secret.rpcSecret. If both are omitted, random values are generated.
     adminToken: ""
 
   # -- This is not required if you use the integrated kubernetes discovery
@@ -376,6 +376,18 @@ clusterConfig:
     tag: ""
     pullPolicy: IfNotPresent
 
+  toolsImage:
+    # -- Image to use for the tools task for the configuration job
+    repository: busybox
+    tag: musl
+    pullPolicy: IfNotPresent
+
+  configureImage:
+    # -- Image to use for the configure task for the configuration job
+    repository: busybox
+    tag: latest
+    pullPolicy: IfNotPresent
+
   # -- Image pull secrets
   imagePullSecrets: []
 
@@ -414,6 +426,9 @@ webui:
   # -- Enable the garage-webui deployment
   enabled: false
 
+  # -- Base path or prefix for Web UI
+  basePath: "/"
+
   # -- Number of WebUI replicas
   replicaCount: 1
 
@@ -431,6 +446,7 @@ webui:
     # -- Use an existing secret for authentication (must contain 'webuiAuthUserPass' key)
     existingSecret: ""
     # -- Pre-hashed password in bcrypt format (username:hash), REQUIRED when auth is enabled
+    # -- When the chart manages the auth secret, provide this together with garage.secret.rpcSecret and garage.secret.adminToken.
     # Generate with: htpasswd -nbBC 10 "username" "password"
     # Example: "admin:$2y$10$DSTi9o..."
     userPassHash: ""

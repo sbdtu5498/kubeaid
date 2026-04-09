@@ -1,6 +1,6 @@
 dependencies:
 - name: opensearch-operator
   repository: https://opensearch-project.github.io/opensearch-k8s-operator/
-  version: 3.0.1
-digest: sha256:5fee6e7cddf81a751d1d32b59855bc0809b2eb1cf1ef248bb7fbb70469d9f1aa
-generated: "2026-03-23T12:23:17.516101156+05:30"
+  version: 3.0.2
+digest: sha256:586dba85980c11bf65e4c13a93d23f4569cf57480e16b6d41f2e70f2c51ceaa2
+generated: "2026-04-09T11:02:56.961009899+05:30"

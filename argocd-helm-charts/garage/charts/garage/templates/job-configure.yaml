@@ -8,7 +8,7 @@ metadata:
   annotations:
     "helm.sh/hook": post-install,post-upgrade
     "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
-    "argocd.argoproj.io/hook": PostSync
+    "argocd.argoproj.io/hook": Sync
     "argocd.argoproj.io/hook-delete-policy": BeforeHookCreation,HookSucceeded
 spec:
   template:
@@ -30,7 +30,8 @@ spec:
         {{- toYaml .Values.clusterConfig.podSecurityContext | nindent 8 }}
       initContainers:
         - name: get-busybox-tools
-          image: busybox:musl
+          image: "{{ .Values.clusterConfig.toolsImage.repository }}:{{ .Values.clusterConfig.toolsImage.tag }}"
+          imagePullPolicy: {{ .Values.clusterConfig.toolsImage.pullPolicy }}
           resources:
             requests:
               cpu: 50m
@@ -60,8 +61,8 @@ spec:
               mountPath: /shared
       containers:
         - name: configure
-          image: busybox:latest
-          imagePullPolicy: IfNotPresent
+          image: "{{ .Values.clusterConfig.configureImage.repository }}:{{ .Values.clusterConfig.configureImage.tag }}"
+          imagePullPolicy: {{ .Values.clusterConfig.configureImage.pullPolicy }}
           resources:
             {{- toYaml .Values.clusterConfig.resources | nindent 12 }}
           securityContext:

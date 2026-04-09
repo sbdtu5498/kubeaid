@@ -50,6 +50,7 @@ customScheduling:
     # Define nodeSelector rules here
   tolerations:
     # Set tolerations for nodes here
+  priorityClassName: ""
 
 # -- set the image pull secrets for private registry support
 imagePullSecrets: ""
@@ -146,7 +147,7 @@ configurations:
 
   priorityClass:
     enabled: true
-    daemonset: 100000100 # PriorityClass of the DaemonSet, this should be higher than the other components so the DaemonSet will schedule on all nodes
+    daemonset: 100000100 # PriorityClass value for the node-agent DaemonSet; higher than other components so it schedules on all nodes. Override the name via nodeAgent.priorityClassName.
 
   # List of json paths to exclude from the pod spec hash computation - used for aggregating CronJob generated CRDs
   excludeJsonPaths:
@@ -269,6 +270,7 @@ kubescape:
 
   nodeSelector:
     kubernetes.io/os: linux
+  priorityClassName: ""
 
   podAnnotations: {}
   podLabels: {}
@@ -324,11 +326,12 @@ operator:
   image:
     # -- source code: https://github.com/kubescape/operator
     repository: quay.io/kubescape/operator
-    tag: v0.2.128
+    tag: v0.2.134
     pullPolicy: IfNotPresent
 
   nodeSelector:
     kubernetes.io/os: linux
+  priorityClassName: ""
 
   service:
     type: ClusterIP
@@ -372,11 +375,12 @@ kubevuln:
   image:
     # -- source code: https://github.com/kubescape/kubevuln
     repository: quay.io/kubescape/kubevuln
-    tag: v0.3.109
+    tag: v0.3.119
     pullPolicy: IfNotPresent
 
   nodeSelector:
     kubernetes.io/os: linux
+  priorityClassName: ""
 
   replicaCount: 1
 
@@ -425,6 +429,19 @@ kubevuln:
       - ReadWriteOnce
     size: 50Gi
     annotations: {}
+
+  # SBOM scanner sidecar — isolates Syft memory usage in a separate container
+  sbomScanner:
+    enabled: false
+    command:
+      - /usr/bin/sbom-scanner
+    resources:
+      requests:
+        cpu: 100m
+        memory: 512Mi
+      limits:
+        cpu: 1000m
+        memory: 5Gi
 
 # +++++++++++++++++++++++++++++++ Host-scanner ++++++++++++++++++++++++++++++++++++++++++++++++
 
@@ -479,11 +496,12 @@ storage:
   image:
     # -- source code: https://github.com/kubescape/storage
     repository: quay.io/kubescape/storage
-    tag: v0.0.247
+    tag: v0.0.265
     pullPolicy: IfNotPresent
 
   nodeSelector:
     kubernetes.io/os: linux
+  priorityClassName: ""
 
   # cleanup interval is a duration string
   cleanupInterval: "6h"
@@ -543,7 +561,7 @@ nodeAgent:
   image:
     # -- source code: https://github.com/kubescape/node-agent
     repository: quay.io/kubescape/node-agent
-    tag: v0.3.47
+    tag: v0.3.79
     pullPolicy: IfNotPresent
 
   config:
@@ -736,6 +754,37 @@ nodeAgent:
     # -- interval for reconciliation loop
     reconcileInterval: 5m
 
+  priorityClassName: ""
+
+  # SBOM scanner sidecar — runs Syft in a separate container for memory isolation
+  sbomScanner:
+    enabled: false
+    name: sbom-scanner
+    image:
+      # Same image as node-agent — shared pull, different entrypoint
+      repository: quay.io/kubescape/node-agent
+      tag: ""
+      pullPolicy: IfNotPresent
+    command: ["/usr/bin/sbom-scanner"]
+    resources:
+      requests:
+        cpu: 50m
+        memory: 256Mi
+      limits:
+        cpu: 1000m
+        memory: 4Gi
+    volumeMounts:
+      - mountPath: /sbom-comm
+        name: sbom-comm
+      - mountPath: /host
+        name: host
+        readOnly: true
+    volumes:
+      - name: sbom-comm
+        emptyDir:
+          medium: Memory
+          sizeLimit: 10Mi
+
 # +++++++++++++++++++++++++++++++ ClamAV ++++++++++++++++++++++++++++++++++++++++++++++++
 clamav:
   name: clamav
@@ -797,10 +846,11 @@ synchronizer:
   image:
     # -- source code: https://github.com/kubescape/synchronizer
     repository: quay.io/kubescape/synchronizer
-    tag: v0.0.132
+    tag: v0.0.136
     pullPolicy: IfNotPresent
   nodeSelector:
     kubernetes.io/os: linux
+  priorityClassName: ""
   podAnnotations: {}
   podLabels: {}
   resources:
@@ -867,6 +917,7 @@ grypeOfflineDB:
 
   nodeSelector:
     kubernetes.io/os: linux
+  priorityClassName: ""
 
   podAnnotations: {}
   podLabels: {}
@@ -924,11 +975,12 @@ prometheusExporter:
   name: "prometheus-exporter"
   image:
     repository: quay.io/kubescape/prometheus-exporter
-    tag: v0.2.11
+    tag: v0.2.13
     pullPolicy: IfNotPresent
 
   nodeSelector:
     kubernetes.io/os: linux
+  priorityClassName: ""
 
   podAnnotations: {}
   podLabels: {}
@@ -965,6 +1017,7 @@ helmReleaseUpgrader:
 
   nodeSelector:
     kubernetes.io/os: linux
+  priorityClassName: ""
 
   # A cron schedule of how often the updating CronJob should run
   schedule: "0 14 * * *"
@@ -1029,6 +1082,7 @@ kubescapeScheduler:
 
   nodeSelector:
     kubernetes.io/os: linux
+  priorityClassName: ""
 
   # Skip SSL certificate verification
   insecureSkipTLSVerify: false
@@ -1076,6 +1130,7 @@ kubevulnScheduler:
 
   nodeSelector:
     kubernetes.io/os: linux
+  priorityClassName: ""
 
   # Skip SSL certificate verification
   insecureSkipTLSVerify: false

@@ -3,8 +3,8 @@ name: opentelemetry-operator
 version: 0.13.4
 dependencies:
   - name: opentelemetry-operator
-    version: 0.108.0
+    version: 0.109.0
     repository: https://open-telemetry.github.io/opentelemetry-helm-charts
   - name: opentelemetry-collector
-    version: 0.147.1
+    version: 0.148.0
     repository: https://open-telemetry.github.io/opentelemetry-helm-charts

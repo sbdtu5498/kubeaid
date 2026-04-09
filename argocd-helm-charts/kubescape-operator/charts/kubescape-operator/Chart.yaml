@@ -1,5 +1,5 @@
 apiVersion: v2
-appVersion: 1.30.5
+appVersion: 1.30.6
 dependencies:
 - condition: alertCRD.scopeClustered
   name: kubescape-alert-crd
@@ -15,9 +15,6 @@ maintainers:
 - email: ben@armosec.io
   name: Ben Hirschberg
   url: https://www.linkedin.com/in/benyamin-ben-hirschberg-66141890
-- email: dw@armosec.io
-  name: David Wertenteil
-  url: https://www.linkedin.com/in/david-wertenteil-0ba277b9
 - email: bez@armosec.io
   name: Bezalel Brandwine
   url: https://www.linkedin.com/in/bezalel-brandwine
@@ -29,4 +26,4 @@ maintainers:
   url: https://www.linkedin.com/in/amirmalka
 name: kubescape-operator
 type: application
-version: 1.30.5
+version: 1.30.6
