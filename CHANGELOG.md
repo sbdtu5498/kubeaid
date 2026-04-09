@@ -1,7 +1,207 @@
 # Changelog
 
-All releases and the changes included in them (pulled from git commits added since last release)
-will be detailed in this file.
+All releases and the changes included in them (pulled from git commits added since last release) will be detailed in this file.
+
+## KubeAid Release Version 26.0.0\n
+### Major Version Upgrades
+- 5cb76745a Updated aws-efs-csi-driver from version 3.4.1 to 4.0.0
+
+### Minor Version Upgrades
+- 5cb76745a Updated argo-cd from version 9.4.15 to 9.5.0
+
+- 5cb76745a Updated aws-ebs-csi-driver from version 2.57.1 to 2.58.0
+
+- 5cb76745a Updated cloud-provider-azure from version 1.34.5 to 1.35.1
+
+- 5cb76745a Updated cerebro from version 2.2.0 to 2.3.0
+
+- 5cb76745a Updated cloudnative-pg from version 0.27.1 to 0.28.0
+
+- 5cb76745a Updated fluent-bit from version 0.56.0 to 0.57.2
+
+- 5cb76745a Updated garage from version 0.2.1 to 0.4.1
+
+- 5cb76745a Updated opensearch from version 3.5.0 to 3.6.0
+
+- 5cb76745a Updated opensearch-dashboards from version 3.5.0 to 3.6.0
+
+- 5cb76745a Updated opentelemetry-operator from version 0.108.0 to 0.109.0
+
+- 5cb76745a Updated opentelemetry-collector from version 0.147.1 to 0.148.0
+
+- 5cb76745a Updated seaweedfs from version 4.17.0 to 4.19.0
+
+- 5cb76745a Updated sonarqube from version 2026.1.0 to 2026.2.1
+
+### Patch Version Upgrades
+- 5cb76745a Updated argocd-image-updater from version 1.1.3 to 1.1.5
+
+- 5cb76745a Updated aws-cloud-controller-manager from version 0.0.10 to 0.0.11
+
+- 5cb76745a Updated ccm-hetzner from version 2.0.5 to 2.0.6
+
+- 5cb76745a Updated cert-manager from version v1.20.0 to v1.20.1
+
+- 5cb76745a Updated cilium from version 1.19.1 to 1.19.2
+
+- 5cb76745a Updated erpnext from version 8.0.36 to 8.0.40
+
+- 5cb76745a Updated gitlab-runner from version 0.87.0 to 0.87.1
+
+- 5cb76745a Updated graylog from version 3.0.15 to 3.0.18
+
+- 5cb76745a Updated haproxy from version 1.28.0 to 1.28.1
+
+- 5cb76745a Updated kubescape-operator from version 1.30.5 to 1.30.6
+
+- 5cb76745a Updated lemmy from version 0.6.11 to 0.6.12
+
+- 5cb76745a Updated opensearch-operator from version 3.0.1 to 3.0.2
+
+- 5cb76745a Updated peertube from version 1.7.1 to 1.7.2
+
+- 5cb76745a Updated rook-ceph from version v1.19.2 to v1.19.3
+
+- 5cb76745a Updated rook-ceph-cluster from version v1.19.2 to v1.19.3
+
+- 5cb76745a Updated step-issuer from version 1.10.1 to 1.10.2
+
+- 5cb76745a Updated step-certificates from version 1.30.0 to 1.30.1
+
+- 5cb76745a Updated autocert from version 1.20.6 to 1.20.7
+
+- 5cb76745a Updated teleport-cluster from version 18.7.3 to 18.7.4
+
+- 5cb76745a Updated teleport-kube-agent from version 18.7.3 to 18.7.4
+
+- 5cb76745a Updated traefik from version 39.0.6 to 39.0.7
+
+### Features
+- e03c877fb feat(prometheus-linuxaid): add security exporter scan alerts
+
+- d69ab3c3a feat(capi-cluster/hetzner): adding support for provisioning Hetzner hybrid clusters
+
+- b996cc246 feat(oncall): add kubeaid-addons as full dep (postgres, rabbitmq, netpols)
+
+### Bug Fixes
+- f2613e892 fix(zfs-localpv): add disk=nvme label instruction for NVMe nodes in README
+
+- e6d246d7d fix: clean up YAML formatting for NFS device error alert and test
+
+- 2dd56e84f fix(haproxy): restrict daemonset to control-plane nodes via nodeAffinity
+
+- 8e930224a fix(capi-cluster/hetzner): removing G and passing OS and ZFS pool size as integers to capi-cluster Helm chart
+
+- baa45eabd fix(capi-cluster/hetzner): removing G and passing OS and ZFS pool size as integers to capi-cluster Helm chart
+
+- 946626266 fix(kube-prometheus): drop kubelet /metrics/probes endpoint and extract reusable endpoint-utils
+
+- fb0eab946 fix(kube-prometheus): drop duplicate process_start_time_seconds from kubelet /metrics/probes
+
+- 25cccc899 fix: add blank lines around headings in release notes to pass markdownlint
+
+- 7d5b74b37 fix: yamlint
+
+- b0aa95118 fix: adding crontimeinterval variable to hetzner-robot-failover deployment
+
+- d04ffc6b1 fix(capi-cluster/hetzner): kubeaid-storagectl execution commands
+
+- 46ede289a fix:mardownlint CI and the then the lint errors.
+
+### Configuration Changes
+- 6b5e8aced chore(fix): removed v0.14.0 and v0.15.0, since we v0.16.0 is the default now
+
+- 0cf3cf3d7 chore(oncall): force-add network-policies tgz (bypasses .gitignore *.tgz rule)
+
+- ab90f7597 chore(oncall): force-add network-policies tgz (bypasses .gitignore *.tgz rule)
+
+### Other Changes
+- 6b91c7404 Improve docs for sonarqube migration and specify pgsql image for sonarqube cnpg template
+
+- e2519bf83 Add blackbox-exporter monitoring mixin
+
+- fcba366f9 Fixed the docker down alert expression
+
+- 0937166ef add relate pod monitor
+
+- 4a7b99d58 Added an alert when an NFS mount is not reachable
+
+- d485709f9 Fix markdownlint flagging release-notes as invalid markdown
+
+- 6468fface docs:add documentation for harbor proxy-cache kyverno policy with local testing instructions
+
+- 95077f54b bump kubeaid-agent version to 0.0.3
+
+- 8c470663a Add opsbridge
+
+- a78111cab Added support for traefik 4XX code alerts
+
+- b9beaee4b (chore): improve kubeaid-addons helm chart - update readme, values and standardize names
+
+- ae14a1943 gfetch only the tags release after v1.5.0
+
+- 3ec247a38 kube-prometheus: expand mixins doc with step-by-step guide for adding new mixins
+
+- 9c86afba9 Add TTL for daily and weekly velero backup as per Supporting Control 8.13 — ISO 27001:2022. Daily retained for 30 Days and Weekly for 90 Days. Few markdownlint fix
+
+- e3d594f05 removed old obsolete files
+
+- 5572853e7 kube-prometheus: fix addmixin crash when prometheusRules exists but has no groups
+
+- baa8f8d7f kube-prometheus: replace kops e2e fixtures with kubeadm for v0.13.0
+
+- bff6de79b kube-prometheus: add --all flag to update-mixin.sh
+
+- 04bc9eac9 kube-prometheus: simplify update-mixin.sh and setup-version.sh
+
+- 54c30a2f1 kube-prometheus: replace add-version.sh and update.sh with setup-version.sh and update-mixin.sh
+
+- 4f53b5434 kube-prometheus: add v0.17.0 vendor libraries
+
+- 6c58b9e75 kube-prometheus: add v0.17.0 support with compatibility table and AKS e2e fixtures
+
+- 790c96fae Added support for aks validation in kube-prometheus
+
+- 081458c29 e2e: fix failing tests
+
+- 2c3a780a5 docs: split README into structured docs/
+
+- 24447836b ci: run jsonnet unit tests against all library versions
+
+- cd0a5e8cd e2e: reorganize fixtures by kube-prometheus version
+
+- 1bcd6a047 tests: add lint, unit tests and import e2e fixtures
+
+- c04222f30 build.sh: clean up flags, improve output and add --commit
+
+- 83bebce0f kube-prometheus: add default vars and validation library
+
+- ecb0c1be8 Update puppet blackbox probe path to /status/v1/services
+
+- f6f0e6867 (chore): migrate oncall netpols to kubeaid-addons
+
+- c9c14a201 Fix a typo in ccm-hetzner values file
+
+- b318759d7 (chore): migrate oncall netpols to kubeaid-addons
+
+- 882fa70a8 (chore): add kubeaid-addons helm chart and netpols subchart and populate it will oncall netpols
+
+- 2eb5cb363 docs: Guide for migrating the SonarQube Zolando to CNPG
+
+- e790f5fff Added default kubeprometheus version which can be overridden by cluster vars jsonnet
+
+- 191c8a989 Fix: current limit is 1 so when we start troubleshooting the job is no longer there
+
+- 4ac5f572c (chore): move network-policy config to global: values for subchart access
+
+- 4a823a6e7 (chore): added networkpolicy for oncall application
+
+- 9a1d36780 (chore): add netpol firewall for oncall application
+
+- a2f47c923 Allow external datasources in grafana
+
+- b8b5d025b Disable velero backup monitoring in argocd to avoid huge diffs
+
 
 ## KubeAid Release Version 25.0.0
 
