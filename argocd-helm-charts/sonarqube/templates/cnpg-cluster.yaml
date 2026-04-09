@@ -15,6 +15,14 @@ metadata:
 spec:
   instances: {{ $cnpg.instances }}
 
+  # This needs to be tied to the specific version of sonarqube
+  # Currently, this pgsql v17 supports till Sonarqube v26.1.0-community
+  # Newer versions of Sonarqube can use pgsql v18 and above.
+  # NOTE: If the imageName is not specified, then the cnpg-operator will spin up latest pgsql
+  # depending on operator version which can be incompatible with Sonarqube version.
+
+  imageName: ghcr.io/cloudnative-pg/postgresql:17-system-trixie
+
   {{- with $cnpg.resources }}
   resources:
     {{- toYaml . | nindent 4 }}

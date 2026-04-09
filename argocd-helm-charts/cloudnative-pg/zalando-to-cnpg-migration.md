@@ -402,6 +402,21 @@ curl -s https://<SONARQUBE_URL>/api/system/status
 
 ### Step 4: Post-migration validation
 
+
+Sonarqube pod logs will have a message like
+
+```
+The Database needs to be manually upgraded
+```
+When you see this, you can go to the url where Sonarqube is deployed, and that will redirect you to `https://sonarqube.yourdomain.com/maintenance`.
+You will need to go to `https://sonarqube.yourdomain.com/setup` to **Manually** approve the DB upgrade. Without this
+critical step, Sonarqube will be stuck in maintenace mode.
+
+
+> NOTE: If you are upgrading to Postgres 18, that is not supported by the current sonarqube version used at the time of writing this guide. There is a good chance that the operator will spin up pgsql 18 if you don't specify it explicitly in the `kind: Cluster` manifest for sonarqube-pgsql.
+
+After the DB upgrade is completed, the sonarqube pod logs will show the completion status and then Sonarqube ingress should be up.
+
 ```shell
 # CNPG cluster healthy
 kubectl get clusters.postgresql.cnpg.io sonarqube-pgsql -n sonarqube
