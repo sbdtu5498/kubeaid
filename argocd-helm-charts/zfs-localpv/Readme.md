@@ -16,11 +16,14 @@ Creating a mirrored zpool
 
 ## Label nodes
 
-To label nodes, get all modes in a cluster:
+To label nodes, get all nodes in a cluster:
 `kubectl get nodes`
 
-To label a specific node:
+To label a specific node with the ZFS filesystem label:
 `kubectl label node <node_name> filesystem=zfs`
+
+For nodes that contain NVMe disks, also apply the NVMe label:
+`kubectl label node <node_name> disk=nvme`
 
 To check if nodes are labelled:
 `kubectl get node <node_name> --show-labels`
