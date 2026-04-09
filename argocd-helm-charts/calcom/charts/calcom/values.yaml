@@ -1,9 +1,9 @@
 replicaCount: 1
 
 image:
-  repository: calcom/cal.com
+  repository: harbor.obmondo.com/obmondo/calcom
   pullPolicy: IfNotPresent
-  tag: v5.0.19
+  tag: 0.0.6
 
 imagePullSecrets: []
 nameOverride: ""
@@ -16,6 +16,18 @@ podSecurityContext: {}
 securityContext: {}
 
 secretRef: "calcom"
+
+# Non-secret env vars (literal values). Used for signup/org/OAuth lockdown; these keys
+# are not read from secretRef (see deployment extraEnv block).
+extraEnv:
+  - name: NEXT_PUBLIC_DISABLE_SIGNUP
+    value: "true"
+  - name: ORGANIZATIONS_ENABLED
+    value: "false"
+  - name: ORGANIZATIONS_AUTOLINK
+    value: "false"
+  - name: GOOGLE_LOGIN_ENABLED
+    value: "false"
 
 service:
   type: ClusterIP
@@ -46,3 +58,21 @@ nodeSelector: {}
 tolerations: []
 
 affinity: {}
+
+postgresql:
+  enabled: true
+  instance: 1
+  size: 10Gi
+  recover: false
+  bootstrap:
+    initdb:
+      database: calcom
+      owner: calcom
+  resources:
+    limits:
+      memory: 800Mi
+      cpu: 500m
+    requests:
+      memory: 500Mi
+      cpu: 100m
+

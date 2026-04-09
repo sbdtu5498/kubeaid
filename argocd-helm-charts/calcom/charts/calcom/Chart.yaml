@@ -1,7 +1,7 @@
 apiVersion: v2
 appVersion: v5.0.19
 description: Deploy Calcom in a Helm Chart
-home: https://pyrrha.github.io/calcom-helm/
+home: https://obmondo.github.io/calcom-helm/
 keywords:
 - kubernetes
 - chart
@@ -15,10 +15,10 @@ keywords:
 - appointment
 - calcom
 maintainers:
-- name: Pyrrha
-  url: https://github.com/Pyrrha/calcom-helm
+- name: Obmondo
+  url: https://github.com/Obmondo/calcom-helm
 name: calcom
 sources:
-- https://github.com/Pyrrha/calcom-helm
+- https://github.com/Obmondo/calcom-helm
 type: application
 version: 0.8.6
