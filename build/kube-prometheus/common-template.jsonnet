@@ -121,6 +121,11 @@ local mixins = remove_nulls([
     (import 'mixins/kubelet-cert-expiry/mixin.libsonnet'),
     vars,
   ),
+  addMixin(
+    'blackbox-exporter',
+    (import 'mixins/blackbox-exporter/mixin.libsonnet'),
+    vars,
+  ),
 ]);
 
 local scrape_namespaces = std.uniq(std.sort(std.flattenArrays(
