@@ -5,7 +5,7 @@ snapshot-controller:
     tls:
       certManagerIssuerRef:
         group: cert-manager.io
-        kind: ClusterIssuer
+        kind: Issuer
         name: selfsigned
   controller:
     revisionHistoryLimit: 0
