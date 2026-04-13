@@ -51,7 +51,7 @@ vulsExporter:
   enabled: false
   image:
     repository: ghcr.io/obmondo/vuls-exporter
-    tag: 1.1.0
+    tag: 1.2.0
     pullPolicy: IfNotPresent
   obmondo:
     url: ""
