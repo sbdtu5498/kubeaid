@@ -11,7 +11,7 @@ rook-ceph:
 
 rook-ceph-cluster:
   monitoring:
-    enabled: true
+    enabled: false
 
   toolbox:
     enabled: true
