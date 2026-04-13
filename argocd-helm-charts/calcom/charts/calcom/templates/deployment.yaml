@@ -32,23 +32,189 @@ spec:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              # Format ALLOWED_HOSTNAMES to be JSON-compatible (POSIX-compliant)
+              # The Cal.com code does: JSON.parse(`[${process.env.ALLOWED_HOSTNAMES || ""}]`)
+              # So ALLOWED_HOSTNAMES needs to be formatted as quoted strings separated by commas
+              # Example: "host1.com","host2.com" so it becomes ["host1.com","host2.com"]
+              if [ -n "$ALLOWED_HOSTNAMES" ]; then
+                # Check if it's already JSON-formatted (starts with quote)
+                case "$ALLOWED_HOSTNAMES" in
+                  \"*)
+                    # Already formatted, do nothing
+                    ;;
+                  *)
+                    # Format: handle comma-separated hostnames
+                    # Replace commas with "," and wrap the whole thing
+                    if echo "$ALLOWED_HOSTNAMES" | grep -q ','; then
+                      # Multiple hostnames: format each one
+                      FORMATTED=""
+                      OLD_IFS="$IFS"
+                      IFS=','
+                      for host in $ALLOWED_HOSTNAMES; do
+                        host=$(echo "$host" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
+                        if [ -n "$host" ]; then
+                          if [ -n "$FORMATTED" ]; then
+                            FORMATTED="$FORMATTED,\"$host\""
+                          else
+                            FORMATTED="\"$host\""
+                          fi
+                        fi
+                      done
+                      IFS="$OLD_IFS"
+                      export ALLOWED_HOSTNAMES="$FORMATTED"
+                    else
+                      # Single hostname: just wrap in quotes
+                      export ALLOWED_HOSTNAMES="\"$ALLOWED_HOSTNAMES\""
+                    fi
+                    ;;
+                esac
+              fi
+              # First, resolve a known failing migration on fresh v6.1.10 installs.
+              # This migration only adds an index; if it fails once, Prisma marks it as failed
+              # and refuses to continue (P3009). Since you don't need existing data, it's safe
+              # to mark it as applied on a new database before running the full deploy.
+              echo "Resolving known failed migration (index only, safe on fresh DBs)..."
+              npx prisma migrate resolve \
+                --applied "20260130000000_add_selected_calendar_channel_id_index" \
+                --schema /calcom/packages/prisma/schema.prisma || true
+
+              # Run database migrations with retry logic to handle advisory lock timeouts.
+              # Prisma P1002 (advisory lock timeout) can happen if multiple pods start simultaneously.
+              # If migrations don't run, Cal.com will crash later with Prisma P2021 (missing tables like public.users/public.Feature).
+              echo "Running database migrations..."
+              MAX_RETRIES=5
+              RETRY_DELAY=10
+              for i in $(seq 1 $MAX_RETRIES); do
+                if npx prisma migrate deploy --schema /calcom/packages/prisma/schema.prisma; then
+                  echo "Migrations completed successfully"
+                  break
+                else
+                  if [ $i -eq $MAX_RETRIES ]; then
+                    echo "ERROR: Migrations failed after $MAX_RETRIES attempts. Exiting."
+                    exit 1
+                  fi
+                  echo "Migration attempt $i failed. Retrying in $RETRY_DELAY seconds..."
+                  sleep $RETRY_DELAY
+                fi
+              done
+              # Replace build-time URLs baked into static JS/HTML files with the
+              # actual runtime URL. Next.js inlines NEXT_PUBLIC_* env vars at
+              # build time, so without this every client-side redirect goes to
+              # whatever URL was used during `next build`.
+              #
+              # We handle TWO cases:
+              #   1. The image was built with the placeholder kept intact
+              #      (fixed Dockerfile) → replace "http://NEXT_PUBLIC_WEBAPP_URL_PLACEHOLDER"
+              #   2. The image was built with the old Dockerfile that already
+              #      replaced the placeholder with "http://localhost:3000"
+              #      → replace "http://localhost:3000"
+              if [ -n "$NEXT_PUBLIC_WEBAPP_URL" ]; then
+                echo "Replacing build-time URLs with runtime URL: $NEXT_PUBLIC_WEBAPP_URL"
+                # Case 1: placeholder still present (preferred / new images)
+                /calcom/scripts/replace-placeholder.sh "http://NEXT_PUBLIC_WEBAPP_URL_PLACEHOLDER" "$NEXT_PUBLIC_WEBAPP_URL" || true
+                # Case 2: localhost:3000 baked in (legacy images)
+                if [ "$NEXT_PUBLIC_WEBAPP_URL" != "http://localhost:3000" ]; then
+                  /calcom/scripts/replace-placeholder.sh "http://localhost:3000" "$NEXT_PUBLIC_WEBAPP_URL" || true
+                fi
+                # Tell Cal.com that the *built* URL now matches the runtime URL.
+                # orgDomains.ts compares NEXT_PUBLIC_WEBAPP_URL against
+                # BUILT_NEXT_PUBLIC_WEBAPP_URL to decide hostname validity.
+                export BUILT_NEXT_PUBLIC_WEBAPP_URL="$NEXT_PUBLIC_WEBAPP_URL"
+              fi
+              # Start the application (standalone mode)
+              exec node apps/web/server.js
           env:
             {{- $secretRef  := .Values.secretRef -}}
-            {{- range tuple "DATABASE_URL" "NEXT_PUBLIC_WEBAPP_URL" "NEXTAUTH_SECRET" "CALENDSO_ENCRYPTION_KEY" }}
+            {{- $webappUrl := default "" .Values.webappUrl -}}
+            {{- $useSecretUrl := eq $webappUrl "" -}}
+            {{- range tuple "NEXTAUTH_SECRET" "CALENDSO_ENCRYPTION_KEY" }}
             - name: {{ . }}
               valueFrom:
                 secretKeyRef:
                   key: {{ . }}
                   name: {{ $secretRef }}
             {{- end}}
+            - name: NEXT_PUBLIC_WEBAPP_URL
+            {{- if $useSecretUrl }}
+              valueFrom:
+                secretKeyRef:
+                  key: NEXT_PUBLIC_WEBAPP_URL
+                  name: {{ $secretRef }}
+            {{- else }}
+              value: {{ $webappUrl | quote }}
+            {{- end }}
+            # Override build-time URL baked into the image (BUILT_NEXT_PUBLIC_WEBAPP_URL),
+            # so Cal.com stops thinking it's running on http://localhost:3000.
+            # This is what orgDomains.ts actually uses when comparing hostnames.
+            - name: BUILT_NEXT_PUBLIC_WEBAPP_URL
+            {{- if $useSecretUrl }}
+              valueFrom:
+                secretKeyRef:
+                  key: NEXT_PUBLIC_WEBAPP_URL
+                  name: {{ $secretRef }}
+            {{- else }}
+              value: {{ $webappUrl | quote }}
+            {{- end }}
+            # Cal.com uses WEBAPP_URL (server-side) in a few places; if it's unset it falls back to http://localhost:3000.
+            # Keep NEXT_PUBLIC_WEBAPP_URL as the source of truth and derive WEBAPP_URL/NEXTAUTH_URL from it.
+            - name: WEBAPP_URL
+            {{- if $useSecretUrl }}
+              valueFrom:
+                secretKeyRef:
+                  key: NEXT_PUBLIC_WEBAPP_URL
+                  name: {{ $secretRef }}
+            {{- else }}
+              value: {{ $webappUrl | quote }}
+            {{- end }}
+            - name: NEXTAUTH_URL
+            {{- if $useSecretUrl }}
+              valueFrom:
+                secretKeyRef:
+                  key: NEXT_PUBLIC_WEBAPP_URL
+                  name: {{ $secretRef }}
+            {{- else }}
+              value: {{ $webappUrl | quote }}
+            {{- end }}
+            # WEBSITE_URL is used in JWT verification and some redirect flows (see getServerSideProps.tsx)
+            # Set it to match WEBAPP_URL to ensure redirects go to the correct domain
+            - name: WEBSITE_URL
+            {{- if $useSecretUrl }}
+              valueFrom:
+                secretKeyRef:
+                  key: NEXT_PUBLIC_WEBAPP_URL
+                  name: {{ $secretRef }}
+            {{- else }}
+              value: {{ $webappUrl | quote }}
+            {{- end }}
+
+            # Use the CloudNativePG-generated app secret as the source of truth for database credentials.
+            # This avoids SealedSecret drift (calcom secret having an outdated DB password).
+            # The secret name is stable (`calcom-pgsql-app`) in this chart.
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: calcom-pgsql-app
+                  key: uri
             - name: DATABASE_DIRECT_URL
               valueFrom:
                 secretKeyRef:
-                  key: DATABASE_URL
-                  name: {{ .Values.secretRef }}
+                  name: calcom-pgsql-app
+                  key: uri
+            # Increase Prisma advisory lock timeout to reduce P1002 errors during concurrent migrations
+            - name: PRISMA_MIGRATE_ENGINE_ADVISORY_LOCK_TIMEOUT
+              value: "60000"
+            - name: ALLOWED_HOSTNAMES
+              valueFrom:
+                secretKeyRef:
+                  key: ALLOWED_HOSTNAMES
+                  name: {{ $secretRef }}
+                  optional: true
+
             {{- range tuple
               "AB_TEST_BUCKET_PROBABILITY"
-              "ALLOWED_HOSTNAMES"
               "API_KEY_PREFIX"
               "APP_ROUTER_APPS_CATEGORIES_CATEGORY_ENABLED"
               "APP_ROUTER_APPS_CATEGORIES_ENABLED"
@@ -114,7 +280,6 @@ spec:
               "FORMBRICKS_FEEDBACK_SURVEY_ID"
               "GIPHY_API_KEY"
               "GOOGLE_API_CREDENTIALS"
-              "GOOGLE_LOGIN_ENABLED"
               "HUBSPOT_CLIENT_ID"
               "HUBSPOT_CLIENT_SECRET"
               "INSIGHTS_DATABASE_URL"
@@ -126,7 +291,6 @@ spec:
               "MS_GRAPH_CLIENT_ID"
               "MS_GRAPH_CLIENT_SECRET"
               "NEXTAUTH_COOKIE_DOMAIN"
-              "NEXTAUTH_URL"
               "NEXT_PUBLIC_API_V2_URL"
               "NEXT_PUBLIC_APP_NAME"
               "NEXT_PUBLIC_AVAILABILITY_SCHEDULE_INTERVAL"
@@ -134,7 +298,6 @@ spec:
               "NEXT_PUBLIC_CLOUDFLARE_SITEKEY"
               "NEXT_PUBLIC_COMPANY_NAME"
               "NEXT_PUBLIC_CONSOLE_URL"
-              "NEXT_PUBLIC_DISABLE_SIGNUP"
               "NEXT_PUBLIC_EMBED_LIB_URL"
               "NEXT_PUBLIC_FORMBRICKS_ENVIRONMENT_ID"
               "NEXT_PUBLIC_FORMBRICKS_HOST_URL"
@@ -157,8 +320,6 @@ spec:
               "NEXT_PUBLIC_TEAM_IMPERSONATION"
               "NEXT_PUBLIC_WEBSITE_URL"
               "NEXT_PUBLIC_ZENDESK_KEY"
-              "ORGANIZATIONS_AUTOLINK"
-              "ORGANIZATIONS_ENABLED"
               "PAYMENT_FEE_FIXED"
               "PAYMENT_FEE_PERCENTAGE"
               "PGSSLMODE"
@@ -172,9 +333,7 @@ spec:
               "REVERT_PUBLIC_TOKEN"
               "SALESFORCE_CONSUMER_KEY"
               "SALESFORCE_CONSUMER_SECRET"
-              "SAML_ADMINS"
               "SAML_CLIENT_SECRET_VERIFIER"
-              "SAML_DATABASE_URL"
               "SENDGRID_API_KEY"
               "SENDGRID_EMAIL"
               "SENDGRID_SYNC_API_KEY"
@@ -219,6 +378,10 @@ spec:
                   name: {{ $secretRef }}
                   optional: true
             {{- end}}
+            {{- range .Values.extraEnv }}
+            - name: {{ .name }}
+              value: {{ .value | quote }}
+            {{- end }}
           ports:
             - name: http
               containerPort: 3000
@@ -227,10 +390,12 @@ spec:
             httpGet:
               path: /
               port: http
+            timeoutSeconds: 5
           readinessProbe:
             httpGet:
               path: /
               port: http
+            timeoutSeconds: 5
           startupProbe:
             httpGet:
               path: /
@@ -238,6 +403,7 @@ spec:
             failureThreshold: 60
             initialDelaySeconds: 5
             periodSeconds: 5
+            timeoutSeconds: 5
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
       {{- with .Values.nodeSelector }}
