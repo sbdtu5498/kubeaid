@@ -20,7 +20,7 @@
               alert_id: 'blackbox_http_endpoint_down',
             },
             annotations: {
-              summary: 'HTTP endpoint is down',
+              summary: 'HTTP endpoint is down.',
               description: 'Probe to **{{ .Labels.instance }}** is failing.',
             },
           },
@@ -33,7 +33,7 @@
               alert_id: 'blackbox_http_5xx',
             },
             annotations: {
-              summary: 'HTTP 5xx responses detected',
+              summary: 'HTTP 5xx responses detected.',
               description: '**{{ .Labels.instance }}** is returning server errors with HTTP status code: {{ .Value }}',
             },
           },
@@ -49,7 +49,7 @@
               alert_id: 'blackbox_tls_expiring',
             },
             annotations: {
-              summary: 'TLS certificate nearing expiry',
+              summary: 'TLS certificate nearing expiry.',
               description: 'TLS cert for **{{ .Labels.instance }}** expires in less than 15 days.',
             },
           },
@@ -63,7 +63,7 @@
               alert_id: 'blackbox_tls_expiring_soon',
             },
             annotations: {
-              summary: 'TLS certificate expiring soon',
+              summary: 'TLS certificate expiring soon.',
               description: 'TLS cert for **{{ .Labels.instance }}** expires in less than 7 days.',
             },
           },
@@ -80,7 +80,7 @@
               alert_id: 'blackbox_high_latency',
             },
             annotations: {
-              summary: 'High response latency detected',
+              summary: 'High response latency detected.',
               description: '**{{ .Labels.instance }}** is responding slowly (~{{ .Value }} seconds).',
             },
           },
@@ -94,7 +94,7 @@
               alert_id: 'blackbox_very_high_latency',
             },
             annotations: {
-              summary: 'Very high latency detected',
+              summary: 'Very high latency detected.',
               description: '**{{ .Labels.instance }}** latency is critically high (~{{ .Value}} seconds).',
             },
           },
@@ -111,7 +111,7 @@
               alert_id: 'blackbox_redirect_loop',
             },
             annotations: {
-              summary: 'Too many HTTP redirects',
+              summary: 'Too many HTTP redirects.',
               description: '**{{ .Labels.instance }}** may have a redirect loop.',
             },
           },
@@ -128,7 +128,7 @@
               alert_id: 'blackbox_dns_failure',
             },
             annotations: {
-              summary: 'DNS resolution failed',
+              summary: 'DNS resolution failed.',
               description: 'DNS lookup failed for **{{ .Labels.instance }}**.',
             },
           },
@@ -142,7 +142,7 @@
               alert_id: 'blackbox_dns_slow',
             },
             annotations: {
-              summary: 'Slow DNS resolution',
+              summary: 'Slow DNS resolution.',
               description: '**{{ .Labels.instance }}** DNS lookup is slow (~{{ .Value }} seconds).',
             },
           },
@@ -158,7 +158,7 @@
               alert_id: 'blackbox_ip_flapping',
             },
             annotations: {
-              summary: 'IP address flapping detected',
+              summary: 'IP address flapping detected.',
               description: 'Resolved IP for **{{ .Labels.instance }}** is changing frequently (DNS instability).',
             },
           },
