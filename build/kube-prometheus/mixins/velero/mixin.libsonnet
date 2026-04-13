@@ -26,7 +26,7 @@
             'for': '30m',
             labels: {
               severity: 'warning',
-              schedule: '{{ $labels.schedule }}'
+              schedule: '{{ $labels.schedule }}',
             },
             annotations: {
               description: 'Velero backup was not successful for {{ $labels.schedule }}.',
@@ -43,12 +43,12 @@
             'for': '15m',
             labels: {
               severity: 'critical',
-              schedule: '{{ $labels.schedule }}'
+              schedule: '{{ $labels.schedule }}',
             },
             annotations: {
-              summary: "Velero backup has not completed once successfully for any schedule.",
+              summary: 'Velero backup has not completed once successfully for any schedule.',
               description:
-                "{{- with $labels.schedule -}} No successful Velero backups have been detected for schedule: {{ . }} while the Velero pod is running.This likely indicates a configuration or permission issue preventing backups from completing. {{- else -}} Velero backup metrics are missing while the Velero pod is running. This may indicate that the backup metric is not being emitted or there is a configuration/permission issue. {{- end }}"
+                '{{- with $labels.schedule -}} No successful Velero backups have been detected for schedule: {{ . }} while the Velero pod is running.This likely indicates a configuration or permission issue preventing backups from completing. {{- else -}} Velero backup metrics are missing while the Velero pod is running. This may indicate that the backup metric is not being emitted or there is a configuration/permission issue. {{- end }}',
             },
           },
         ],
