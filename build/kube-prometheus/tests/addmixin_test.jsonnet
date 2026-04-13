@@ -1,7 +1,7 @@
 // Run with:
 //   jsonnet -J libraries/v0.13.0/vendor tests/addmixin_test.jsonnet
-local test = import 'github.com/yugui/jsonnetunit/jsonnetunit/test.libsonnet';
 local addMixin = import '../lib/addmixin.libsonnet';
+local test = import 'github.com/yugui/jsonnetunit/jsonnetunit/test.libsonnet';
 
 // ── cluster config fixtures (mirrors real bw7 customer configs) ────────────
 

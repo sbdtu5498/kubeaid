@@ -17,9 +17,8 @@
               alert_id: 'SmartMonUdmaCrcErrorCountRawValue',
             },
             annotations: {
-              description: 'Disk **{{ .Labels.device }}**  has disk sata failure on instance **{{ .Labels.instance }}**
-          UDMA_CRC_Error_Count - The number of errors related to data transfer over the interface. A value of **{{ .Value }}** is concerning and indicates potential issues with the data cable or connections.',
-              summary: 'The device has disk sata failures.'
+              description: 'Disk **{{ .Labels.device }}**  has disk sata failure on instance **{{ .Labels.instance }}**\n          UDMA_CRC_Error_Count - The number of errors related to data transfer over the interface. A value of **{{ .Value }}** is concerning and indicates potential issues with the data cable or connections.',
+              summary: 'The device has disk sata failures.',
             },
           },
           {
@@ -32,7 +31,7 @@
             },
             annotations: {
               description: 'Disk **{{ $labels.disk }}** on **{{ $labels.certname }}** has SMART failure',
-              summary: 'Disk has SMART failure.'
+              summary: 'Disk has SMART failure.',
             },
           },
           {
@@ -44,12 +43,8 @@
               alert_id: 'SmartMonReallocatedSectorCtRawValue',
             },
             annotations: {
-              description: 'Disk **{{ $labels.disk }}** on **{{ $labels.certname }}** has remapped sector too many times,
-          instance="**{{ $labels.instance }}**",
-          type="**{{ $labels.type }}**",
-
-          Reallocated Sectors Count -  This value is primarily used as a metric of the life expectancy of the drive; a drive which has had any reallocations at all is significantly more likely to fail in the immediate months.',
-              summary: 'Disk has remapped disk sector too many times.'
+              description: 'Disk **{{ $labels.disk }}** on **{{ $labels.certname }}** has remapped sector too many times,\n          instance="**{{ $labels.instance }}**",\n          type="**{{ $labels.type }}**",\n\n          Reallocated Sectors Count -  This value is primarily used as a metric of the life expectancy of the drive; a drive which has had any reallocations at all is significantly more likely to fail in the immediate months.',
+              summary: 'Disk has remapped disk sector too many times.',
             },
           },
           {
@@ -61,11 +56,8 @@
               alert_id: 'SmartMonDevicePercentageUsed',
             },
             annotations: {
-              description: 'Disk **{{ $labels.disk }}** on **{{ $labels.certname }}** has exceeded 100% of NVM subsystem life,
-          instance="**{{ $labels.instance }}**",
-
-          Percentage Used: Contains a vendor specific estimate of the percentage of NVM subsystem life used based on the actual usage and the manufacturers prediction of NVM life. A value of 100 indicates that the estimated endurance of the NVM in the NVM subsystem has been consumed, but may not indicate an NVM subsystem failure. The value is allowed to exceed 100, percentages greater than 254 shall be represented as 255, this value shall be updated once per power-on hour (when the controller is not in a sleep state).',
-              summary: 'Disk has exceeded 100% of NVM subsystem life.'
+              description: 'Disk **{{ $labels.disk }}** on **{{ $labels.certname }}** has exceeded 100% of NVM subsystem life,\n          instance="**{{ $labels.instance }}**",\n\n          Percentage Used: Contains a vendor specific estimate of the percentage of NVM subsystem life used based on the actual usage and the manufacturers prediction of NVM life. A value of 100 indicates that the estimated endurance of the NVM in the NVM subsystem has been consumed, but may not indicate an NVM subsystem failure. The value is allowed to exceed 100, percentages greater than 254 shall be represented as 255, this value shall be updated once per power-on hour (when the controller is not in a sleep state).',
+              summary: 'Disk has exceeded 100% of NVM subsystem life.',
             },
           },
         ],
