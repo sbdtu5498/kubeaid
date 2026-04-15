@@ -548,6 +548,17 @@ function main (){
   fi
 
   if "$UPDATE_ALL"; then
+
+ # Update kubeaid_apps list at build/kube-prometheus/lib/default_kubeaid_apps_vars.libsonnet
+
+  DEFAULT_KUBEAID_APPS_VARS="./build/kube-prometheus/lib/default_kubeaid_apps_vars.yaml"
+
+  kubeaid_apps=$(find "$ARGOCD_CHART_PATH" -mindepth 1 -maxdepth 1 -type d -exec basename {} \;)
+  export kubeaid_apps
+  yq -n '.kubeaid_apps = (strenv(kubeaid_apps) | split("\n"))' > "${DEFAULT_KUBEAID_APPS_VARS}"
+
+  echo "Updated kubeaid_apps in ${DEFAULT_KUBEAID_APPS_VARS}"
+
     # Determine KubeAid version bump
     echo "Current KubeAid version: $CURRENT_VERSION"
 
